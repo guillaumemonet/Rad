@@ -1,0 +1,13 @@
+{
+    "name": "I3lade/Rad",
+    "description": "Rest API Dedicated Framework.",
+    "authors": [
+        {
+            "name": "Guillaume Monet",
+            "email": "guillaume.monet@free.fr"
+        }
+    ],
+    "require": {
+        "php": " ^7.0"
+    }
+}
