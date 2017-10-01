@@ -4,7 +4,7 @@ RAD Micro Framework
 ## WARNING WIP Framework
 
 ## What is RAD?
-RAD for Rest Application Dedicated.
+RAD for Rest API Dedicated Framework.
 
 ## Installation
 
@@ -13,14 +13,14 @@ RAD for Rest Application Dedicated.
 To get the latest version of RAD Framework, simply add the following line to the require block of your `composer.json` file:
 
 ```
-"rad/rad-framework": "~1.0"
+"rad/rad-framework": "dev-master"
 ```
 
 ## Usage
 
 ```php
 
-?>
+
 ```
 
 ## PSR Support
