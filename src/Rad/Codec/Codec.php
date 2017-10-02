@@ -1,5 +1,6 @@
 <?php
 
+
 /*
  * The MIT License
  *
@@ -26,7 +27,9 @@
 
 namespace Rad\Codec;
 
-use ErrorException;
+use Rad\Codec\CodecInterface;
+use Rad\Codec\DefaultCodec;
+use Rad\Codec\JsonCodec;
 use Rad\Errors\CodecException;
 
 /**
@@ -45,7 +48,7 @@ class Codec {
 
     /**
      * 
-     * @param \Rad\Codec\CodecInterface $codec
+     * @param CodecInterface $codec
      * @return $this
      */
     public function add(CodecInterface $codec) {
@@ -62,7 +65,7 @@ class Codec {
      * @return type
      * @throws CodecException
      */
-    public static function serialize($datas, string $mime_type = "*") {
+    public function serialize($datas, string $mime_type = "*") {
         if (isset($this->codecs[$mime_type])) {
             return $this->codecs[$mime_type]->serialize($datas);
         } else {
