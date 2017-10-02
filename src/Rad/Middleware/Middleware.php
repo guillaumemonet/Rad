@@ -26,7 +26,6 @@ final class Middleware {
     /**
      * Add layer(s) or Middleware
      * @param  mixed $layers
-     * @return Middleware
      */
     public function layer($layers) {
         if ($layers instanceof Middleware) {
@@ -38,7 +37,7 @@ final class Middleware {
         if (!is_array($layers)) {
             throw new InvalidArgumentException(get_class($layers) . " is not a valid middleware.");
         }
-        return new static(array_merge($this->layers, $layers));
+        $this->layers = array_merge($this->layers, $layers);
     }
 
     /**
@@ -80,8 +79,8 @@ final class Middleware {
     /**
      * Get an onion layer function.
      * This function will get the object from a previous layer and pass it inwards
-     * @param  IMiddleware $nextLayer
-     * @param  IMiddleware $layer
+     * @param  MiddlewareInterface $nextLayer
+     * @param  IMiddlewareInterface $layer
      * @return Closure
      */
     private function createLayer($nextLayer, $layer) {

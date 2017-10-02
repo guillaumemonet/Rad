@@ -3,37 +3,20 @@
 require(__DIR__ . "/../vendor/autoload.php");
 
 use Rad\Codec\Codec;
-use Rad\Codec\CodecInterface;
 
-class TestCodec implements CodecInterface {
-
-    public function getMimeType() {
-        return array("json");
-    }
-
-    public function __toString() {
-        return "JSON Codec";
-    }
-
-    public function deserialize(string $string) {
-        return json_decode($string);
-    }
-
-    public function serialize($object) {
-        return json_encode($object);
-    }
-
+$codec = new Codec();
+error_log($codec);
+$initdatas = array("toto" => "zero");
+$decode0 = $codec->serialize($initdatas, "json");
+error_log(print_r($decode0, true));
+$decode1 = $codec->deserialize($decode0, "json");
+error_log(print_r($decode1, true));
+$decode4 = $codec->serialize($decode1, "*");
+error_log(print_r($decode4, true));
+$decode5 = $codec->deserialize($decode4, "*");
+error_log(print_r($decode5, true));
+if ($initdatas == $decode5) {
+    error_log("Success :)");
 }
-
-$testcodec = new TestCodec();
-//Codec::add($testcodec);
-error_log(Codec::add($testcodec)::listCodecs());
-$datas = Codec::serialize("json", array("toto"));
-error_log(json_last_error_msg());
-error_log($datas);
-$decode = Codec::deserialize("json", $datas);
-error_log(print_r($decode, true));
-$decode2 = Codec::deserialize("xml", $datas);
-
 
 

@@ -89,11 +89,11 @@ abstract class Model implements JsonSerializable, Serializable {
     }
 
     public function serialize(): string {
-        return serialize($this);
+        
     }
 
     public function unserialize($serialized) {
-        $this = unserialize($serialized);
+        
     }
 
 }

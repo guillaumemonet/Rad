@@ -18,12 +18,20 @@ class Route {
     public $methodName;
     public $verb;
     public $regex;
-    public $middleware = array();
+    public $middlewares = array();
     public $produce = null;
     public $consume = null;
 
     public function __toString() {
         return "Route " . strtoupper($this->verb) . " : /v" . $this->version . "/" . $this->regex . " call " . $this->className . "->" . $this->methodName;
+    }
+
+    public function getMiddlewares() {
+        $ret = array();
+        foreach ($this->middlewares as $middle) {
+            $ret[] = new $middle();
+        }
+        return $ret;
     }
 
 }

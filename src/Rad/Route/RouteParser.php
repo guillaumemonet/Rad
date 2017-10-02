@@ -53,9 +53,7 @@ class RouteParser {
     public static function parseRoutes(array $classes) {
         $routes = array();
         foreach ($classes as $class) {
-            Log::getLogHandler()->debug(print_r($classes, true));
             $methods = get_class_methods($class);
-            Log::getLogHandler()->debug(print_r($methods, true));
             foreach ($methods as $method) {
                 $tmp_route = new Route();
                 $tmp_route->className = $class;
@@ -69,7 +67,7 @@ class RouteParser {
                             $tmp_route->verb = $key;
                             $tmp_route->regex = $annotation[0];
                         } else if ($key == self::$middle) {
-                            $tmp_route->middleware[] = $annotation[0];
+                            $tmp_route->middlewares = $annotation;
                         } else if ($key == self::$version) {
                             $tmp_route->version = $annotation[0];
                         } else if ($key == self::$consume) {
@@ -82,7 +80,6 @@ class RouteParser {
                 }
             }
         }
-        Log::getLogHandler()->debug(print_r($routes, true));
         return $routes;
     }
 

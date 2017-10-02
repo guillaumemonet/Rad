@@ -145,10 +145,8 @@ final class Router implements RouterInterface {
 
     public function set(array $routes) {
         foreach ($routes as $route) {
-            //$this->path_array[$route->version] = $routes;
             $this->{$route->verb}($route->regex, $route, $route->version);
         }
-        Log::getLogHandler()->debug(print_r($this->path_array, true));
     }
 
     /**
@@ -194,8 +192,12 @@ final class Router implements RouterInterface {
                     $api->getRequest()->path_datas = $m;
                     Log::getLogHandler()->debug($method . " : " . $path . " Matching " . $p . " Consume " . $route->consume);
                     if ($route->consume == null || $route->consume == "" || in_array($api->getRequest()->getHeader("CONTENT_TYPE"), Mime::MIME_TYPES[$route->consume])) {
+                        $api->getMiddleware()->layer($route->getMiddlewares());
                         $controller = new $route->className();
-                        $datas = $controller->{$route->methodName}($api);
+                        $method = $route->methodName;
+                        $datas = $api->getMiddleware()->call($api, function(Api $api) use($controller, $method) {
+                            return $controller->{$method}($api);
+                        });
                         if (isset($route->produce)) {
                             $api->getResponse()->setDataType($route->produce);
                         }

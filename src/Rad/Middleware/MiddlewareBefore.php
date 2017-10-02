@@ -22,10 +22,10 @@ abstract class MiddlewareBefore implements MiddlewareInterface {
      * @param Closure $next
      * @return IMiddleware
      */
-    final public function call(Api &$api, Closure $next) {
+    final public function call(Api $api, Closure $next) {
         $this->middle($api);
         return $next($api);
     }
 
-    abstract function middle(Api &$api);
+    abstract function middle(Api $api);
 }

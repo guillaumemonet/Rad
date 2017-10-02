@@ -89,7 +89,6 @@ abstract class Api {
             $this->router->set(RouteParser::parseRoutes($this->addRoutes()));
             $this->router->save();
         }
-        Log::getLogHandler()->debug($this->router);
     }
 
     /**

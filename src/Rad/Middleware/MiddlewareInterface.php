@@ -21,11 +21,11 @@ interface MiddlewareInterface {
      * @param Api $api
      * @param Closure $next
      */
-    public function call(Api &$api, Closure $next);
+    public function call(Api $api, Closure $next);
 
     /**
      * 
      * @param Api $api
      */
-    public function middle(Api &$api);
+    public function middle(Api $api);
 }
