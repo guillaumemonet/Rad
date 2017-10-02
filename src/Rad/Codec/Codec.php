@@ -45,9 +45,8 @@ class Codec {
 
     /**
      * 
-     * @param array $mime_types
-     * @param CodecInterface $codec
-     * @return Codec
+     * @param \Rad\Codec\CodecInterface $codec
+     * @return $this
      */
     public function add(CodecInterface $codec) {
         foreach ($codec->getMimeTypes() as $mime) {
@@ -56,16 +55,12 @@ class Codec {
         return $this;
     }
 
-    public static function init() {
-        
-    }
-
     /**
      * 
-     * @param type $mime_type
      * @param type $datas
+     * @param string $mime_type
      * @return type
-     * @throws ErrorException
+     * @throws CodecException
      */
     public static function serialize($datas, string $mime_type = "*") {
         if (isset($this->codecs[$mime_type])) {
@@ -77,10 +72,10 @@ class Codec {
 
     /**
      * 
-     * @param type $mime_type
      * @param type $datas
+     * @param string $mime_type
      * @return type
-     * @throws ErrorException
+     * @throws CodecException
      */
     public function deserialize($datas, string $mime_type = "*") {
         if (isset($this->codecs[$mime_type])) {
