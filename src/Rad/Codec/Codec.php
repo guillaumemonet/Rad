@@ -36,7 +36,12 @@ use Rad\Errors\CodecException;
  */
 class Codec {
 
-    private static $codecs = array();
+    private $codecs = array();
+
+    public function __construct() {
+        $this->add(new JsonCodec());
+        $this->add(new DefaultCodec());
+    }
 
     /**
      * 
@@ -44,16 +49,15 @@ class Codec {
      * @param CodecInterface $codec
      * @return Codec
      */
-    public static function add(CodecInterface $codec) {
+    public function add(CodecInterface $codec) {
         foreach ($codec->getMimeTypes() as $mime) {
-            self::$codecs[$mime] = &$codec;
+            $this->codecs[$mime] = &$codec;
         }
-        return self::class;
+        return $this;
     }
 
     public static function init() {
-        self::add(new JsonCodec());
-        self::add(new DefaultCodec());
+        
     }
 
     /**
@@ -64,8 +68,8 @@ class Codec {
      * @throws ErrorException
      */
     public static function serialize($datas, string $mime_type = "*") {
-        if (isset(self::$codecs[$mime_type])) {
-            return self::$codecs[$mime_type]->serialize($datas);
+        if (isset($this->codecs[$mime_type])) {
+            return $this->codecs[$mime_type]->serialize($datas);
         } else {
             throw new CodecException("No Codec found for serializing " . $mime_type);
         }
@@ -78,9 +82,9 @@ class Codec {
      * @return type
      * @throws ErrorException
      */
-    public static function deserialize($datas, string $mime_type = "*") {
-        if (isset(self::$codecs[$mime_type])) {
-            return self::$codecs[$mime_type]->deserialize($datas);
+    public function deserialize($datas, string $mime_type = "*") {
+        if (isset($this->codecs[$mime_type])) {
+            return $this->codecs[$mime_type]->deserialize($datas);
         } else {
             throw new CodecException("No Codec found for deserializing " . $mime_type);
         }
@@ -90,9 +94,9 @@ class Codec {
      * 
      * @return string
      */
-    public static function listCodecs(): string {
+    public function __toString(): string {
         $ret = "";
-        foreach (self::$codecs as $codec) {
+        foreach ($this->codecs as $codec) {
             $ret .= "" . $codec;
         }
         return $ret;
