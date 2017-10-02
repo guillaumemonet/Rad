@@ -32,7 +32,7 @@ use Psr\SimpleCache\CacheInterface;
  * Volatile Cache 
  * To Share Var Between Function
  */
-final class QuickCache implements CacheInterface {
+class QuickCache implements CacheInterface {
 
     /**
      *

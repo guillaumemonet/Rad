@@ -40,7 +40,7 @@ final class Memcache_Handler implements CacheInterface {
     private $memcache = null;
 
     public function __construct() {
-        $this->memcache = new Memcache();
+        $this->memcache = new Memcached();
         $this->memcache->addServer(Config::get('cache_memcache', 'url'), (int) Config::get('cache_memcache', 'port'), 100);
     }
 

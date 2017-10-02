@@ -86,12 +86,8 @@ final class Redis_Handler implements CacheInterface {
         }
     }
 
-    public function purge() {
-        
-    }
-
     public function clear(): bool {
-        
+        $this->redis->flushAll();
     }
 
     public function deleteMultiple($keys): bool {

@@ -28,7 +28,6 @@ namespace Rad\Cache;
 
 use Psr\SimpleCache\CacheInterface;
 use Rad\Config\Config;
-use Rad\Log\Log;
 
 /*
  * Description of CacheManager
@@ -42,6 +41,7 @@ final class Cache {
      * @var CacheInterface
      */
     private static $cache_handler = null;
+    private $cache_pool;
 
     private function __construct() {
         

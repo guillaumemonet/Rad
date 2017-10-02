@@ -160,7 +160,7 @@ final class Router implements RouterInterface {
      * @return $this
      */
     public function map(string $method, string $path, Route $route, $version = 1) {
-        $this->{$method}($path, $route, $version = 1);
+        $this->{$method}($path, $route, $version);
         return $this;
     }
 

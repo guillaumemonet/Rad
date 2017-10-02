@@ -3,7 +3,6 @@
 namespace Rad\Mail;
 
 class Email extends Swift_Message {
-
     protected $template = null;
     protected $htmlPart = "";
     protected $textPart = "";

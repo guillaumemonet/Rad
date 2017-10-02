@@ -32,7 +32,7 @@ final class Middleware {
         if ($layers instanceof Middleware) {
             $layers = $layers->toArray();
         }
-        if ($layers instanceof IMiddleware) {
+        if ($layers instanceof MiddlewareInterface) {
             $layers = [$layers];
         }
         if (!is_array($layers)) {
