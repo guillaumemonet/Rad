@@ -12,8 +12,6 @@ class Email extends Swift_Message {
 
         parent::__construct($subject, $body, $contentType, $charset);
 
-        $this->addBcc('exploit_auto@bebe-au-naturel.com');
-        $this->addBcc('bebenaturelshipup@gmail.com');
         $this->setCharset('ISO-8859-15');
         $this->template = new Smarty;
         $this->template->template_dir = bb::$conf->getConfig()->mail->template->path;
