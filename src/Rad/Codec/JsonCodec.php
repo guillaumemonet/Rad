@@ -27,17 +27,34 @@
 namespace Rad\Codec;
 
 /**
- * Description of CodecInterface
+ * Description of JsonCodec
  *
  * @author guillaume
  */
-interface CodecInterface {
+class JsonCodec implements CodecInterface {
 
-    public function getMimeTypes(): array;
+    public function __toString() {
+        return "Json encode/decode";
+    }
 
-    public function serialize($object): string;
+    public function deserialize(string $string) {
+        $ret = json_decode($string, true);
+        if (json_last_error() > 0) {
+            throw new \Rad\Errors\CodecException("Error during json_decode");
+        }
+        return $ret;
+    }
 
-    public function deserialize(string $string);
+    public function serialize($object): string {
+        $ret = json_encode($object);
+        if (json_last_error() > 0) {
+            throw new \Rad\Errors\CodecException("Error during json_encode");
+        }
+        return $ret;
+    }
 
-    public function __toString();
+    public function getMimeTypes(): array {
+        return array("json");
+    }
+
 }

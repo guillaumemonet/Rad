@@ -27,17 +27,26 @@
 namespace Rad\Codec;
 
 /**
- * Description of CodecInterface
+ * Description of DefaultCodec
  *
  * @author guillaume
  */
-interface CodecInterface {
+class DefaultCodec implements CodecInterface {
 
-    public function getMimeTypes(): array;
+    public function deserialize(string $string) {
+        return unserialize($string);
+    }
 
-    public function serialize($object): string;
+    public function getMimeTypes(): array {
+        return array("*");
+    }
 
-    public function deserialize(string $string);
+    public function serialize($object): string {
+        return serialize($object);
+    }
 
-    public function __toString();
+    public function __toString() {
+        return "Default PHP serialize/deserialize";
+    }
+
 }

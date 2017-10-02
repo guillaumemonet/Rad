@@ -45,10 +45,15 @@ class Codec {
      * @return Codec
      */
     public static function add(CodecInterface $codec) {
-        foreach ($codec->getMimeType() as $mime) {
+        foreach ($codec->getMimeTypes() as $mime) {
             self::$codecs[$mime] = &$codec;
         }
         return self::class;
+    }
+
+    public static function init() {
+        self::add(new JsonCodec());
+        self::add(new DefaultCodec());
     }
 
     /**
@@ -58,7 +63,7 @@ class Codec {
      * @return type
      * @throws ErrorException
      */
-    public static function serialize(string $mime_type, $datas) {
+    public static function serialize($datas, string $mime_type = "*") {
         if (isset(self::$codecs[$mime_type])) {
             return self::$codecs[$mime_type]->serialize($datas);
         } else {
@@ -73,7 +78,7 @@ class Codec {
      * @return type
      * @throws ErrorException
      */
-    public static function deserialize(string $mime_type, $datas) {
+    public static function deserialize($datas, string $mime_type = "*") {
         if (isset(self::$codecs[$mime_type])) {
             return self::$codecs[$mime_type]->deserialize($datas);
         } else {
