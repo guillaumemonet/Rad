@@ -32,7 +32,7 @@ use Psr\SimpleCache\CacheInterface;
  * Volatile Cache 
  * To Share Var Between Function
  */
-class QuickCache implements CacheInterface {
+class Quick_Handler implements CacheInterface {
 
     /**
      *
@@ -65,7 +65,7 @@ class QuickCache implements CacheInterface {
     public function getMultiple($keys, $default = null): array {
         $ret = array();
         foreach ($keys as $key) {
-            $ret[$key] = $this->get($key);
+            $ret[$key] = $this->get($key, $default);
         }
         return $ret;
     }
