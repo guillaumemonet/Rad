@@ -26,6 +26,7 @@
 
 namespace Rad\Cache;
 
+use ErrorException;
 use Psr\SimpleCache\CacheInterface;
 use Rad\Config\Config;
 
@@ -51,7 +52,7 @@ class CacheHandler {
      * @param string $shortName
      * @param CacheInterface $cache
      */
-    public static function addCacheHandler(string $shortName, CacheInterface $cache) {
+    public static function addHandler(string $shortName, CacheInterface $cache) {
         self::$cacheHandlers[$shortName] = $cache;
     }
 
@@ -59,13 +60,19 @@ class CacheHandler {
      * 
      * @return CacheInterface
      */
-    public static function getCacheHandler(string $handlerType = null): CacheInterface {
+    public static function getHandler(string $handlerType = null): CacheInterface {
         if ($handlerType === null) {
             $handlerType = (string) Config::get("cache", "type");
         }
-        if (self::$cacheHandlers[$handlerType] === null) {
-            $className = ucfirst($handlerType) . "_Handler";
-            self::$cacheHandlers[$handlerType] = new $className();
+        if (self::$cacheHandlers[$handlerType] !== null) {
+            try {
+                $className = ucfirst($handlerType) . "_CacheHandler";
+                self::$cacheHandlers[$handlerType] = new $className();
+            } catch (ErrorException $ex) {
+                throw new ErrorException($handlerType . " Cache Handler not found");
+            }
+        } else {
+            throw new ErrorException("No " . $handlerType . " Cache Handler defined");
         }
         return self::$cacheHandlers[$handlerType];
     }

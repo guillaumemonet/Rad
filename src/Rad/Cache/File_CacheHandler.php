@@ -35,7 +35,7 @@ use Rad\Log\Log;
  *
  * @author Guillaume Monet
  */
-final class File_Handler implements CacheInterface {
+final class File_CacheHandler implements CacheInterface {
 
     public function __construct() {
         

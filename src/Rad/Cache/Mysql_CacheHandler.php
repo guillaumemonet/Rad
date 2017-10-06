@@ -41,7 +41,7 @@ use Rad\Database\Database;
  *   INDEX(`modified`)
  * ) ENGINE = InnoDB;</pre>
  */
-final class Mysql_Handler implements CacheInterface {
+final class Mysql_CacheHandler implements CacheInterface {
 
     private $read = "SELECT content FROM output_cache WHERE id IN(%s)";
     private $write = "INSERT INTO output_cache (id,modified,content) VALUES(\"%s\",%d,\"%s\") ON DUPLICATE KEY UPDATE content=\"%s\",modified=%d";

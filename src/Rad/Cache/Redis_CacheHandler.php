@@ -37,7 +37,7 @@ use Redis;
  *
  * @author Guillaume Monet
  */
-final class Redis_Handler implements CacheInterface {
+final class Redis_CacheHandler implements CacheInterface {
 
     //@var Redis
     private $redis = null;

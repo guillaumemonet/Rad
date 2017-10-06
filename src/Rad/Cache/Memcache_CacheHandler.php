@@ -35,7 +35,7 @@ use Rad\Config\Config;
  *
  * @author Guillaume Monet
  */
-final class Memcache_Handler implements CacheInterface {
+final class Memcache_CacheHandler implements CacheInterface {
 
     private $memcache = null;
 
