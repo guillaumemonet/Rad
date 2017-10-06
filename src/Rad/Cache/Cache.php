@@ -48,7 +48,7 @@ class CacheHandler {
     }
 
     /**
-     * add cache handler
+     * add cache handler to the cache handler pool
      * @param string $shortName
      * @param CacheInterface $cache
      */
@@ -57,8 +57,10 @@ class CacheHandler {
     }
 
     /**
-     * 
+     * return a cache handler from the cache handler pool
+     * @param string $handlerType
      * @return CacheInterface
+     * @throws ErrorException
      */
     public static function getHandler(string $handlerType = null): CacheInterface {
         if ($handlerType === null) {
