@@ -36,7 +36,7 @@ use Rad\Config\Config;
  * @author Guillaume Monet
  */
 
-class CacheHandler {
+class Cache {
 
     /**
      * @var array of CacheInterface
