@@ -66,15 +66,13 @@ class Cache {
         if ($handlerType === null) {
             $handlerType = (string) Config::get("cache", "type");
         }
-        if (self::$cacheHandlers[$handlerType] !== null) {
+        if (!isset(self::$cacheHandlers[$handlerType])) {
             try {
                 $className = ucfirst($handlerType) . "_CacheHandler";
                 self::$cacheHandlers[$handlerType] = new $className();
             } catch (ErrorException $ex) {
                 throw new ErrorException($handlerType . " Cache Handler not found");
             }
-        } else {
-            throw new ErrorException("No " . $handlerType . " Cache Handler defined");
         }
         return self::$cacheHandlers[$handlerType];
     }
