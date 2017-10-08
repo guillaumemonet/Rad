@@ -26,6 +26,8 @@
 
 namespace Rad\Codec;
 
+use Rad\Errors\CodecException;
+
 /**
  * Description of JsonCodec
  *
@@ -40,7 +42,7 @@ class JsonCodec implements CodecInterface {
     public function deserialize(string $string) {
         $ret = json_decode($string, true);
         if (json_last_error() > 0) {
-            throw new \Rad\Errors\CodecException("Error during json_decode");
+            throw new CodecException("Error during json_decode");
         }
         return $ret;
     }
@@ -48,7 +50,7 @@ class JsonCodec implements CodecInterface {
     public function serialize($object): string {
         $ret = json_encode($object);
         if (json_last_error() > 0) {
-            throw new \Rad\Errors\CodecException("Error during json_encode");
+            throw new CodecException("Error during json_encode");
         }
         return $ret;
     }
