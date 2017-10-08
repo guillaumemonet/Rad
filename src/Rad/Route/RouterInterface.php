@@ -35,19 +35,21 @@ use Rad\Api;
  */
 interface RouterInterface {
 
-    public function get(string $path, Route $route, $version = 1);
+    public function addGetRoute(Route $route);
 
-    public function post(string $path, Route $route, $version = 1);
+    public function addPostRoute(Route $route);
 
-    public function options(string $path, Route $route, $version = 1);
+    public function addPutRoute(Route $route);
 
-    public function put(string $path, Route $route, $version = 1);
+    public function addPatchRoute(Route $route);
 
-    public function patch(string $path, Route $route, $version = 1);
+    public function addDeleteRoute(Route $route);
 
-    public function delete(string $path, Route $route, $version = 1);
+    public function addOptionsRoute(Route $route);
 
-    public function map(string $method, string $path, Route $route, $version = 1);
+    public function mapRoute(string $method, Route $route);
+
+    public function setRoutes(array $routes);
 
     public function route(Api &$api);
 }

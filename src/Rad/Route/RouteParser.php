@@ -41,6 +41,7 @@ class RouteParser {
     private static $version = "api";
     private static $consume = "consume";
     private static $produce = "produce";
+    private static $xmlHttpRequest = "xmlhttprequest";
 
     private function __construct() {
         
@@ -64,7 +65,7 @@ class RouteParser {
                 if (count(array_intersect(self::$allowed_methods, array_keys($annotations))) > 0) {
                     foreach ($annotations as $key => $annotation) {
                         if (in_array($key, self::$allowed_methods)) {
-                            $tmp_route->verb = $key;
+                            $tmp_route->verb = strtoupper($key);
                             $tmp_route->regex = $annotation[0];
                         } else if ($key == self::$middle) {
                             $tmp_route->middlewares = $annotation;
@@ -74,6 +75,8 @@ class RouteParser {
                             $tmp_route->consume = $annotation[0];
                         } else if ($key == self::$produce) {
                             $tmp_route->produce = $annotation[0];
+                        } else if ($key == self::$xmlHttpRequest) {
+                            $tmp_route->xmlHttpRequest = $annotation[0];
                         }
                     }
                     $routes[] = $tmp_route;

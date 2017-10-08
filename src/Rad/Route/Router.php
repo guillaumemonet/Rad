@@ -26,7 +26,6 @@
 
 namespace Rad\Route;
 
-use ErrorException;
 use Rad\Api;
 use Rad\Cache\Cache;
 use Rad\Errors\Http\NotAcceptableException;
@@ -49,104 +48,81 @@ final class Router implements RouterInterface {
 
     /**
      * 
-     * @param string $path
-     * @param string $function
-     * @throws ErrorException
+     * @param Route $route
+     * @return \self
      */
-    public function get(string $path, Route $route, $version = 1) {
-        if (!isset($this->path_array[$version]["GET"][$path])) {
-            $this->path_array[$version]["GET"][$path] = $route;
-            Log::getLogHandler()->debug("GET Adding route " . $path);
-            return $this;
-        } else {
-            throw new ErrorException("GET Path [$path] Already exist");
-        }
+    public function addGetRoute(Route $route): self {
+        $this->path_array[$route->version]["GET"][] = $route;
+        Log::getHandler()->debug("GET Adding route " . $route->regex);
+        return $this;
     }
 
     /**
      * 
-     * @param string $path
-     * @param string $function
-     * @throws ErrorException
+     * @param Route $route
+     * @return \self
      */
-    public function post(string $path, Route $route, $version = 1) {
-        if (!isset($this->path_array[$version]["POST"][$path])) {
-            $this->path_array[$version]["POST"][$path] = $route;
-            Log::getLogHandler()->debug("POST Adding route " . $path);
-            return $this;
-        } else {
-            throw new ErrorException("POST Path [$path] Already exist");
-        }
+    public function addPostRoute(Route $route): self {
+        $this->path_array[$route->version]["POST"][] = $route;
+        Log::getHandler()->debug("POST Adding route " . $route->regex);
+        return $this;
     }
 
     /**
      * 
-     * @param string $path
-     * @param string $function
-     * @throws ErrorException
+     * @param Route $route
+     * @return \self
      */
-    public function options(string $path, Route $route, $version = 1) {
-        if (!isset($this->path_array[$version]["OPTIONS"][$path])) {
-            $this->path_array[$version]["OPTIONS"][$path] = $route;
-            Log::getLogHandler()->debug("OPTIONS Adding route " . $path);
-            return $this;
-        } else {
-            throw new ErrorException("OPTIONS Path [$path] Already exist");
-        }
+    public function addPutRoute(Route $route): self {
+        $this->path_array[$route->version]["PUT"][] = $route;
+        Log::getHandler()->debug("PUT Adding route " . $route->regex);
+        return $this;
     }
 
     /**
      * 
-     * @param string $path
-     * @param string $function
-     * @throws ErrorException
+     * @param Route $route
+     * @return \self
      */
-    public function put(string $path, Route $route, $version = 1) {
-        if (!isset($this->path_array[$version]["PUT"][$path])) {
-            $this->path_array[$version]["PUT"][$path] = $route;
-            Log::getLogHandler()->debug("PUT Adding route " . $path);
-            return $this;
-        } else {
-            throw new ErrorException("PUT Path [$path] Already exist");
-        }
+    public function addPatchRoute(Route $route): self {
+        $this->path_array[$route->version]["PATCH"][] = $route;
+        Log::getHandler()->debug("PATCH Adding route " . $route->regex);
+        return $this;
     }
 
     /**
      * 
-     * @param string $path
-     * @param string $function
-     * @throws ErrorException
+     * @param Route $route
+     * @return \self
      */
-    public function patch(string $path, Route $route, $version = 1) {
-        if (!isset($this->path_array[$version]["PATCH"][$path])) {
-            $this->path_array[$version]["PATCH"][$path] = $route;
-            Log::getLogHandler()->debug("PATCH Adding route " . $path);
-            return $this;
-        } else {
-            throw new ErrorException("PATCH Path [$path] Already exist");
-        }
+    public function addDeleteRoute(Route $route): self {
+        $this->path_array[$route->version]["DELETE"][] = $route;
+        Log::getHandler()->debug("DELETE Adding route " . $route->regex);
+        return $this;
     }
 
     /**
      * 
-     * @param string $path
-     * @param string $function
-     * @throws ErrorException
+     * @param Route $route
+     * @return \self
      */
-    public function delete(string $path, Route $route, $version = 1) {
-        if (!isset($this->path_array[$version]["DELETE"][$path])) {
-            $this->path_array[$version]["DELETE"][$path] = $route;
-            Log::getLogHandler()->debug("DELETE Adding route " . $path);
-            return $this;
-        } else {
-            throw new ErrorException("DELETE Path [$path] Already exist");
-        }
+    public function addOptionsRoute(Route $route): self {
+        $this->path_array[$route->version]["OPTIONS"][] = $route;
+        Log::getHandler()->debug("OPTIONS Adding route " . $route->regex);
+        return $this;
     }
 
-    public function set(array $routes) {
+    /**
+     * 
+     * @param array $routes
+     * @return \self
+     */
+    public function setRoutes(array $routes): self {
         foreach ($routes as $route) {
-            $this->{$route->verb}($route->regex, $route, $route->version);
+            $method = "add" . ucfirst($route->verb) . "Route";
+            $this->$method($route);
         }
+        return $this;
     }
 
     /**
@@ -157,8 +133,8 @@ final class Router implements RouterInterface {
      * @param int $version
      * @return $this
      */
-    public function map(string $method, string $path, Route $route, $version = 1) {
-        $this->{$method}($path, $route, $version);
+    public function mapRoute(string $method, Route $route) {
+        $this->{$method}($route);
         return $this;
     }
 
@@ -168,29 +144,27 @@ final class Router implements RouterInterface {
 
     /**
      * 
-     * @param type $version
-     * @param type $method
-     * @param type $path
-     * @param type $request
-     * @param type $response
-     * @param type $middle
-     * @return type
+     * @param Api $api
+     * @throws NotAcceptableException
      * @throws NotFoundException
      */
     public function route(Api &$api) {
         $version = $api->getRequest()->version;
         $method = $api->getRequest()->method;
         $path = $api->getRequest()->path;
-
+        //error_log(print_r($this->path_array, true));
         if (isset($this->path_array[$version][$method])) {
             $found = false;
-            foreach ($this->path_array[$version][$method] as $reg_path => $route) {
-                $p = "/^" . str_replace("/", "\/", (trim($reg_path, "/"))) . "$/";
+            foreach ($this->path_array[$version][$method] as $route) {
+                $reg_path = $route->regex;
+                //$p = "/^" . str_replace("/", "\/", (trim($reg_path, "/"))) . "$/";
+                $p = $reg_path;
+                Log::getHandler()->error("preg_match('$p','$path')");
                 if (preg_match($p, $path, $m)) {
                     $found = true;
                     array_shift($m);
                     $api->getRequest()->path_datas = $m;
-                    Log::getLogHandler()->debug($method . " : " . $path . " Matching " . $p . " Consume " . $route->consume);
+                    Log::getHandler()->debug($method . " : " . $path . " Matching " . $p . " Consume " . $route->consume);
                     if ($route->consume == null || $route->consume == "" || in_array($api->getRequest()->getHeader("CONTENT_TYPE"), Mime::MIME_TYPES[$route->consume])) {
                         $api->getMiddleware()->layer($route->getMiddlewares());
                         $controller = new $route->className();
@@ -202,6 +176,7 @@ final class Router implements RouterInterface {
                             $api->getResponse()->setDataType($route->produce);
                         }
                         $api->getResponse()->setData($datas);
+                        break;
                     } else {
                         throw new NotAcceptableException("Wrong Content Type");
                     }
@@ -216,21 +191,17 @@ final class Router implements RouterInterface {
     }
 
     public function save() {
-        Cache::write(array("RadRoute" => serialize($this->path_array)));
+        Cache::getHandler()->set("RadRoute", serialize($this->path_array));
     }
 
     public function load(): bool {
-        $routes = unserialize(Cache::read(array("RadRoute"))["RadRoute"]);
+        $routes = unserialize(Cache::getHandler()->get("RadRoute"));
         if (isset($routes) && $routes != null && sizeof($routes) > 0) {
             $this->path_array = $routes;
             return true;
         } else {
             return false;
         }
-    }
-
-    public function clean() {
-        Cache::delete(array("RadRoute"));
     }
 
 }
