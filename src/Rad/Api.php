@@ -86,7 +86,7 @@ abstract class Api {
         $this->request = new Request();
         $this->response = new Response();
         if (!$this->router->load()) {
-            $this->router->set(RouteParser::parseRoutes($this->addRoutes()));
+            $this->router->setRoutes(RouteParser::parseRoutes($this->addControllers()));
             $this->router->save();
         }
     }
@@ -100,7 +100,7 @@ abstract class Api {
         try {
             $this->getRouter()->route($this);
         } catch (ErrorException $ex) {
-            Log::getLogHandler()->error($ex->getMessage());
+            Log::getHandler()->error($ex->getMessage());
             $this->getResponse()->headerStatus($ex->getCode());
             $this->getResponse()->setDataType("json");
             $this->getResponse()->setData($ex);
@@ -148,5 +148,5 @@ abstract class Api {
         return $this->middle;
     }
 
-    public abstract function addRoutes(): array;
+    public abstract function addControllers(): array;
 }
