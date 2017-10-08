@@ -54,7 +54,7 @@ final class Redis_CacheHandler implements CacheInterface {
                 $this->redis->del($k);
             }
         } catch (Exception $e) {
-            Log::getLogHandler()->error($e->getMessage());
+            Log::getHandler()->error($e->getMessage());
         }
     }
 
@@ -65,7 +65,7 @@ final class Redis_CacheHandler implements CacheInterface {
                 $ret[] = $this->redis->get($k);
             }
         } catch (Exception $e) {
-            Log::getLogHandler()->error($e->getMessage());
+            Log::getHandler()->error($e->getMessage());
         }
         return $ret;
     }
@@ -82,7 +82,7 @@ final class Redis_CacheHandler implements CacheInterface {
                 }
             }
         } catch (Exception $e) {
-            Log::getLogHandler()->error($e->getMessage());
+            Log::getHandler()->error($e->getMessage());
         }
     }
 

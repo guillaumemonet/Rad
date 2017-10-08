@@ -28,14 +28,13 @@ namespace Rad\Cache;
 
 use Psr\SimpleCache\CacheInterface;
 use Rad\Config\Config;
-use Rad\Log\Log;
 
 /**
  * Description of CacheManager
  *
  * @author Guillaume Monet
  */
-final class File_CacheHandler implements CacheInterface {
+class File_CacheHandler implements CacheInterface {
 
     public function __construct() {
         
@@ -46,39 +45,32 @@ final class File_CacheHandler implements CacheInterface {
      * @param array $keys
      * @return type
      */
-    public function read(array $keys) {
-        $ret = array();
-        foreach ($keys as $k) {
-            if (file_exists(Config::get('install', 'path') . Config::get("cache_file", "path") . sha1($k))) {
-                $tmp = file_get_contents(Config::get('install', 'path') . Config::get("cache_file", "path") . sha1($k));
-                if ($tmp !== false) {
-                    $ret[$k] = $tmp;
-                }
-            }
-        }
-        return $ret;
-    }
+    /* public function read(array $keys) {
+      $ret = array();
+      foreach ($keys as $k) {
+      if (file_exists(Config::get('install', 'path') . Config::get("cache_file", "path") . sha1($k))) {
+      $tmp = file_get_contents(Config::get('install', 'path') . Config::get("cache_file", "path") . sha1($k));
+      if ($tmp !== false) {
+      $ret[$k] = $tmp;
+      }
+      }
+      }
+      return $ret;
+      }
 
-    public function write(array $keys, $expire = null) {
-        foreach ($keys as $k => $v) {
-            if ($v !== null) {
-                if (!file_put_contents(Config::get('install', 'path') . Config::get("cache_file", "path") . sha1($k), $v, LOCK_EX)) {
-                    Log::getLogHandler()->critical("Cannot write to file " . Config::get('install', 'path') . Config::get("cache_file", "path") . sha1($k));
-                }
-            }
-        }
-    }
+      public function write(array $keys, $expire = null) {
+      foreach ($keys as $k => $v) {
+      if ($v !== null) {
+      if (!file_put_contents(Config::get('install', 'path') . Config::get("cache_file", "path") . sha1($k), $v, LOCK_EX)) {
+      Log::getHandler()->critical("Cannot write to file " . Config::get('install', 'path') . Config::get("cache_file", "path") . sha1($k));
+      }
+      }
+      }
+      }
 
-    public function clear(): bool {
-        $t = time();
-        if ($handle = opendir(Config::get('install', 'path') . Config::get("cache_file", "path"))) {
-            while (false !== ($file = readdir($handle))) {
-                if ($file != ".." && $file != "." && @filectime(Config::get('install', 'path') . Config::get("cache_file", "path") . $file) < ($t - (int) Config::get("cache_file", "lifetime"))) {
-                    @unlink(Config::get('install', 'path') . Config::get("cache_file", "path") . $file);
-                }
-            }
-        }
-    }
+      public function clear(): bool {
+
+      } */
 
     public function delete($key): bool {
         return unlink($key);
@@ -129,6 +121,17 @@ final class File_CacheHandler implements CacheInterface {
             $ret &= file_put_contents(Config::get('install', 'path') . Config::get("cache_file", "path") . sha1($k), $v, LOCK_EX);
         }
         return $ret;
+    }
+
+    public function clear(): bool {
+        $t = time();
+        if ($handle = opendir(Config::get('install', 'path') . Config::get("cache_file", "path"))) {
+            while (false !== ($file = readdir($handle))) {
+                if ($file != ".." && $file != "." && @filectime(Config::get('install', 'path') . Config::get("cache_file", "path") . $file) < ($t - (int) Config::get("cache_file", "lifetime"))) {
+                    @unlink(Config::get('install', 'path') . Config::get("cache_file", "path") . $file);
+                }
+            }
+        }
     }
 
 }

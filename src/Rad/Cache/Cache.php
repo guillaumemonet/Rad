@@ -36,7 +36,7 @@ use Rad\Config\Config;
  * @author Guillaume Monet
  */
 
-class Cache {
+abstract class Cache {
 
     /**
      * @var array of CacheInterface
@@ -68,7 +68,7 @@ class Cache {
         }
         if (!isset(self::$cacheHandlers[$handlerType])) {
             try {
-                $className = ucfirst($handlerType) . "_CacheHandler";
+                $className = __NAMESPACE__ . "\\" . ucfirst($handlerType) . "_CacheHandler";
                 self::$cacheHandlers[$handlerType] = new $className();
             } catch (ErrorException $ex) {
                 throw new ErrorException($handlerType . " Cache Handler not found");
