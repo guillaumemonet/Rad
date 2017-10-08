@@ -34,7 +34,7 @@ use Rad\Config\Config;
  *
  * @author guillaume
  */
-final class FileLogger extends AbstractLogger {
+class File_LogHandler extends AbstractLogger {
 
     public function log($level, $message, array $context = array()) {
         if (Config::get("log", "enabled") == 1) {

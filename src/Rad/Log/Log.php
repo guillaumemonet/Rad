@@ -26,16 +26,18 @@
 
 namespace Rad\Log;
 
+use ErrorException;
 use Psr\Log\AbstractLogger;
+use Rad\Config\Config;
 
 /**
  * Description of Log
  *
  * @author Guillaume Monet
  */
-final class Log {
+abstract class Log {
 
-    private static $logger;
+    private static $logHandlers;
 
     private function __construct() {
         
@@ -45,11 +47,19 @@ final class Log {
      * 
      * @return AbstractLogger
      */
-    public static function getLogHandler(): AbstractLogger {
-        if (self::$logger == null) {
-            self::$logger = new FileLogger();
+    public static function getHandler(string $handlerType = null): AbstractLogger {
+        if ($handlerType === null) {
+            $handlerType = (string) Config::get("log", "type");
         }
-        return self::$logger;
+        if (!isset(self::$logHandlers[$handlerType])) {
+            try {
+                $className = __NAMESPACE__ . "\\" . ucfirst($handlerType) . "_LogHandler";
+                self::$logHandlers[$handlerType] = new $className();
+            } catch (ErrorException $ex) {
+                throw new ErrorException($handlerType . " Log Handler not found");
+            }
+        }
+        return self::$logHandlers[$handlerType];
     }
 
     /**
@@ -57,9 +67,8 @@ final class Log {
      * @param AbstractLogger $logger
      * @return AbstractLogger
      */
-    public static function setLogHandler(AbstractLogger $logger): AbstractLogger {
-        self::$logger = $logger;
-        return self::$logger;
+    public static function addLogHandler(string $type, AbstractLogger $logger) {
+        self::$logHandlers[$type] = $logger;
     }
 
 }
