@@ -27,10 +27,11 @@
 namespace Rad\Template;
 
 use ErrorException;
+use Rad\Config\Config;
 
 final class Template {
 
-    private static $template;
+    private static $templateHandlers = array();
 
     private function __construct() {
         
@@ -38,11 +39,11 @@ final class Template {
 
     /**
      * 
+     * @param string $name
      * @param TemplateInterface $template
      */
-    public static function setTemplateHandler(TemplateInterface $template): TemplateInterface {
-        self::$template = $template;
-        return self::$template;
+    public static function addHandler(string $name, TemplateInterface $template) {
+        self::$templateHandlers[$name] = $template;
     }
 
     /**
@@ -50,12 +51,19 @@ final class Template {
      * @return TemplateInterface
      * @throws ErrorException
      */
-    public static function getTemplateHandler(): TemplateInterface {
-        if (self::$template == null) {
-            self::$template = new TemplateSmarty();
-            //throw new ErrorException("Template Manager Not Defined");
+    public static function getHandler(string $handlerType = null): TemplateInterface {
+        if ($handlerType === null) {
+            $handlerType = (string) Config::get("template", "type");
         }
-        return self::$template;
+        if (!isset(self::$templateHandlers[$handlerType])) {
+            try {
+                $className = __NAMESPACE__ . "\\" . ucfirst($handlerType) . "_TemplateHandler";
+                self::$templateHandlers[$handlerType] = new $className();
+            } catch (ErrorException $ex) {
+                throw new ErrorException($handlerType . " Template Handler not found");
+            }
+        }
+        return self::$templateHandlers[$handlerType];
     }
 
 }

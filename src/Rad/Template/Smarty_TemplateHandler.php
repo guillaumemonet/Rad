@@ -29,7 +29,7 @@ namespace Rad\Template;
 use Rad\Config\Config;
 use Smarty;
 
-final class TemplateSmarty extends Smarty implements TemplateInterface {
+final class Smarty_TemplateHandler extends Smarty implements TemplateInterface {
 
     public function __construct() {
         parent::__construct();
@@ -40,11 +40,11 @@ final class TemplateSmarty extends Smarty implements TemplateInterface {
         $this->caching = (int) Config::get('template', 'caching');
         $this->cache_locking = 1;
         $this->cache_lifetime = (int) Config::get('template', 'cache_lifetime');
-        $this->registerDefaultTemplateHandler('Rad\Template\TemplateSmarty::getDefault_template');
+        $this->registerDefaultTemplateHandler(__NAMESPACE__ . '\\' . 'Smarty_TemplateHandler::getDefault_template');
         $this->template_dir = Config::get('install', 'path') . Config::get('template', 'template_dir');
         $this->compile_dir = Config::get('install', 'path') . Config::get('template', 'compile_dir');
         $this->config_dir = Config::get('install', 'path') . Config::get('template', 'config_dir');
-        $this->cache_dir = Config::get('install', 'path') . Config::get('template', 'cache_dir');       
+        $this->cache_dir = Config::get('install', 'path') . Config::get('template', 'cache_dir');
     }
 
     /**
