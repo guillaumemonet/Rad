@@ -49,8 +49,8 @@ final class Database {
      * @param string $name
      * @param DatabaseInterface $databaseInterface
      */
-    public static function addHandler(string $name, DatabaseInterface $databaseInterface) {
-        self::$databaseHandlers[$name] = $databaseInterface;
+    public static function addHandler(string $type, DatabaseInterface $databaseInterface) {
+        self::$databaseHandlers[$type] = $databaseInterface;
     }
 
     /**
@@ -63,15 +63,15 @@ final class Database {
         if ($handlerType === null) {
             $handlerType = (string) Config::get("database", "type");
         }
-        if (!isset(self::$cacheHandlers[$handlerType])) {
+        if (!isset(self::$databaseHandlers[$handlerType])) {
             try {
-                $className = ucfirst($handlerType) . "_DatabaseHandler";
-                self::$cacheHandlers[$handlerType] = new $className();
+                $className = __NAMESPACE__ . "\\" . ucfirst($handlerType) . "_DatabaseHandler";
+                self::$databaseHandlers[$handlerType] = new $className();
             } catch (ErrorException $ex) {
                 throw new ErrorException($handlerType . " Cache Handler not found");
             }
         }
-        return self::$cacheHandlers[$handlerType];
+        return self::$databaseHandlers[$handlerType];
     }
 
 }

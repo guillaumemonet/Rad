@@ -45,7 +45,7 @@ class Mysql_DatabaseHandler extends DatabaseAdapter {
             $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
             $this->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
         } catch (PDOException $ex) {
-            Log::getLogHandler()->error($ex->getMessage());
+            Log::getHandler()->error($ex->getMessage());
         }
     }
 
@@ -59,7 +59,7 @@ class Mysql_DatabaseHandler extends DatabaseAdapter {
         try {
             $this->exec("USE " . $dbname);
         } catch (PDOException $ex) {
-            Log::getLogHandler()->error($ex->getMessage());
+            Log::getHandler()->error($ex->getMessage());
         }
     }
 
@@ -73,10 +73,10 @@ class Mysql_DatabaseHandler extends DatabaseAdapter {
             $this->connect();
         }
         try {
-            Log::getLogHandler()->debug($sql);
+            Log::getHandler()->debug($sql);
             $stmt = $this->prepare($sql);
         } catch (PDOException $ex) {
-            Log::getLogHandler()->error($ex->getMessage());
+            Log::getHandler()->error($ex->getMessage());
         }
         return $stmt;
     }
@@ -91,10 +91,10 @@ class Mysql_DatabaseHandler extends DatabaseAdapter {
             $this->connect();
         }
         try {
-            Log::getLogHandler()->debug($sql);
+            Log::getHandler()->debug($sql);
             return $this->query($sql);
         } catch (PDOException $ex) {
-            Log::getLogHandler()->error($ex->getMessage());
+            Log::getHandler()->error($ex->getMessage());
         }
         return false;
     }
@@ -151,7 +151,7 @@ class Mysql_DatabaseHandler extends DatabaseAdapter {
                 return $stmt->execute($input_parameters);
             }
         } catch (PDOException $ex) {
-            Log::getLogHandler()->error($ex->getMessage());
+            Log::getHandler()->error($ex->getMessage());
         }
     }
 
@@ -169,7 +169,7 @@ class Mysql_DatabaseHandler extends DatabaseAdapter {
                     return true;
                 }
             } catch (PDOException $ex) {
-                Log::getLogHandler()->error($ex->getMessage());
+                Log::getHandler()->error($ex->getMessage());
             }
         } else {
             return false;
