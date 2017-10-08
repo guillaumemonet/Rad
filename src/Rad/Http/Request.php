@@ -77,8 +77,7 @@ final class Request implements RequestInterface {
         $this->accept_type = self::getHeader("HTTP_ACCEPT_TYPE");
         $this->appname = self::getHeader("HTTP_APPNAME");
         $this->context = self::getHeader("HTTP_CONTEXT");
-        $this->cache = self::getHeader("HTTP_CACHE_CONTROL") == "cache" ? true : false;
-        $this->cache = true;
+        $this->cache = self::getHeader("HTTP_CACHE_CONTROL") == "cache";
         $range = self::getHeader("HTTP_RANGE");
         if ($range != null && strlen($range) > 0) {
             $limits = explode("-", $range);
@@ -117,7 +116,6 @@ final class Request implements RequestInterface {
                 }
             }
         }
-        
     }
 
     public function getDatas() {
@@ -162,7 +160,7 @@ final class Request implements RequestInterface {
 
     /**
      * 
-     * @return type
+     * @return bool
      */
     public function isXmlHTTPRequest(): bool {
         return isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
@@ -207,12 +205,6 @@ final class Request implements RequestInterface {
      * @return string
      */
     public function getHeader($header) {
-
-        /* if (self::$headers == null) {
-          self::$headers = apache_request_headers();
-          self::$headers = array_merge(self::$headers, $_SERVER);
-          } */
-        //return self::$headers[$header];
         if (isset($_SERVER[$header])) {
             return $_SERVER[$header];
         } else {
@@ -224,7 +216,7 @@ final class Request implements RequestInterface {
      * 
      * @return array
      */
-    public static function getAllHeaders() {
+    public function getHeaders() {
         $headers = array();
         foreach ($_SERVER as $name => $value) {
             if (substr($name, 0, 5) == 'HTTP_') {
@@ -239,10 +231,6 @@ final class Request implements RequestInterface {
     }
 
     public function getHeaderLine($name): string {
-        
-    }
-
-    public function getHeaders(): array {
         
     }
 
