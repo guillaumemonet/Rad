@@ -7,15 +7,15 @@
 namespace Rad\Model;
 
 use JsonSerializable;
-use Serializable;
 use Rad\Config\Config;
 
 /**
  * Description of IObject.
  *
  * @author Guillaume Monet
+ * 
  */
-abstract class Model implements JsonSerializable, Serializable {
+abstract class Model implements JsonSerializable, ModelDAO {
 
     public $resource_uri;
     public $resource_name;
@@ -23,16 +23,6 @@ abstract class Model implements JsonSerializable, Serializable {
     public function getID() {
         return null;
     }
-
-    abstract public function create($force = false);
-
-    abstract public function read($id = null, $use_cache = false);
-
-    abstract public function update();
-
-    abstract public function delete();
-
-    abstract public function parse($var, $use_cache);
 
     public function getResourceName() {
         return $this->resource_name;
@@ -86,14 +76,6 @@ abstract class Model implements JsonSerializable, Serializable {
         } else {
             return null;
         }
-    }
-
-    public function serialize(): string {
-        
-    }
-
-    public function unserialize($serialized) {
-        
     }
 
 }
