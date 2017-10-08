@@ -27,5 +27,8 @@ To get the latest version of RAD Framework, simply add the following line to the
 
 * [psr-3](http://www.php-fig.org/psr/psr-3/)
 * [psr-4](http://www.php-fig.org/psr/psr-4/)
+* [psr-7](http://www.php-fig.org/psr/psr-7/) WIP
+* [psr-16](http://www.php-fig.org/psr/psr-16/) WIP
+
 
 
