@@ -1,6 +1,5 @@
 <?php
 
-
 /*
  * The MIT License
  *
@@ -53,7 +52,7 @@ class Codec {
      */
     public function add(CodecInterface $codec) {
         foreach ($codec->getMimeTypes() as $mime) {
-            $this->codecs[$mime] = &$codec;
+            $this->codecs[$mime] = $codec;
         }
         return $this;
     }
