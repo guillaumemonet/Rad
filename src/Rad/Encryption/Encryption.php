@@ -68,11 +68,11 @@ final class Encryption {
 
     /**
      * 
-     * @param array $data
+     * @param string $data
      * @param string $secret
-     * @return type
+     * @return string
      */
-    public static function sign(string $data, string $secret) {
+    public static function sign(string $data, string $secret): string {
         return base64_encode(hash_hmac('md5', $data, $secret, true));
     }
 
@@ -81,7 +81,7 @@ final class Encryption {
      *
      * @return string
      */
-    public static function generateToken($size = 8) {
+    public static function generateToken($size = 8): string {
         return bin2hex(openssl_random_pseudo_bytes($size));
     }
 
@@ -90,7 +90,7 @@ final class Encryption {
      * @param string $input
      * @return string
      */
-    public static function password($input) {
+    public static function password($input): string {
         return "*" . strtoupper(sha1(sha1($input, true)));
     }
 
