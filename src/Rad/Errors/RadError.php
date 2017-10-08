@@ -28,25 +28,16 @@ namespace Rad\Errors;
 
 use ErrorException;
 use JsonSerializable;
-use Serializable;
 
 /**
  * Description of DefaultError
  *
  * @author guillaume
  */
-abstract class RadError extends ErrorException implements JsonSerializable, Serializable {
+abstract class RadError extends ErrorException implements JsonSerializable {
 
     public function __toString() {
         return $this->message;
-    }
-
-    public function serialize(): string {
-        return null;
-    }
-
-    public function unserialize($serialized) {
-        
     }
 
     public function jsonSerialize() {
