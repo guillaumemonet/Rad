@@ -26,28 +26,50 @@
 
 namespace Rad\Mail;
 
-final class Mail {
+use ErrorException;
+use Rad\Config\Config;
+use Rad\Database\DatabaseAdapter;
+use Rad\Database\DatabaseInterface;
+
+abstract class Mail {
+
+    /**
+     * @var DatabaseAdapter
+     */
+    private static $mailHandlers = array();
 
     private function __construct() {
         
     }
 
-    public static function sendMail($to_email, $subject, $message, $from_email, $from_name) {
-        $email = new EMailObject($from_email, $from_name);
-        $email->setSubject($subject);
-        $email->setText($message);
-        $email->send($to_email);
+    /**
+     * 
+     * @param string $name
+     * @param DatabaseInterface $mailInterface
+     */
+    public static function addHandler(string $type, MailInterface $mailInterface) {
+        self::$mailHandlers[$type] = $mailInterface;
     }
 
-    public static function sendHTMLMail($to_email, $subject, $message, $from_email, $from_name) {
-        $email = new EMailObject($from_email, $from_name);
-        $email->setSubject($subject);
-        $email->setHtml($message);
-        $email->send($to_email);
-    }
-
-    public static function createMail($from_email, $from_name, $subject = "") {
-        return new EMailObject($from_email, $from_name, $subject);
+    /**
+     * 
+     * @param string $handlerType
+     * @return DatabaseInterface
+     * @throws ErrorException
+     */
+    public static function getHandler(string $handlerType = null): MailInterface {
+        if ($handlerType === null) {
+            $handlerType = (string) Config::get("mail", "type");
+        }
+        if (!isset(self::$mailHandlers[$handlerType])) {
+            try {
+                $className = __NAMESPACE__ . "\\" . ucfirst($handlerType) . "_MailHandler";
+                self::$mailHandlers[$handlerType] = new $className();
+            } catch (ErrorException $ex) {
+                throw new ErrorException($handlerType . " Cache Handler not found");
+            }
+        }
+        return self::$mailHandlers[$handlerType];
     }
 
 }
