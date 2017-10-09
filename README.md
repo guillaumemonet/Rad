@@ -19,7 +19,24 @@ To get the latest version of RAD Framework, simply add the following line to the
 ## Usage
 
 ```php
+class App extends Api {
+    public function addControllers(){
+        return array(
+            MyController::class
+        );
+    }
+}
 
+class MyController extends Controller{
+    /**
+     * @api 1
+     * @get /
+     * @produce html
+     */
+    public function helloWorld(Request $request,Response $response,Route $route){
+        $api->getResponse()->setData("<b>Hello World</b>");
+    }
+}
 
 ```
 
