@@ -40,38 +40,6 @@ class File_CacheHandler implements CacheInterface {
         
     }
 
-    /**
-     * 
-     * @param array $keys
-     * @return type
-     */
-    /* public function read(array $keys) {
-      $ret = array();
-      foreach ($keys as $k) {
-      if (file_exists(Config::get('install', 'path') . Config::get("cache_file", "path") . sha1($k))) {
-      $tmp = file_get_contents(Config::get('install', 'path') . Config::get("cache_file", "path") . sha1($k));
-      if ($tmp !== false) {
-      $ret[$k] = $tmp;
-      }
-      }
-      }
-      return $ret;
-      }
-
-      public function write(array $keys, $expire = null) {
-      foreach ($keys as $k => $v) {
-      if ($v !== null) {
-      if (!file_put_contents(Config::get('install', 'path') . Config::get("cache_file", "path") . sha1($k), $v, LOCK_EX)) {
-      Log::getHandler()->critical("Cannot write to file " . Config::get('install', 'path') . Config::get("cache_file", "path") . sha1($k));
-      }
-      }
-      }
-      }
-
-      public function clear(): bool {
-
-      } */
-
     public function delete($key): bool {
         return unlink($key);
     }

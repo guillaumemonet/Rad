@@ -33,7 +33,7 @@ use Rad\Config\Config;
  * Description of Database.
  * @author Guillaume Monet
  */
-final class Database {
+abstract class Database {
 
     /**
      * @var DatabaseAdapter
