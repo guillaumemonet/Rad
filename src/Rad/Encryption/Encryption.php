@@ -76,6 +76,10 @@ final class Encryption {
         return base64_encode(hash_hmac('md5', $data, $secret, true));
     }
 
+    public static function hashMd5(string $data) {
+        return hash("md5", $data);
+    }
+
     /**
      * Generate secure token.
      *

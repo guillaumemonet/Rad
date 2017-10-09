@@ -31,7 +31,6 @@ use Rad\Cache\Cache;
 use Rad\Errors\Http\NotAcceptableException;
 use Rad\Errors\Http\NotFoundException;
 use Rad\Log\Log;
-use Rad\Utils\Mime;
 
 /**
  * Description of ApiRoute
@@ -52,8 +51,8 @@ final class Router implements RouterInterface {
      * @return \self
      */
     public function addGetRoute(Route $route): self {
-        $this->path_array[$route->version]["GET"][] = $route;
-        Log::getHandler()->debug("GET Adding route " . $route->regex);
+        $this->path_array[$route->getVersion()]["GET"][] = $route;
+        Log::getHandler()->debug("GET Adding route " . $route->getRegExp());
         return $this;
     }
 
@@ -63,8 +62,8 @@ final class Router implements RouterInterface {
      * @return \self
      */
     public function addPostRoute(Route $route): self {
-        $this->path_array[$route->version]["POST"][] = $route;
-        Log::getHandler()->debug("POST Adding route " . $route->regex);
+        $this->path_array[$route->getVersion()]["POST"][] = $route;
+        Log::getHandler()->debug("POST Adding route " . $route->getRegExp());
         return $this;
     }
 
@@ -74,8 +73,8 @@ final class Router implements RouterInterface {
      * @return \self
      */
     public function addPutRoute(Route $route): self {
-        $this->path_array[$route->version]["PUT"][] = $route;
-        Log::getHandler()->debug("PUT Adding route " . $route->regex);
+        $this->path_array[$route->getVersion()]["PUT"][] = $route;
+        Log::getHandler()->debug("PUT Adding route " . $route->getRegExp());
         return $this;
     }
 
@@ -85,8 +84,8 @@ final class Router implements RouterInterface {
      * @return \self
      */
     public function addPatchRoute(Route $route): self {
-        $this->path_array[$route->version]["PATCH"][] = $route;
-        Log::getHandler()->debug("PATCH Adding route " . $route->regex);
+        $this->path_array[$route->getVersion()]["PATCH"][] = $route;
+        Log::getHandler()->debug("PATCH Adding route " . $route->getRegExp());
         return $this;
     }
 
@@ -96,8 +95,8 @@ final class Router implements RouterInterface {
      * @return \self
      */
     public function addDeleteRoute(Route $route): self {
-        $this->path_array[$route->version]["DELETE"][] = $route;
-        Log::getHandler()->debug("DELETE Adding route " . $route->regex);
+        $this->path_array[$route->getVersion()]["DELETE"][] = $route;
+        Log::getHandler()->debug("DELETE Adding route " . $route->getRegExp());
         return $this;
     }
 
@@ -107,8 +106,8 @@ final class Router implements RouterInterface {
      * @return \self
      */
     public function addOptionsRoute(Route $route): self {
-        $this->path_array[$route->version]["OPTIONS"][] = $route;
-        Log::getHandler()->debug("OPTIONS Adding route " . $route->regex);
+        $this->path_array[$route->getVersion()]["OPTIONS"][] = $route;
+        Log::getHandler()->debug("OPTIONS Adding route " . $route->getRegExp());
         return $this;
     }
 
@@ -119,7 +118,7 @@ final class Router implements RouterInterface {
      */
     public function setRoutes(array $routes): self {
         foreach ($routes as $route) {
-            $method = "add" . ucfirst($route->verb) . "Route";
+            $method = "add" . ucfirst($route->getVerb()) . "Route";
             $this->$method($route);
         }
         return $this;
@@ -149,37 +148,31 @@ final class Router implements RouterInterface {
      * @throws NotFoundException
      */
     public function route(Api &$api) {
-        $version = $api->getRequest()->version;
-        $method = $api->getRequest()->method;
-        $path = $api->getRequest()->path;
+        $request = $api->getRequest();
+        $response = $api->getResponse();
+        $version = $request->version;
+        $method = $request->method;
+        $path = $request->path;
         //error_log(print_r($this->path_array, true));
         if (isset($this->path_array[$version][$method])) {
             $found = false;
             foreach ($this->path_array[$version][$method] as $route) {
-                $reg_path = $route->regex;
-                //$p = "/^" . str_replace("/", "\/", (trim($reg_path, "/"))) . "$/";
-                $p = $reg_path;
-                Log::getHandler()->error("preg_match('$p','$path')");
-                if (preg_match($p, $path, $m)) {
+                $regExp = $route->getRegExp();
+                Log::getHandler()->debug("preg_match('$regExp','$path')");
+                if (preg_match($regExp, $path, $m)) {
                     $found = true;
                     array_shift($m);
                     $api->getRequest()->path_datas = $m;
-                    Log::getHandler()->debug($method . " : " . $path . " Matching " . $p . " Consume " . $route->consume);
-                    if ($route->consume == null || $route->consume == "" || in_array($api->getRequest()->getHeader("CONTENT_TYPE"), Mime::MIME_TYPES[$route->consume])) {
-                        $api->getMiddleware()->layer($route->getMiddlewares());
-                        $controller = new $route->className();
-                        $method = $route->methodName;
-                        $datas = $api->getMiddleware()->call($api, function(Api $api) use($controller, $method) {
-                            return $controller->{$method}($api);
-                        });
-                        if (isset($route->produce)) {
-                            $api->getResponse()->setDataType($route->produce);
-                        }
-                        $api->getResponse()->setData($datas);
-                        break;
-                    } else {
-                        throw new NotAcceptableException("Wrong Content Type");
-                    }
+                    Log::getHandler()->debug($method . " : " . $path . " Matching " . $regExp);
+                    $api->getMiddleware()->layer($route->getMiddlewares());
+                    $classController = $route->getClassName();
+                    $method = $route->getMethodName();
+                    $controller = new $classController();
+                    $datas = $api->getMiddleware()->call($request, $response, $route, function($request, $response, $route) use($controller, $method) {
+                        return $controller->{$method}($request, $response, $route);
+                    });
+                    $response->setData($datas);
+                    break;
                 }
             }
             if (!$found) {

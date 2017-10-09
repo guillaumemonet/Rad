@@ -41,7 +41,6 @@ class RouteParser {
     private static $version = "api";
     private static $consume = "consume";
     private static $produce = "produce";
-    private static $xmlHttpRequest = "xmlhttprequest";
 
     private function __construct() {
         
@@ -52,31 +51,30 @@ class RouteParser {
      * @param array $classes
      */
     public static function parseRoutes(array $classes) {
+        Log::getHandler()->debug("Generating Routes");
         $routes = array();
         foreach ($classes as $class) {
             $methods = get_class_methods($class);
             foreach ($methods as $method) {
                 $tmp_route = new Route();
-                $tmp_route->className = $class;
-                $tmp_route->methodName = $method;
+                $tmp_route->setClassName($class)
+                        ->setMethodName($method);
                 $staticMethod = new ReflectionMethod($class, $method);
                 $comment = $staticMethod->getDocComment();
                 $annotations = self::getInfos($comment);
                 if (count(array_intersect(self::$allowed_methods, array_keys($annotations))) > 0) {
                     foreach ($annotations as $key => $annotation) {
-                        if (in_array($key, self::$allowed_methods)) {
-                            $tmp_route->verb = strtoupper($key);
-                            $tmp_route->regex = $annotation[0];
+                        if (in_array(strtolower($key), self::$allowed_methods)) {
+                            $tmp_route->setVerb($key)
+                                    ->setRegExp($annotation[0]);
                         } else if ($key == self::$middle) {
-                            $tmp_route->middlewares = $annotation;
+                            $tmp_route->setMiddlewares($annotation);
                         } else if ($key == self::$version) {
-                            $tmp_route->version = $annotation[0];
+                            $tmp_route->setVersion($annotation[0]);
                         } else if ($key == self::$consume) {
-                            $tmp_route->consume = $annotation[0];
+                            $tmp_route->setConsume($annotation[0]);
                         } else if ($key == self::$produce) {
-                            $tmp_route->produce = $annotation[0];
-                        } else if ($key == self::$xmlHttpRequest) {
-                            $tmp_route->xmlHttpRequest = $annotation[0];
+                            $tmp_route->setProduce($annotation[0]);
                         }
                     }
                     $routes[] = $tmp_route;
@@ -89,7 +87,7 @@ class RouteParser {
     /**
      * 
      * @param string $comment
-     * @return type
+     * @return array
      */
     private static function getInfos(string $comment) {
         $infos = array();

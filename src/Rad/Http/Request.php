@@ -26,9 +26,6 @@
 
 namespace Rad\Http;
 
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\StreamInterface;
-use Psr\Http\Message\UriInterface;
 use Rad\Errors\Http\MethodNotAllowedException;
 use Rad\Errors\Http\RequestedRangeException;
 
@@ -37,7 +34,7 @@ use Rad\Errors\Http\RequestedRangeException;
  *
  * @author Admin
  */
-final class Request implements RequestInterface {
+final class Request { //extends \Psr\Http\Message implements ServerRequestInterface {
 
     /**
      *
@@ -224,62 +221,6 @@ final class Request implements RequestInterface {
             }
         }
         return $headers;
-    }
-
-    public function getBody(): StreamInterface {
-        
-    }
-
-    public function getHeaderLine($name): string {
-        
-    }
-
-    public function getProtocolVersion(): string {
-        
-    }
-
-    public function getRequestTarget(): string {
-        
-    }
-
-    public function getUri(): UriInterface {
-        
-    }
-
-    public function hasHeader($name): bool {
-        
-    }
-
-    public function withAddedHeader($name, $value): self {
-        
-    }
-
-    public function withBody(StreamInterface $body): self {
-        
-    }
-
-    public function withHeader($name, $value): self {
-        
-    }
-
-    public function withMethod($method): self {
-        
-    }
-
-    public function withProtocolVersion($version): self {
-        
-    }
-
-    public function withRequestTarget($requestTarget): self {
-        
-    }
-
-    public function withUri(UriInterface $uri, $preserveHost = false): self {
-        
-    }
-
-    public function withoutHeader($name): self {
-        
     }
 
 }

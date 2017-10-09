@@ -9,6 +9,9 @@ namespace Rad\Middleware;
 use Closure;
 use InvalidArgumentException;
 use Rad\Api;
+use Rad\Http\Request;
+use Rad\Http\Response;
+use Rad\Route\Route;
 
 /**
  * Description of Middleware
@@ -47,13 +50,13 @@ final class Middleware {
      * @param  Closure $core
      * @return mixed         
      */
-    public function call(Api $api, Closure $core) {
+    public function call(Request $request, Response $response, Route $route, Closure $core) {
         $coreFunction = $this->createCoreFunction($core);
         $layers = $this->layers;
         $completeOnion = array_reduce($layers, function($nextLayer, $layer) {
             return $this->createLayer($nextLayer, $layer);
         }, $coreFunction);
-        return $completeOnion($api);
+        return $completeOnion($request, $response, $route);
     }
 
     /**
@@ -71,8 +74,8 @@ final class Middleware {
      * @return Closure
      */
     private function createCoreFunction(Closure $core) {
-        return function(Api $api) use($core) {
-            return call_user_func($core, $api);
+        return function(Request $request, Response $response, Route $route) use($core) {
+            return call_user_func($core, $request, $response, $route);
         };
     }
 
@@ -84,8 +87,8 @@ final class Middleware {
      * @return Closure
      */
     private function createLayer($nextLayer, $layer) {
-        return function(Api &$api) use($nextLayer, $layer) {
-            return call_user_func_array([$layer, 'call'], [&$api, $nextLayer]);
+        return function(Request $request, Response $response, Route $route) use($nextLayer, $layer) {
+            return call_user_func_array([$layer, 'call'], [$request, $response, $route, $nextLayer]);
         };
     }
 

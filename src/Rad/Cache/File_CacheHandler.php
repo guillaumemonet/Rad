@@ -28,6 +28,7 @@ namespace Rad\Cache;
 
 use Psr\SimpleCache\CacheInterface;
 use Rad\Config\Config;
+use Rad\Encryption\Encryption;
 
 /**
  * Description of CacheManager
@@ -53,8 +54,8 @@ class File_CacheHandler implements CacheInterface {
     }
 
     public function get($key, $default = null) {
-        if (file_exists(Config::get('install', 'path') . Config::get("cache_file", "path") . sha1($key))) {
-            $tmp = file_get_contents(Config::get('install', 'path') . Config::get("cache_file", "path") . sha1($key));
+        if (file_exists(Config::get('install', 'path') . Config::get("cache_file", "path") . Encryption::hashMd5($key))) {
+            $tmp = file_get_contents(Config::get('install', 'path') . Config::get("cache_file", "path") . Encryption::hashMd5($key));
             if ($tmp !== false) {
                 return $tmp;
             }
@@ -65,8 +66,8 @@ class File_CacheHandler implements CacheInterface {
     public function getMultiple($keys, $default = null) {
         $ret = array();
         foreach ($keys as $k) {
-            if (file_exists(Config::get('install', 'path') . Config::get("cache_file", "path") . sha1($k))) {
-                $tmp = file_get_contents(Config::get('install', 'path') . Config::get("cache_file", "path") . sha1($k));
+            if (file_exists(Config::get('install', 'path') . Config::get("cache_file", "path") . Encryption::hashMd5($k))) {
+                $tmp = file_get_contents(Config::get('install', 'path') . Config::get("cache_file", "path") . Encryption::hashMd5($k));
                 if ($tmp !== false) {
                     $ret[$k] = $tmp;
                 }
@@ -76,17 +77,17 @@ class File_CacheHandler implements CacheInterface {
     }
 
     public function has($key): bool {
-        return file_exists(Config::get('install', 'path') . Config::get("cache_file", "path") . sha1($key));
+        return file_exists(Config::get('install', 'path') . Config::get("cache_file", "path") . Encryption::hashMd5($key));
     }
 
     public function set($key, $value, $ttl = null): bool {
-        return file_put_contents(Config::get('install', 'path') . Config::get("cache_file", "path") . sha1($key), $value, LOCK_EX);
+        return file_put_contents(Config::get('install', 'path') . Config::get("cache_file", "path") . Encryption::hashMd5($key), $value, LOCK_EX);
     }
 
     public function setMultiple($values, $ttl = null): bool {
         $ret = false;
         foreach ($values as $k => $v) {
-            $ret &= file_put_contents(Config::get('install', 'path') . Config::get("cache_file", "path") . sha1($k), $v, LOCK_EX);
+            $ret &= file_put_contents(Config::get('install', 'path') . Config::get("cache_file", "path") . Encryption::hashMd5($k), $v, LOCK_EX);
         }
         return $ret;
     }

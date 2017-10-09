@@ -8,6 +8,9 @@ namespace Rad\Middleware;
 
 use Closure;
 use Rad\Api;
+use Rad\Http\Request;
+use Rad\Http\Response;
+use Rad\Route\Route;
 
 /**
  * Description of MiddlewareInterface
@@ -21,11 +24,11 @@ interface MiddlewareInterface {
      * @param Api $api
      * @param Closure $next
      */
-    public function call(Api $api, Closure $next);
+    public function call(Request $request, Response $response, Route $route, Closure $next);
 
     /**
      * 
      * @param Api $api
      */
-    public function middle(Api $api);
+    public function middle(Request $request, Response $response, Route $route);
 }

@@ -26,7 +26,7 @@
 
 namespace Rad\bin;
 
-use Rad\bin\scripts\generate_class;
+use Rad\bin\scripts\GenerateBase;
 
 require(__DIR__ . "/../../vendor/autoload.php");
 
@@ -49,7 +49,8 @@ final class console {
             case "build":
                 switch ($verb) {
                     case "classes";
-                        generate_class::generate();
+                        $generate = new GenerateBase();
+                        $generate->generate();
                         break;
                     default:
                         echo "Nothing to build";
