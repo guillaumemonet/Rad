@@ -70,6 +70,8 @@ class File_CacheHandler implements CacheInterface {
                 $tmp = file_get_contents(Config::get('install', 'path') . Config::get("cache_file", "path") . Encryption::hashMd5($k));
                 if ($tmp !== false) {
                     $ret[$k] = $tmp;
+                } else {
+                    $ret[$k] = $default;
                 }
             }
         }

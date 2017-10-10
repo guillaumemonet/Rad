@@ -28,13 +28,14 @@ namespace Rad\Cache;
 
 use Psr\SimpleCache\CacheInterface;
 use Rad\Database\Database;
+use Rad\Encryption\Encryption;
 
 /**
  * MySQL CacheHandler
  *
  * Table definition:
  * <pre>CREATE TABLE IF NOT EXISTS `output_cache` (
- *   `id` CHAR(40) NOT NULL COMMENT 'sha1 hash',
+ *   `id` CHAR(40) NOT NULL COMMENT 'Encryption::hashMd5 hash',
  *   `modified` INT,
  *   `content` LONGTEXT NOT NULL,
  *   PRIMARY KEY (`id`),
@@ -51,7 +52,7 @@ final class Mysql_CacheHandler implements CacheInterface {
     public function read(array $keys) {
         $ret = array();
         foreach ($keys as $k) {
-            $_k = sha1($k);
+            $_k = Encryption::hashMd5($k);
             $r = sprintf($this->read, $_k);
             $res = Database::query($r);
             if ($row = Database::fetch_assoc($res)) {
@@ -63,15 +64,16 @@ final class Mysql_CacheHandler implements CacheInterface {
 
     public function write(array $keys, $expire = null) {
         foreach ($keys as $k => $v) {
-            $_k = sha1($k);
+            $_k = Encryption::hashMd5($k);
             $r = sprintf($this->write, $_k, time(), addslashes($v), addslashes($v), time());
             Database::query($r);
         }
     }
 
     public function delete(array $keys) {
+        array_map(Encryption::hashMd5, $keys);
         foreach ($keys as $k) {
-            $_k = sha1($k);
+            $_k = Encryption::hashMd5($k);
             Database::query(sprintf($this->delete, $_k));
         }
     }
@@ -89,15 +91,25 @@ final class Mysql_CacheHandler implements CacheInterface {
     }
 
     public function get($key, $default = null) {
-        
+        $res = Database::query(sprintf($this->read, Encryption::hashMd5($key)));
+        if ($row = Database::fetch_assoc($res)) {
+            return $row["content"];
+        } else {
+            return $default;
+        }
     }
 
-    public function getMultiple($keys, $default = null): \Psr\SimpleCache\iterable {
+    public function getMultiple($keys, $default = null) {
         
     }
 
     public function has($key): bool {
-        
+        $res = Database::query(sprintf($this->read, Encryption::hashMd5($key)));
+        if ($row = Database::fetch_assoc($res)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public function set($key, $value, $ttl = null): bool {
