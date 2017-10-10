@@ -168,6 +168,14 @@ final class Router implements RouterInterface {
                     $classController = $route->getClassName();
                     $method = $route->getMethodName();
                     $controller = new $classController();
+                    $observers = $route->getObservers();
+                    array_map(function($observer) use ($controller) {
+                        $controller->attach($observer);
+                    }, $observers);
+                    /* foreach($observers as $observer){
+                      $controller->attach($observer);
+                      } */
+
                     $datas = $api->getMiddleware()->call($request, $response, $route, function($request, $response, $route) use($controller, $method) {
                         return $controller->{$method}($request, $response, $route);
                     });

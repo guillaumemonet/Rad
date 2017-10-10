@@ -27,6 +27,7 @@
 namespace Rad\Route;
 
 use Rad\Log\Log;
+use ReflectionClass;
 use ReflectionMethod;
 
 /**
@@ -54,13 +55,22 @@ class RouteParser {
         Log::getHandler()->debug("Generating Routes");
         $routes = array();
         foreach ($classes as $class) {
+
             $methods = get_class_methods($class);
             foreach ($methods as $method) {
                 $tmp_route = new Route();
                 $tmp_route->setClassName($class)
                         ->setMethodName($method);
-                $staticMethod = new ReflectionMethod($class, $method);
-                $comment = $staticMethod->getDocComment();
+                $rclass = new ReflectionClass($class);
+                $ccomment = $rclass->getDocComment();
+                $classAnnotations = self::getInfos($ccomment);
+                foreach ($classAnnotations as $key => $annotation) {
+                    if ($key == "observer") {
+                        $tmp_route->setObservers($annotation);
+                    }
+                }
+                $rmethod = new ReflectionMethod($class, $method);
+                $comment = $rmethod->getDocComment();
                 $annotations = self::getInfos($comment);
                 if (count(array_intersect(self::$allowed_methods, array_keys($annotations))) > 0) {
                     foreach ($annotations as $key => $annotation) {

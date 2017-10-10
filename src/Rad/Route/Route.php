@@ -24,6 +24,7 @@ class Route {
     protected $middlewares = array();
     protected $produce = null;
     protected $consume = null;
+    protected $observers = array();
 
     public function __toString() {
         return "Route " . strtoupper($this->verb) . " : /v" . $this->version . "/" . $this->regex . " call " . $this->className . "->" . $this->methodName;
@@ -56,6 +57,11 @@ class Route {
 
     public function setMiddlewares(array $middlewares) {
         $this->middlewares = $middlewares;
+        return $this;
+    }
+
+    public function setObservers(array $observers) {
+        $this->observers = $observers;
         return $this;
     }
 
@@ -109,6 +115,14 @@ class Route {
 
     public function getVersion() {
         return $this->version;
+    }
+
+    public function getObservers() {
+        $ret = array();
+        foreach ($this->observers as $observer) {
+            $ret[] = new $observer();
+        }
+        return $ret;
     }
 
 }
