@@ -31,27 +31,11 @@ namespace Rad\Worker;
  *
  * @author Guillaume Monet
  */
-abstract class Worker {
+class Orderer {
 
-    private $queue;
-    private $desiredmsgtype;
-    private $maxsize;
-
-    public function __construct($queue, $desiredmsgtype, $maxsize) {
-        $this->queue = $queue;
-        $this->desiredmsgtype = $desiredmsgtype;
-        $this->maxsize = $maxsize;
+    public static function sendMessage($queue, $messageType, $message) {
+        $ip = msg_get_queue($queue);
+        msg_send($ip, $messageType, $message, true);
     }
 
-    public function run() {
-        $ip = msg_get_queue($this->queue);
-        while (true) {
-            $message = null;
-            $messageType = null;
-            msg_receive($ip, $this->desiredmsgtype, $messageType, $this->maxsize, $message, true);
-            $this->event($messageType, $message);
-        }
-    }
-
-    abstract protected function event(string $messageType, $message);
 }
