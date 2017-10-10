@@ -44,8 +44,8 @@ abstract class Mail {
 
     /**
      * 
-     * @param string $name
-     * @param DatabaseInterface $mailInterface
+     * @param string $type
+     * @param MailInterface $mailInterface
      */
     public static function addHandler(string $type, MailInterface $mailInterface) {
         self::$mailHandlers[$type] = $mailInterface;
@@ -54,7 +54,7 @@ abstract class Mail {
     /**
      * 
      * @param string $handlerType
-     * @return DatabaseInterface
+     * @return MailInterface
      * @throws ErrorException
      */
     public static function getHandler(string $handlerType = null): MailInterface {
