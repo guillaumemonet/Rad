@@ -52,7 +52,7 @@ class Mysql_DatabaseHandler extends DatabaseAdapter {
     /**
      * @param string $dbname
      */
-    public function change($dbname) {
+    public function change(string $dbname) {
         if (!$this->ping()) {
             $this->connect();
         }
@@ -68,13 +68,10 @@ class Mysql_DatabaseHandler extends DatabaseAdapter {
      *
      * @return PDOStatement
      */
-    public function prepare($sql) {
-        if (!$this->ping()) {
-            $this->connect();
-        }
+    public function prepare($sql, $options = null) {
         try {
             Log::getHandler()->debug($sql);
-            $stmt = $this->prepare($sql);
+            $stmt = parent::prepare($sql, $options);
         } catch (PDOException $ex) {
             Log::getHandler()->error($ex->getMessage());
         }
@@ -87,12 +84,9 @@ class Mysql_DatabaseHandler extends DatabaseAdapter {
      * @return PDOStatement
      */
     public function query($sql) {
-        if (!$this->ping()) {
-            $this->connect();
-        }
         try {
             Log::getHandler()->debug($sql);
-            return $this->query($sql);
+            return parent::query($sql);
         } catch (PDOException $ex) {
             Log::getHandler()->error($ex->getMessage());
         }
@@ -103,7 +97,7 @@ class Mysql_DatabaseHandler extends DatabaseAdapter {
      * 
      * @param PDOStatement $stmt
      * @param type $mode
-     * @return type
+     * @return mixed
      */
     public function fetch(PDOStatement $stmt, $mode = PDO::FETCH_ASSOC) {
         return $stmt->fetch($mode);
@@ -180,8 +174,8 @@ class Mysql_DatabaseHandler extends DatabaseAdapter {
         return $this->query("SHOW COLUMUNS FROM `$table`");
     }
 
-    public function lastInsertId() {
-        return $this->lastInsertId();
+    public function lastInsertId($seqname = null) {
+        return parent::lastInsertId($seqname);
     }
 
 }

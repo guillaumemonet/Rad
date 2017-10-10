@@ -36,25 +36,5 @@ use PDOStatement;
  */
 interface DatabaseInterface {
 
-    public function change(string $dbname): DatabaseInterface;
-
-    public function prepare(string $sql): PDOStatement;
-
-    public function query(string $sql): PDOStatement;
-
-    public function fetch(PDOStatement $stmt, int $mode = PDO::FETCH_ASSOC): PDOStatement;
-
-    public function fetchAssoc(PDOStatement $stmt): PDOStatement;
-
-    public function fetchArray(PDOStatement $stmt): PDOStatement;
-
-    public function fetchAll(PDOStatement $stmt, int $mode = PDO::FETCH_ASSOC): PDOStatement;
-
-    public function execute(PDOStatement $stmt, $input_parameters = null): PDOStatement;
-
-    public function ping(): bool;
-
-    public function schema(string $table): PDOStatement;
-
-    public function lastInsertId(): int;
+    
 }
