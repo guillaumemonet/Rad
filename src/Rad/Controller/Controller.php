@@ -26,13 +26,15 @@
 
 namespace Rad\Controller;
 
+use Rad\Observer\Observable;
+
 /*
- * Description of IController
+ * Description of Controller
  *
  * @author Guillaume Monet
  */
 
-abstract class Controller {
+abstract class Controller extends Observable {
 
     /**
      * Call on specific event to provide webhook to customer
