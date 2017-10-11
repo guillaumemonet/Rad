@@ -3,7 +3,7 @@
 /*
  * The MIT License
  *
- * Copyright 2017 Guillaume Monet.
+ * Copyright 2017 guillaume.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,31 +27,10 @@
 namespace Rad\Worker;
 
 /**
- * Description of Worker
+ * Description of MessageType
  *
- * @author Guillaume Monet
+ * @author guillaume
  */
-abstract class Worker {
-
-    protected $queue;
-    protected $desiredmsgtype;
-    protected $maxsize;
-
-    public function __construct($queue, $desiredmsgtype, $maxsize) {
-        $this->queue = $queue;
-        $this->desiredmsgtype = $desiredmsgtype;
-        $this->maxsize = $maxsize;
-    }
-
-    public function run() {
-        $ip = msg_get_queue($this->queue);
-        while (true) {
-            $message = null;
-            $messageType = null;
-            msg_receive($ip, $this->desiredmsgtype, $messageType, $this->maxsize, $message, true);
-            $this->event($messageType, $message);
-        }
-    }
-
-    abstract protected function event(string $messageType, $message);
+abstract class MessageType {
+    
 }
