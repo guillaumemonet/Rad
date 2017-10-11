@@ -33,7 +33,7 @@ use Rad\Config\Config;
  *
  * @author Guillaume Monet
  */
-final class Encryption {
+abstract class Encryption {
 
     private function __construct() {
         
