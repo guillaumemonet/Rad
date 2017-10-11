@@ -40,7 +40,7 @@ class JsonCodec implements CodecInterface {
     }
 
     public function deserialize(string $string) {
-        $ret = json_decode($string, true);
+        $ret = json_decode($string);
         if (json_last_error() > 0) {
             throw new CodecException("Error during json_decode");
         }
