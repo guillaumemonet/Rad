@@ -19,6 +19,7 @@ abstract class Model implements JsonSerializable, ModelDAO {
 
     public $resource_uri;
     public $resource_name;
+    public $resource_namespace;
 
     public function getID() {
         return null;
@@ -34,22 +35,23 @@ abstract class Model implements JsonSerializable, ModelDAO {
 
     public function jsonSerialize() {
         $this->generateResourceURI();
-        return (array) $this;
+        return $this;
     }
 
     public function generateResourceURI() {
-        $this->resource_uri = Config::get("api", "url") . "v" . Config::get("api", "version") . "/" . $this->getResourceName() . "/" . $this->getID();
+        $this->resource_uri = Config::get("api", "url") . "v" . Config::get("api", "version") . "/" . strtolower($this->getResourceName()) . "/" . $this->getID();
     }
 
     /**
      * 
      * @param type $object
-     * @return IModel
+     * @return Model
      */
     public final static function hydrate($object) {
         if (is_object($object) && isset($object->resource_name)) {
-            $c = "\\model\\" . $object->resource_name;
-            $new = new $c;
+            $c = $object->resource_namespace . "\\" . $object->resource_name;
+            $className = $c;
+            $new = new $className();
             foreach ($object as $key => $val) {
                 if (is_object($val)) {
                     $new->$key = self::hydrate($val);
