@@ -32,7 +32,6 @@ use Psr\Http\Message\ResponseInterface;
 use Rad\Http\Request;
 use Rad\Http\Response;
 use Rad\Log\Log;
-use Rad\Middleware\Middleware;
 use Rad\Route\RouteParser;
 use Rad\Route\Router;
 
@@ -47,40 +46,29 @@ abstract class Api {
 
     /**
      *
-     * @var Middleware
-     */
-    private $middle = null;
-
-    /**
-     *
      * @var Router
      */
-    private $router = null;
+    protected $router = null;
 
     /**
      *
      * @var RequestInterface
      */
-    private $request = null;
+    protected $request = null;
 
     /**
      *
      * @var ResponseInterface
      */
-    private $response = null;
+    protected $response = null;
 
     /**
      * 
      */
     public function __construct() {
-        $this->middle = new Middleware();
         $this->router = new Router();
         $this->request = new Request();
         $this->response = new Response();
-        if (!$this->router->load()) {
-            $this->router->setRoutes(RouteParser::parseRoutes($this->addControllers()));
-            $this->router->save();
-        }
     }
 
     /**
@@ -90,6 +78,10 @@ abstract class Api {
      */
     public final function run() {
         try {
+            if (!$this->getRouter()->load()) {
+                $this->getRouter()->setRoutes(RouteParser::parseRoutes($this->addControllers()));
+                $this->getRouter()->save();
+            }
             $this->getRouter()->route($this);
         } catch (ErrorException $ex) {
             Log::getHandler()->error($ex->getMessage());
@@ -122,14 +114,6 @@ abstract class Api {
      */
     public function getResponse() {
         return $this->response;
-    }
-
-    /**
-     * 
-     * @return Middleware
-     */
-    public function getMiddleware() {
-        return $this->middle;
     }
 
     public abstract function addControllers(): array;

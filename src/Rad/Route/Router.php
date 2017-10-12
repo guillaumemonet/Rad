@@ -31,6 +31,7 @@ use Rad\Cache\Cache;
 use Rad\Errors\Http\InternalErrorException;
 use Rad\Errors\Http\NotFoundException;
 use Rad\Log\Log;
+use Rad\Middleware\Middleware;
 
 /**
  * Description of ApiRoute
@@ -155,12 +156,12 @@ final class Router implements RouterInterface {
         if (isset($this->path_array[$version][$method])) {
             $route = $this->filterRoutes($path, $this->path_array[$version][$method]);
             Log::getHandler()->debug($method . " : " . $path . " Matching " . $route->getRegExp());
-            $api->getMiddleware()->layer($route->getMiddlewares());
+            $middleware = new Middleware($route->getMiddlewares());
             $classController = $route->getClassName();
             $method = $route->getMethodName();
             $controller = new $classController();
             $route->applyObservers($controller);
-            $datas = $api->getMiddleware()->call($request, $response, $route, function($request, $response, $route) use($controller, $method) {
+            $datas = $middleware->call($request, $response, $route, function($request, $response, $route) use($controller, $method) {
                 return $controller->{$method}($request, $response, $route);
             });
             $response->setData($datas);
