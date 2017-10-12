@@ -33,7 +33,7 @@ use Rad\Errors\CodecException;
  *
  * @author guillaume
  */
-class JsonCodec implements CodecInterface {
+class Json_CodecHandler implements CodecInterface {
 
     public function __toString() {
         return "Json encode/decode";

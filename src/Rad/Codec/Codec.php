@@ -36,67 +36,43 @@ use Rad\Errors\CodecException;
  *
  * @author guillaume
  */
-class Codec {
+abstract class Codec {
 
-    private $codecs = array();
+    private static $codecHandlers = array();
 
-    public function __construct() {
-        $this->add(new JsonCodec());
-        $this->add(new DefaultCodec());
+    private function __construct() {
+        
     }
 
     /**
      * 
-     * @param CodecInterface $codec
-     * @return $this
+     * @param string $type
+     * @param CodecInterface $codecInterface
      */
-    public function add(CodecInterface $codec) {
-        foreach ($codec->getMimeTypes() as $mime) {
-            $this->codecs[$mime] = $codec;
-        }
-        return $this;
-    }
-
-    /**
-     * 
-     * @param type $datas
-     * @param string $mime_type
-     * @return type
-     * @throws CodecException
-     */
-    public function serialize($datas, string $mime_type = "*") {
-        if (isset($this->codecs[$mime_type])) {
-            return $this->codecs[$mime_type]->serialize($datas);
-        } else {
-            throw new CodecException("No Codec found for serializing " . $mime_type);
+    public static function addHandler(CodecInterface $codecInterface) {
+        foreach ($codecInterface->getMimeTypes() as $type) {
+            self::$codecHandlers[$type] = $codecInterface;
         }
     }
 
     /**
      * 
-     * @param type $datas
-     * @param string $mime_type
-     * @return type
-     * @throws CodecException
+     * @param string $handlerType
+     * @return CodecInterface
+     * @throws ErrorException
      */
-    public function deserialize($datas, string $mime_type = "*") {
-        if (isset($this->codecs[$mime_type])) {
-            return $this->codecs[$mime_type]->deserialize($datas);
-        } else {
-            throw new CodecException("No Codec found for deserializing " . $mime_type);
+    public static function getHandler(string $handlerType = null): CodecInterface {
+        if ($handlerType === null) {
+            $handlerType = (string) Config::get("codec", "default");
         }
-    }
-
-    /**
-     * 
-     * @return string
-     */
-    public function __toString(): string {
-        $ret = "";
-        foreach ($this->codecs as $codec) {
-            $ret .= "" . $codec;
+        if (!isset(self::$codecHandlers[$handlerType])) {
+            try {
+                $className = __NAMESPACE__ . "\\" . ucfirst($handlerType) . "_CodecHandler";
+                self::$codecHandlers[$handlerType] = new $className();
+            } catch (ErrorException $ex) {
+                throw new ErrorException($handlerType . " Cache Handler not found");
+            }
         }
-        return $ret;
+        return self::$codecHandlers[$handlerType];
     }
-
 }

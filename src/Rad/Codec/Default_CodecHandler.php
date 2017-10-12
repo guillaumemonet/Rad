@@ -31,7 +31,7 @@ namespace Rad\Codec;
  *
  * @author guillaume
  */
-class DefaultCodec implements CodecInterface {
+class Default_CodecHandler implements CodecInterface {
 
     public function deserialize(string $string) {
         return unserialize($string);
