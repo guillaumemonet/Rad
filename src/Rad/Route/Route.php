@@ -8,6 +8,7 @@ namespace Rad\Route;
 
 use Rad\Middleware\Base\Post_SetProduce;
 use Rad\Middleware\Base\Pre_CheckConsume;
+use Rad\Observer\Observable;
 
 /**
  * Description of Route
@@ -25,6 +26,7 @@ class Route {
     protected $produce = null;
     protected $consume = null;
     protected $observers = array();
+    protected $args = array();
 
     public function __toString() {
         return "Route " . strtoupper($this->verb) . " : /v" . $this->version . "/" . $this->regex . " call " . $this->className . "->" . $this->methodName;
@@ -118,11 +120,33 @@ class Route {
     }
 
     public function getObservers() {
-        $ret = array();
-        foreach ($this->observers as $observer) {
-            $ret[] = new $observer();
-        }
-        return $ret;
+        return $this->observers;
+    }
+
+    public function applyObservers(Observable $observable) {
+        array_map(function($observer) use ($observable) {
+            $obs = new $observer();
+            $observable->attach($obs);
+        }, $this->observers);
+    }
+
+    /**
+     * 
+     * @param array $args
+     * @return $this
+     */
+    public function setArgs(array $args) {
+        array_shift($args);
+        $this->args = $args;
+        return $this;
+    }
+
+    /**
+     * 
+     * @return array
+     */
+    public function getArgs(): array {
+        return $this->args;
     }
 
 }

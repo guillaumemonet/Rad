@@ -28,7 +28,7 @@ namespace Rad\Route;
 
 use Rad\Api;
 use Rad\Cache\Cache;
-use Rad\Errors\Http\NotAcceptableException;
+use Rad\Errors\Http\InternalErrorException;
 use Rad\Errors\Http\NotFoundException;
 use Rad\Log\Log;
 
@@ -144,7 +144,6 @@ final class Router implements RouterInterface {
     /**
      * 
      * @param Api $api
-     * @throws NotAcceptableException
      * @throws NotFoundException
      */
     public function route(Api &$api) {
@@ -153,41 +152,49 @@ final class Router implements RouterInterface {
         $version = $request->version;
         $method = $request->method;
         $path = $request->path;
-        //error_log(print_r($this->path_array, true));
         if (isset($this->path_array[$version][$method])) {
-            $found = false;
-            foreach ($this->path_array[$version][$method] as $route) {
-                $regExp = $route->getRegExp();
-                Log::getHandler()->debug("preg_match('$regExp','$path')");
-                if (preg_match($regExp, $path, $m)) {
-                    $found = true;
-                    array_shift($m);
-                    $api->getRequest()->path_datas = $m;
-                    Log::getHandler()->debug($method . " : " . $path . " Matching " . $regExp);
-                    $api->getMiddleware()->layer($route->getMiddlewares());
-                    $classController = $route->getClassName();
-                    $method = $route->getMethodName();
-                    $controller = new $classController();
-                    $observers = $route->getObservers();
-                    array_map(function($observer) use ($controller) {
-                        $controller->attach($observer);
-                    }, $observers);
-                    /* foreach($observers as $observer){
-                      $controller->attach($observer);
-                      } */
-
-                    $datas = $api->getMiddleware()->call($request, $response, $route, function($request, $response, $route) use($controller, $method) {
-                        return $controller->{$method}($request, $response, $route);
-                    });
-                    $response->setData($datas);
-                    break;
-                }
-            }
-            if (!$found) {
-                throw new NotFoundException("No route found for " . $path);
-            }
+            $route = $this->filterRoutes($path, $this->path_array[$version][$method]);
+            Log::getHandler()->debug($method . " : " . $path . " Matching " . $route->getRegExp());
+            $api->getMiddleware()->layer($route->getMiddlewares());
+            $classController = $route->getClassName();
+            $method = $route->getMethodName();
+            $controller = new $classController();
+            $route->applyObservers($controller);
+            $datas = $api->getMiddleware()->call($request, $response, $route, function($request, $response, $route) use($controller, $method) {
+                return $controller->{$method}($request, $response, $route);
+            });
+            $response->setData($datas);
         } else {
             throw new NotFoundException("No Method " . $method . " found for " . $path);
+        }
+    }
+
+    /**
+     * 
+     * @param string $path
+     * @param array $routesArray
+     * @return Route
+     * @throws NotFoundException
+     * @throws InternalErrorException
+     */
+    private function filterRoutes(string $path, array $routesArray): Route {
+        $ret = array_filter($routesArray, function($route) use ($path) {
+            $regExp = $route->getRegExp();
+            Log::getHandler()->debug("preg_match('$regExp','$path')");
+            $args = null;
+            if (preg_match($regExp, $path, $args)) {
+                $route->setArgs($args);
+                return true;
+            } else {
+                return false;
+            }
+        });
+        if (count($ret) == 1) {
+            return array_shift($ret);
+        } else if (count($ret) == 0) {
+            throw new NotFoundException("No route found for " . $path);
+        } else {
+            throw new InternalErrorException('Too much routes for ' . $path);
         }
     }
 
