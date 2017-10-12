@@ -29,7 +29,6 @@ namespace Rad;
 use ErrorException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Rad\Codec\Codec;
 use Rad\Http\Request;
 use Rad\Http\Response;
 use Rad\Log\Log;
@@ -71,17 +70,10 @@ abstract class Api {
     private $response = null;
 
     /**
-     *
-     * @var Codec
-     */
-    private $codec = null;
-
-    /**
      * 
      */
     public function __construct() {
         $this->middle = new Middleware();
-        $this->codec = new Codec();
         $this->router = new Router();
         $this->request = new Request();
         $this->response = new Response();
@@ -106,14 +98,6 @@ abstract class Api {
             $this->getResponse()->setData($ex);
         }
         $this->getResponse()->send();
-    }
-
-    /**
-     * 
-     * @return Codec
-     */
-    public function getCodec() {
-        return $this->codec;
     }
 
     /**
