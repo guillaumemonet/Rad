@@ -39,7 +39,7 @@ use Rad\Middleware\Middleware;
  *
  * @author Guillaume Monet
  */
-class Router extends RouterInterface {
+class Router implements RouterInterface {
 
     private $path_array = array();
 
