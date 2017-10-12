@@ -76,7 +76,12 @@ abstract class Encryption {
         return base64_encode(hash_hmac('md5', $data, $secret, true));
     }
 
-    public static function hashMd5(string $data) {
+    /**
+     * 
+     * @param string $data
+     * @return string
+     */
+    public static function hashMd5(string $data): string {
         return hash("md5", $data);
     }
 
