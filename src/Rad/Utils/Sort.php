@@ -44,17 +44,23 @@ final class Sort {
         $this->order_by = $order_by;
     }
 
+    /**
+     * 
+     * @param type $a
+     * @param type $b
+     * @return int
+     */
+    public function sort($a, $b) {
+        $field = $this->order_by;
+        if ($a->{$field} == $b->{$field}) {
+            return 0;
+        }
+        return $this->order * (($a->{$field} < $b->{$field}) ? -1 : 1);
+    }
+
     public static function sortBy(array &$array, $order_by, $order = Sort::ASC) {
         $sort = new Sort($order_by, $order);
         return uasort($array, array($sort, "sort"));
-    }
-
-    public function sort($a, $b) {
-        $field = $this->order_by;
-        if ($a->$field == $b->$field) {
-            return 0;
-        }
-        return $this->order * (($a->$field < $b->$field) ? -1 : 1);
     }
 
 }

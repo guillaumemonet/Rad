@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace Rad\utils;
+namespace Rad\Utils;
 
 /**
  * Description of Math
