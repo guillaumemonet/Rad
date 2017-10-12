@@ -26,7 +26,8 @@
 
 namespace Rad\Route;
 
-use Rad\Api;
+use Rad\Http\Request;
+use Rad\Http\Response;
 
 /**
  * Description of RouterInterface
@@ -51,5 +52,5 @@ interface RouterInterface {
 
     public function setRoutes(array $routes);
 
-    public function route(Api &$api);
+    public function route(Request $request, Response $response);
 }

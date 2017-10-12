@@ -34,6 +34,7 @@ use Rad\Http\Response;
 use Rad\Log\Log;
 use Rad\Route\RouteParser;
 use Rad\Route\Router;
+use Rad\Route\RouterInterface;
 
 /**
  * Description of Api
@@ -46,7 +47,7 @@ abstract class Api {
 
     /**
      *
-     * @var Router
+     * @var RouterInterface
      */
     protected $router = null;
 
@@ -82,7 +83,10 @@ abstract class Api {
                 $this->getRouter()->setRoutes(RouteParser::parseRoutes($this->addControllers()));
                 $this->getRouter()->save();
             }
-            $this->getRouter()->route($this);
+            $this->getRouter()->route(
+                    $this->getRequest()
+                    , $this->getResponse()
+            );
         } catch (ErrorException $ex) {
             Log::getHandler()->error($ex->getMessage());
             $this->getResponse()->headerStatus($ex->getCode());
@@ -94,10 +98,18 @@ abstract class Api {
 
     /**
      * 
-     * @return Router
+     * @return RouterInterface
      */
-    public function getRouter() {
+    public function getRouter(): RouterInterface {
         return $this->router;
+    }
+
+    /**
+     * 
+     * @param RouterInterface $routeur
+     */
+    public function setRouter(RouterInterface $routeur) {
+        $this->routeur = $routeur;
     }
 
     /**

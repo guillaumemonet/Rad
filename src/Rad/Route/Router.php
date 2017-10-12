@@ -26,10 +26,11 @@
 
 namespace Rad\Route;
 
-use Rad\Api;
 use Rad\Cache\Cache;
 use Rad\Errors\Http\InternalErrorException;
 use Rad\Errors\Http\NotFoundException;
+use Rad\Http\Request;
+use Rad\Http\Response;
 use Rad\Log\Log;
 use Rad\Middleware\Middleware;
 
@@ -38,13 +39,9 @@ use Rad\Middleware\Middleware;
  *
  * @author Guillaume Monet
  */
-final class Router implements RouterInterface {
+class Router extends RouterInterface {
 
     private $path_array = array();
-
-    public function __construct() {
-        
-    }
 
     /**
      * 
@@ -144,12 +141,11 @@ final class Router implements RouterInterface {
 
     /**
      * 
-     * @param Api $api
+     * @param \Rad\Route\Request $request
+     * @param \Rad\Route\Response $response
      * @throws NotFoundException
      */
-    public function route(Api &$api) {
-        $request = $api->getRequest();
-        $response = $api->getResponse();
+    public function route(Request $request, Response $response) {
         $version = $request->version;
         $method = $request->method;
         $path = $request->path;
