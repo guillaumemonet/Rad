@@ -26,10 +26,9 @@
 
 namespace Rad\Codec;
 
+use ErrorException;
 use Rad\Codec\CodecInterface;
-use Rad\Codec\DefaultCodec;
-use Rad\Codec\JsonCodec;
-use Rad\Errors\CodecException;
+use Rad\Config\Config;
 
 /**
  * Description of Codec
