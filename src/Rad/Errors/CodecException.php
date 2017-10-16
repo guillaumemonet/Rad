@@ -31,7 +31,6 @@ namespace Rad\Errors;
  *
  * @author guillaume
  */
-class CodecException extends RadError {
+class CodecException extends RadException {
     
-
 }

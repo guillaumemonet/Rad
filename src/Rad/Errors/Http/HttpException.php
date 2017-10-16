@@ -26,9 +26,9 @@
 
 namespace Rad\Errors\Http;
 
-use Rad\Errors\RadError;
+use Rad\Errors\RadException;
 
-class HttpException extends RadError {
+class HttpException extends RadException {
 
     public function jsonSerialize() {
         return array("error" => array(

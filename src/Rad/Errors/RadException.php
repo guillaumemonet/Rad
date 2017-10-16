@@ -34,7 +34,7 @@ use JsonSerializable;
  *
  * @author guillaume
  */
-abstract class RadError extends ErrorException implements JsonSerializable {
+abstract class RadException extends ErrorException implements JsonSerializable {
 
     public function __toString() {
         return $this->message;
