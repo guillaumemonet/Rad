@@ -10,7 +10,6 @@ use Closure;
 use Rad\Api;
 use Rad\Http\Request;
 use Rad\Http\Response;
-use Rad\Log\Log;
 use Rad\Route\Route;
 
 /**
@@ -32,5 +31,4 @@ abstract class MiddlewareAfter implements MiddlewareInterface {
         return $ret;
     }
 
-    abstract function middle(Request $request, Response $response, Route $route);
 }

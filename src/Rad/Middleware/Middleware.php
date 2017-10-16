@@ -18,7 +18,7 @@ use Rad\Route\Route;
  *
  * @author Guillaume Monet
  */
-final class Middleware {
+class Middleware {
 
     private $layers;
 
