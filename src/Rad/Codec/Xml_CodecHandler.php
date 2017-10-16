@@ -27,52 +27,37 @@
 namespace Rad\Codec;
 
 use ErrorException;
-use Rad\Codec\CodecInterface;
-use Rad\Config\Config;
 
 /**
- * Description of Codec
+ * Description of Xml_CodecHandler
  *
  * @author guillaume
  */
-abstract class Codec {
+class Xml_CodecHandler implements CodecInterface {
 
-    private static $codecHandlers = array();
-
-    private function __construct() {
-        
+    public function __toString() {
+        return "XML encode/decode (to array)";
     }
 
-    /**
-     * 
-     * @param string $type
-     * @param CodecInterface $codecInterface
-     */
-    public static function addHandler(CodecInterface $codecInterface) {
-        foreach ($codecInterface->getMimeTypes() as $type) {
-            self::$codecHandlers[$type] = $codecInterface;
-        }
+    public function deserialize(string $string) {
+        throw new ErrorException("Not supported yet!");
     }
 
-    /**
-     * 
-     * @param string $handlerType
-     * @return CodecInterface
-     * @throws ErrorException
-     */
-    public static function getHandler(string $handlerType = null): CodecInterface {
-        if ($handlerType === null) {
-            $handlerType = (string) Config::get("codec", "default");
+    public function getMimeTypes(): array {
+        return array("xml");
+    }
+
+    public function serialize($object): string {
+        $backup = libxml_disable_entity_loader(true);
+        $backup_errors = libxml_use_internal_errors(true);
+        $result = simplexml_load_string($object);
+        libxml_disable_entity_loader($backup);
+        libxml_clear_errors();
+        libxml_use_internal_errors($backup_errors);
+        if ($result === false) {
+            return null;
         }
-        if (!isset(self::$codecHandlers[$handlerType])) {
-            try {
-                $className = __NAMESPACE__ . "\\" . ucfirst($handlerType) . "_CodecHandler";
-                self::$codecHandlers[$handlerType] = new $className();
-            } catch (ErrorException $ex) {
-                throw new ErrorException($handlerType . " Cache Handler not found");
-            }
-        }
-        return self::$codecHandlers[$handlerType];
+        return $result;
     }
 
 }
