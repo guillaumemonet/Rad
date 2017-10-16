@@ -65,7 +65,7 @@ abstract class Time {
      * @param int $date
      * @return bool
      */
-    public static function isHoliday($date = null) {
+    public static function isFrenchHoliday($date = null) {
 
         if ($date === null) {
             $date = time();
