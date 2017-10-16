@@ -45,7 +45,18 @@ abstract class Log {
 
     /**
      * 
+     * @param string $type
+     * @param AbstractLogger $logger
+     */
+    public static function addLogHandler(string $type, AbstractLogger $logger) {
+        self::$logHandlers[$type] = $logger;
+    }
+
+    /**
+     * 
+     * @param string $handlerType
      * @return AbstractLogger
+     * @throws ErrorException
      */
     public static function getHandler(string $handlerType = null): AbstractLogger {
         if ($handlerType === null) {
@@ -60,15 +71,6 @@ abstract class Log {
             }
         }
         return self::$logHandlers[$handlerType];
-    }
-
-    /**
-     * 
-     * @param AbstractLogger $logger
-     * @return AbstractLogger
-     */
-    public static function addLogHandler(string $type, AbstractLogger $logger) {
-        self::$logHandlers[$type] = $logger;
     }
 
 }
