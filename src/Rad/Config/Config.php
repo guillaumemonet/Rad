@@ -71,4 +71,14 @@ final class Config {
         }
     }
 
+    /**
+     * 
+     * @param type $section
+     * @param type $row
+     * @param type $value
+     */
+    public static function set($section, $row, $value) {
+        self::$config[$section][$row] = $value;
+    }
+
 }
