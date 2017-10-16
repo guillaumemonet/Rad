@@ -170,12 +170,12 @@ class Mysql_DatabaseHandler extends DatabaseAdapter {
         }
     }
 
-    public function schema($table) {
-        return $this->query("SHOW COLUMUNS FROM `$table`");
-    }
-
     public function lastInsertId($seqname = null) {
         return parent::lastInsertId($seqname);
+    }
+
+    public function schema($table) {
+        return $this->query("SHOW COLUMUNS FROM `$table`");
     }
 
 }

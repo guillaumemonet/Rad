@@ -46,20 +46,20 @@ abstract class Database {
 
     /**
      * 
-     * @param string $name
-     * @param DatabaseInterface $databaseInterface
+     * @param string $type
+     * @param DatabaseAdapter $databaseInterface
      */
-    public static function addHandler(string $type, DatabaseInterface $databaseInterface) {
+    public static function addHandler(string $type, DatabaseAdapter $databaseInterface) {
         self::$databaseHandlers[$type] = $databaseInterface;
     }
 
     /**
      * 
      * @param string $handlerType
-     * @return DatabaseInterface
+     * @return DatabaseAdapter
      * @throws ErrorException
      */
-    public static function getHandler(string $handlerType = null): DatabaseInterface {
+    public static function getHandler(string $handlerType = null): DatabaseAdapter {
         if ($handlerType === null) {
             $handlerType = (string) Config::get("database", "type");
         }

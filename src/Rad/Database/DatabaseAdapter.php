@@ -33,6 +33,6 @@ use PDO;
  *
  * @author guillaume
  */
-abstract class DatabaseAdapter extends PDO implements DatabaseInterface {
+class DatabaseAdapter extends PDO {
     
 }
