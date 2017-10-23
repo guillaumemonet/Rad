@@ -26,7 +26,7 @@
 
 namespace Rad\Middleware\Base;
 
-use Rad\Errors\Http\NotAcceptableException;
+use Rad\Error\Http\NotAcceptableException;
 use Rad\Http\Request;
 use Rad\Http\Response;
 use Rad\Middleware\MiddlewareBefore;

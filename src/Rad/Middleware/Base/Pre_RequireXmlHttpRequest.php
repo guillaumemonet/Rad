@@ -26,7 +26,7 @@
 
 namespace Rad\Middleware\Base;
 
-use Rad\Errors\Http\PreconditionFailedException;
+use Rad\Error\Http\PreconditionFailedException;
 use Rad\Http\Request;
 use Rad\Http\Response;
 use Rad\Middleware\MiddlewareBefore;
