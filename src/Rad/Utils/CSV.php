@@ -31,7 +31,7 @@ namespace Rad\Utils;
  *
  * @author Guillaume Monet
  */
-final class CSV {
+class CSV {
 
     private $filename = null;
     private $hasHeader = null;
