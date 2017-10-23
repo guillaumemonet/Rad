@@ -26,8 +26,8 @@
 
 namespace Rad\Http;
 
-use Rad\Errors\Http\MethodNotAllowedException;
-use Rad\Errors\Http\RequestedRangeException;
+use Rad\Error\Http\MethodNotAllowedException;
+use Rad\Error\Http\RequestedRangeException;
 
 /**
  * Description of Request.
@@ -40,6 +40,7 @@ final class Request { //extends \Psr\Http\Message implements ServerRequestInterf
      *
      * @var array
      */
+
     private $allowed_method = array("POST", "GET", "PATCH", "PUT", "OPTIONS");
     private $_datas = null;
     private $cache = false;
@@ -115,6 +116,17 @@ final class Request { //extends \Psr\Http\Message implements ServerRequestInterf
         }
     }
 
+    public function getRequestURI() {
+        return $_SERVER["REQUEST_URI"];
+    }
+
+    /**
+     * 
+     */
+    protected function checkMethod(): bool {
+        
+    }
+
     public function getDatas() {
         return $this->_datas;
     }
@@ -159,7 +171,7 @@ final class Request { //extends \Psr\Http\Message implements ServerRequestInterf
      * 
      * @return bool
      */
-    public function isXmlHTTPRequest(): bool {
+    public function isXhr(): bool {
         return isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
     }
 
