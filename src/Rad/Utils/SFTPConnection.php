@@ -2,9 +2,10 @@
 
 namespace Rad\Utils;
 
-use Exception;
+use ErrorException;
 
 /**
+ * @require php ssh2 lib
  * @author Guillaume Monet
  */
 class SFTPConnection {
@@ -43,22 +44,22 @@ class SFTPConnection {
      * 
      * @param string $local_file
      * @param string $remote_file
-     * @throws Exception
+     * @throws ErrorException
      */
     public function uploadFile(string $local_file, string $remote_file) {
         $stream = fopen("ssh2.sftp://" . intval($this->sftp) . "/./in/$remote_file", 'w');
 
         if (!$stream) {
-            throw new Exception("Could not open file: $remote_file");
+            throw new ErrorException("Could not open file: $remote_file");
         }
 
         $data_to_send = file_get_contents($local_file);
         if ($data_to_send === false) {
-            throw new Exception("Could not open local file: $local_file.");
+            throw new ErrorException("Could not open local file: $local_file.");
         }
 
         if (fwrite($stream, $data_to_send) === false) {
-            throw new Exception("Could not send data from file: $local_file.");
+            throw new ErrorException("Could not send data from file: $local_file.");
         }
         fflush($stream);
         fclose($stream);
@@ -68,13 +69,12 @@ class SFTPConnection {
      * 
      * @param string $local_file
      * @param string $remote_file
-     * @throws Exception
      * @throws ErrorException
      */
     public function downloadFile(string $local_file, string $remote_file) {
         $stream = fopen("ssh2.sftp://" . intval($this->sftp) . "/./$remote_file", 'r');
         if (!$stream) {
-            throw new Exception("Could not open file: $remote_file");
+            throw new ErrorException("Could not open file: $remote_file");
         }
         $local = fopen($local_file, 'w');
         if (!$local) {
@@ -85,7 +85,7 @@ class SFTPConnection {
         $filesize = filesize("ssh2.sftp://" . intval($this->sftp) . "/./$remote_file");
         while (($read < $filesize) && ($buffer = fread($stream, $filesize - $read))) {
             $read += strlen($buffer);
-            if (fwrite($local, $buffer) === FALSE) {
+            if (fwrite($local, $buffer) === false) {
                 throw new ErrorException("Could not write data to file: $local_file.");
             }
         }
