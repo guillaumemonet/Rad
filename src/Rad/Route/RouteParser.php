@@ -35,7 +35,7 @@ use ReflectionMethod;
  *
  * @author guillaume
  */
-class RouteParser {
+abstract class RouteParser {
 
     private static $allowed_methods = array("get", "post", "put", "patch", "delete", "options");
     private static $middle = "middle";

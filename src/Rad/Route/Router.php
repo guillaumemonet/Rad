@@ -27,8 +27,8 @@
 namespace Rad\Route;
 
 use Rad\Cache\Cache;
-use Rad\Errors\Http\InternalErrorException;
-use Rad\Errors\Http\NotFoundException;
+use Rad\Error\Http\InternalErrorException;
+use Rad\Error\Http\NotFoundException;
 use Rad\Http\Request;
 use Rad\Http\Response;
 use Rad\Log\Log;
