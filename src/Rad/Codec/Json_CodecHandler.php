@@ -26,7 +26,7 @@
 
 namespace Rad\Codec;
 
-use Rad\Errors\CodecException;
+use Rad\Error\CodecException;
 
 /**
  * Description of JsonCodec
