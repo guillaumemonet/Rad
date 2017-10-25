@@ -15,7 +15,7 @@ use Rad\Config\Config;
  * @author Guillaume Monet
  * 
  */
-abstract class Model implements JsonSerializable, ModelDAO {
+abstract class Model extends ModelDAO implements JsonSerializable {
 
     public $resource_uri;
     public $resource_name;
