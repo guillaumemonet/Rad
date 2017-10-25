@@ -54,6 +54,7 @@ class CSV {
             }
             $all_rows[] = array_combine($header, $row);
         }
+        fclose($file);
         return $all_rows;
     }
 
