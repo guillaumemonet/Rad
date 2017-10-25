@@ -34,5 +34,38 @@ namespace Rad\bin\scripts;
 class Column {
 
     public $name;
+    public $type_sql;
+    public $type_php;
+    public $auto = 0;
+    public $param;
+    public $default;
+    public $key;
+
+    public function getAsVar($type) {
+        switch ($type) {
+            case "name":
+                return $this->name;
+            case "sql_name":
+                return "`" . $this->name . "`";
+            case "php":
+                return '$' . $this->name;
+            case "sql_cond":
+                if ($this->name == "password") {
+                    return "`" . $this->name . "` = PASSWORD(:" . $this->name . ")";
+                } else {
+                    return "`" . $this->name . "` = :" . $this->name;
+                }
+            case "sql_param":
+                return ":" . $this->name;
+            case "bind":
+                return '":' . $this->name . '"' . ' => $' . $this->name;
+
+            case "bind_this":
+                return '":' . $this->name . '"' . ' => $this->' . $this->name;
+
+            case "this":
+                return '$this->' . $this->name;
+        }
+    }
 
 }

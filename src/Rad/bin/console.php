@@ -28,7 +28,7 @@ namespace Rad\bin;
 
 use Rad\bin\scripts\GenerateBase;
 
-require(__DIR__ . "/../../vendor/autoload.php");
+require(__DIR__ . "/../../../../vendor/autoload.php");
 
 final class console {
 
@@ -41,9 +41,20 @@ final class console {
             case "create":
                 switch ($verb) {
                     case "skel":
+                        if (isset($opt) && is_dir($opt)) {
+                            mkdir($opt . "/cache");
+                            mkdir($opt . "/config");
+                            mkdir($opt . "/public");
+                            mkdir($opt . "/src");
+                            mkdir($opt . "/templates");
+                            mkdir($opt . "/assets");
+                            mkdir($opt . "/workers");
+                        } else {
+                            echo "No directory provided\n";
+                        }
                         break;
                     default:
-                        echo "Nothing to create";
+                        echo "Nothing to create\n";
                 }
                 break;
             case "build":
