@@ -39,6 +39,9 @@ class File_LogHandler extends AbstractLogger {
     public function log($level, $message, array $context = array()) {
 
         if (Config::get("log", "enabled") == 1 && Config::get("log", $level) == 1) {
+            if (is_array($message)) {
+                $message = print_r($message, true);
+            }
             if (Config::get("log", "file") !== null) {
                 error_log($this->logFormat(strtoupper($level), $message), 3, Config::get("log", "file"));
             } else {
