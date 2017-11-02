@@ -75,7 +75,7 @@ final class Request { //extends \Psr\Http\Message implements ServerRequestInterf
         $this->accept_type = self::getHeader("HTTP_ACCEPT_TYPE");
         $this->appname = self::getHeader("HTTP_APPNAME");
         $this->context = self::getHeader("HTTP_CONTEXT");
-        $this->cache = self::getHeader("HTTP_CACHE_CONTROL") == "cache";
+        $this->cache = !(self::getHeader("HTTP_CACHE_CONTROL") == "no-cache");
         $range = self::getHeader("HTTP_RANGE");
         if ($range != null && strlen($range) > 0) {
             $limits = explode("-", $range);
