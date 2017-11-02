@@ -90,7 +90,7 @@ abstract class Api {
         } catch (ErrorException $ex) {
             Log::getHandler()->error($ex->getMessage());
             $this->getResponse()->headerStatus($ex->getCode());
-            $this->getResponse()->setDataType("json");
+            $this->getResponse()->setDataType($this->getRequest()->accept_type);
             $this->getResponse()->setData($ex);
         }
         $this->getResponse()->send();
