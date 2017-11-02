@@ -32,25 +32,24 @@ namespace Rad\Model;
  * @author guillaume
  */
 abstract class ModelDAO {
+    /* public function create($force = false) {
 
-    public function create($force = false) {
-        
-    }
+      }
 
-    public function read($id, $use_cache = true){
-        
-    }
-    
+      public function read($id, $use_cache = true){
 
-    public function update(){
-        
-    }
+      }
 
-    public function delete(){
-        
-    }
 
-    public function parse($var, $use_cache){
-        
-    }
+      public function update(){
+
+      }
+
+      public function delete(){
+
+      }
+
+      public function parse($var, $use_cache){
+
+      } */
 }
