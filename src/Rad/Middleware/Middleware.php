@@ -8,7 +8,6 @@ namespace Rad\Middleware;
 
 use Closure;
 use InvalidArgumentException;
-use Rad\Api;
 use Rad\Http\Request;
 use Rad\Http\Response;
 use Rad\Route\Route;
@@ -22,6 +21,10 @@ class Middleware {
 
     private $layers;
 
+    /**
+     * 
+     * @param array $layers
+     */
     public function __construct(array $layers = []) {
         $this->layers = $layers;
     }
@@ -44,11 +47,12 @@ class Middleware {
     }
 
     /**
-     * Run middleware around core function and pass an
-     * object through it
-     * @param  Api  $api
-     * @param  Closure $core
-     * @return mixed         
+     * 
+     * @param Request $request
+     * @param Response $response
+     * @param Route $route
+     * @param Closure $core
+     * @return mixed
      */
     public function call(Request $request, Response $response, Route $route, Closure $core) {
         $coreFunction = $this->createCoreFunction($core);
@@ -60,33 +64,31 @@ class Middleware {
     }
 
     /**
-     * Get the layers of this onion, can be used to merge with another onion
+     * Get all the layers
      * @return array
      */
-    public function toArray() {
+    public function toArray(): array {
         return $this->layers;
     }
 
     /**
-     * The inner function of the onion.
-     * This function will be wrapped on layers
+     * Create the core function 
      * @param  Closure $core the core function
      * @return Closure
      */
-    private function createCoreFunction(Closure $core) {
+    private function createCoreFunction(Closure $core): Closure {
         return function(Request $request, Response $response, Route $route) use($core) {
             return call_user_func($core, $request, $response, $route);
         };
     }
 
     /**
-     * Get an onion layer function.
-     * This function will get the object from a previous layer and pass it inwards
+     * Create Layer
      * @param  MiddlewareInterface $nextLayer
-     * @param  IMiddlewareInterface $layer
+     * @param  MiddlewareInterface $layer
      * @return Closure
      */
-    private function createLayer($nextLayer, $layer) {
+    private function createLayer($nextLayer, $layer): Closure {
         return function(Request $request, Response $response, Route $route) use($nextLayer, $layer) {
             return call_user_func_array([$layer, 'call'], [$request, $response, $route, $nextLayer]);
         };

@@ -7,7 +7,6 @@
 namespace Rad\Middleware;
 
 use Closure;
-use Rad\Api;
 use Rad\Http\Request;
 use Rad\Http\Response;
 use Rad\Route\Route;
@@ -21,9 +20,11 @@ abstract class MiddlewareAfter implements MiddlewareInterface {
 
     /**
      * 
-     * @param Api $api
+     * @param Request $request
+     * @param Response $response
+     * @param Route $route
      * @param Closure $next
-     * @return IMiddleware
+     * @return Closure
      */
     final public function call(Request $request, Response $response, Route $route, Closure $next) {
         $ret = $next($request, $response, $route);
