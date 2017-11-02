@@ -35,8 +35,10 @@ final class GenerateBase {
     private $database = null;
     private $pathClass = null;
     private $pathService = null;
+    private $pathImp = null;
     private $namespaceClass = null;
     private $namespaceService = null;
+    private $namespaceImp = null;
     private $baseRequire = array(
         "PDO",
         "Rad\\Model\\Model",
@@ -53,23 +55,36 @@ final class GenerateBase {
     private $i18n_class;
     private $picture_table = "picture";
     private $picture_class;
+    private $language_table = "language";
+    private $language_class;
 
-    public function __construct($database = "bb", $pathClass = "", $namespaceClass = "", $pathService = "", $namespaceService = "") {
+    public function __construct($database = "bb", $dir = "", $basePath = "", $prefixClassesPath = "", $prefixServicesPath = "", $prefixImpsPath = "") {
         $this->database = $database;
-        $this->pathClass = $pathClass;
-        $this->namespaceClass = $namespaceClass;
-        $this->pathService = $pathService;
-        $this->namespaceService = $namespaceService;
+        $this->pathClass = $basePath . "/" . $prefixClassesPath;
+        $this->namespaceClass = rtrim(str_replace("/", "\\", $this->pathClass), "\\");
+        $this->pathService = $basePath . "/" . $prefixServicesPath;
+        $this->namespaceService = rtrim(str_replace("/", "\\", $this->pathService), "\\");
+        $this->pathImp = $basePath . "/" . $prefixImpsPath;
+        $this->namespaceImp = rtrim(str_replace("/", "\\", $this->pathImp), "\\");
         $this->i18n_class = StringUtils::camelCase($this->i18n_table);
         $this->i18n_translate_class = StringUtils::camelCase($this->i18n_translate_table);
         $this->picture_class = StringUtils::camelCase($this->picture_table);
+        $this->language_class = StringUtils::camelCase($this->language_table);
+
+        $this->pathClass = $dir . "/" . $this->pathClass;
+        $this->pathImp = $dir . "/" . $this->pathImp;
+        $this->pathService = $dir . "/" . $this->pathService;
     }
 
-    public function generate() {
+    public function generate(bool $generateImp = false) {
         mkdir($this->pathClass, 0777, true);
         mkdir($this->pathService, 0777, true);
         $this->generateClass();
         $this->generateServices();
+        if ($generateImp) {
+            $this->generateImp();
+        }
+        $this->generateController();
     }
 
     private function generateClass() {
@@ -132,7 +147,7 @@ final class GenerateBase {
                     $c .= StringUtils::printLn("use $this->namespaceClass\\" . StringUtils::camelCase($linked_table["to"]) . ";");
                 }
             }
-            $c .= StringUtils::printLn("class $class extends Model {");
+            $c .= StringUtils::printLn("class " . $class . " extends Model {");
             $c .= StringUtils::printLn("public \$resource_name = \"" . $class . "\";", 1);
             $c .= StringUtils::printLn("public \$resource_uri = null;", 1);
             $c .= StringUtils::printLn("public \$resource_namespace = __NAMESPACE__;", 1);
@@ -159,7 +174,7 @@ final class GenerateBase {
             $c .= StringUtils::println();
 
             $c .= StringUtils::println();
-            $c .= StringUtils::println("public function read(" . implode(', ', $table->getPrimaryColumns("php")) . ",\$use_cache = false) {", 1);
+            $c .= StringUtils::println("public function read(" . implode(', ', $table->getPrimaryColumns("php_prefix")) . ",\$use_cache = false) {", 1);
             $c .= StringUtils::println("\$c_key = \"key_" . strtolower($class) . "_\"." . implode('."_".', $table->getPrimaryColumns("php")) . ";", 2);
             $c .= StringUtils::println("\$row = null;", 2);
             $c .= StringUtils::println("if(\$use_cache){", 2);
@@ -421,19 +436,19 @@ final class GenerateBase {
                 $c .= StringUtils::println("public function deleteRef(" . StringUtils::camelCase($ref_tables["from"]) . " \$" . StringUtils::camelCase($ref_tables["from"]) . "){", 1);
                 $c .= StringUtils::println("}", 1);
             }
+            /*
+              foreach ($table->columns as $col_name => $col) {
+              if ($col->auto == 0 && !in_array($col_name, array("trash"))) {
+              $c .= StringUtils::println("public function get" . StringUtils::camelCase($col_name) . "() :" . $col->type_php . "{", 1);
+              $c .= StringUtils::println("return " . $col->getAsVar("this") . ";", 2);
+              $c .= StringUtils::println("}", 1);
 
-            foreach ($table->columns as $col_name => $col) {
-                if ($col->auto == 0 && !in_array($col_name, array("trash"))) {
-                    $c .= StringUtils::println("public function get" . StringUtils::camelCase($col_name) . "() :" . $col->type_php . "{", 1);
-                    $c .= StringUtils::println("return " . $col->getAsVar("this") . ";", 2);
-                    $c .= StringUtils::println("}", 1);
-
-                    $c .= StringUtils::println("public function set" . StringUtils::camelCase($col_name) . "(" . $col->type_php . " \$" . $col->name . ") {", 1);
-                    $c .= StringUtils::println($col->getAsVar("this") . "= \$" . $col->name . ";", 2);
-                    $c .= StringUtils::println("}", 1);
-                }
-            }
-
+              $c .= StringUtils::println("public function set" . StringUtils::camelCase($col_name) . "(" . $col->type_php . " \$" . $col->name . ") {", 1);
+              $c .= StringUtils::println($col->getAsVar("this") . "= \$" . $col->name . ";", 2);
+              $c .= StringUtils::println("}", 1);
+              }
+              }
+             */
             $c .= StringUtils::printLn("}");
             fwrite($file, $c);
         }
@@ -518,14 +533,14 @@ final class GenerateBase {
             //exit;
             foreach ($table->indexes as $k => $i) {
                 if ($i->name == "PRIMARY") {
-                    $c .= StringUtils::println("public static function get" . ucfirst($table->name) . "(" . implode(",", $i->getColumns("php")) . ",\$use_cache=false){", 1);
+                    $c .= StringUtils::println("public static function get" . ucfirst($table->name) . "(" . implode(",", $i->getColumns("php_prefix")) . ",\$use_cache=false){", 1);
                     $c .= StringUtils::println("\$c = new $class();", 2);
                     $c .= StringUtils::println("\$c->read(" . implode(",", $i->getColumns("php")) . ",\$use_cache);", 2);
                     $c .= StringUtils::println("return \$c;", 2);
                     $c .= StringUtils::println("}", 1);
                 } else {
                     if ($i->unique) {
-                        $c .= StringUtils::println("public static function " . $k . "(" . implode(",", $i->getColumns("php")) . ",\$use_cache=false){", 1);
+                        $c .= StringUtils::println("public static function " . $k . "(" . implode(",", $i->getColumns("php_prefix")) . ",\$use_cache=false){", 1);
                         $c .= StringUtils::println("\$c_key = \"cache_" . $k . "_\"." . implode('."_".', $i->getColumns("php")) . ";", 2);
                         $c .= StringUtils::println("\$" . $table->name . " = null;", 2);
                         $c .= StringUtils::println("if(\$use_cache){", 2);
@@ -548,7 +563,7 @@ final class GenerateBase {
                         $c .= StringUtils::println("return \$$table->name;", 2);
                         $c .= StringUtils::println("}", 1);
                     } else {
-                        $c .= StringUtils::println("public static function " . $k . "(" . implode(",", $i->getColumns("php")) . ", \$offset=null,\$limit=null,\$use_cache=false){", 1);
+                        $c .= StringUtils::println("public static function " . $k . "(" . implode(",", $i->getColumns("php_prefix")) . ", \$offset=null,\$limit=null,\$use_cache=false){", 1);
                         $c .= StringUtils::println("\$c_key = \"cache_" . $k . "_\"." . implode('."_".', $i->getColumns("php")) . ".\$limit.\"_\".\$offset;", 2);
                         $c .= StringUtils::println("\$ret = null;", 2);
                         $c .= StringUtils::println("if(\$use_cache){", 2);
@@ -579,8 +594,8 @@ final class GenerateBase {
             $c .= StringUtils::println("\$ret = null;", 2);
             $c .= StringUtils::println("if(\$use_cache){", 2);
             $c .= StringUtils::println("\$che = Cache::getHandler()->get(\$c_key);", 3);
-            $c .= StringUtils::println("if(isset(\$che[\$c_key])){", 3);
-            $c .= StringUtils::println("\$ret = unserialize(\$che[\$c_key]);", 4);
+            $c .= StringUtils::println("if(isset(\$che)){", 3);
+            $c .= StringUtils::println("\$ret = unserialize(\$che);", 4);
             $c .= StringUtils::println("}", 3);
             $c .= StringUtils::println("}", 2);
             $c .= StringUtils::println("if(!isset(\$ret) || \$ret == null || \$ret == false){", 2);
@@ -599,6 +614,199 @@ final class GenerateBase {
             $c .= StringUtils::println("}", 2);
             $c .= StringUtils::println("return \$ret;", 2);
             $c .= StringUtils::println("}", 1);
+
+
+            $c .= StringUtils::printLn("}");
+            fwrite($file, $c);
+        }
+    }
+
+    private function generateImp() {
+        Database::getHandler()->change($this->database);
+        $sql = "SHOW TABLES FROM " . $this->database;
+        $res_tables = Database::getHandler()->query($sql);
+
+        $tables = array();
+        while ($row = $res_tables->fetch()) {
+            $table = new Table();
+            $table->name = $row[0];
+            $table->columns = $this->getTableStructure($table->name);
+            $table->indexes = $this->getTableIndexes($table->name, $table->columns);
+            $table->onetomany = $this->getOneToManyTable($table->name);
+            $table->manytomany = $this->getManyToManyTable($table->name);
+            $tables[$table->name] = $table;
+        }
+        foreach ($tables as $name => $table) {
+            if (strpos($name, "_has_") !== false) {
+                continue;
+            }
+            $class = StringUtils::camelCase($name);
+
+            $filename = $this->pathImp . "/" . $class . "Imp.php";
+            if (file_exists($filename)) {
+                unlink($filename);
+            }
+            $file = fopen($filename, "w+");
+            $trash = false;
+            if (isset($table->columns['trash'])) {
+                $trash = true;
+            }
+
+            $c = StringUtils::printLn("<?php");
+            $c .= StringUtils::println("namespace $this->namespaceImp;");
+            foreach ($this->baseRequire as $require) {
+                $c .= "use " . StringUtils::printLn($require . ";");
+            }
+
+            $c .= "use " . StringUtils::println($this->namespaceService . "\\Service" . StringUtils::camelCase($this->i18n_translate_class) . ";");
+
+            if (StringUtils::camelCase($class) != StringUtils::camelCase($this->i18n_translate_class)) {
+                $c .= "use " . StringUtils::println($this->namespaceClass . "\\" . StringUtils::camelCase($this->i18n_translate_class) . ";");
+            }
+            if (StringUtils::camelCase($class) != StringUtils::camelCase($this->i18n_class)) {
+                $c .= "use " . StringUtils::println($this->namespaceClass . "\\" . StringUtils::camelCase($this->i18n_class) . ";");
+            }
+            if (StringUtils::camelCase($class) != StringUtils::camelCase($this->picture_class)) {
+                $c .= "use " . StringUtils::println($this->namespaceClass . "\\" . StringUtils::camelCase($this->picture_class) . ";");
+            }
+            if (StringUtils::camelCase($class) != StringUtils::camelCase($this->language_class)) {
+                $c .= "use " . StringUtils::println($this->namespaceClass . "\\" . StringUtils::camelCase($this->language_class) . ";");
+            }
+            $c .= "use " . StringUtils::println($this->namespaceClass . "\\" . StringUtils::camelCase($class) . ";");
+
+            $c .= StringUtils::printLn("class " . $class . "Imp extends " . $class . " {");
+            $c .= StringUtils::printLn("public \$resource_name = \"" . $class . "\";", 1);
+            $c .= StringUtils::printLn("public \$resource_uri = null;", 1);
+            $c .= StringUtils::printLn("public \$resource_namespace = __NAMESPACE__;", 1);
+            foreach ($table->columns as $col_name => $col) {
+                if (StringUtils::endsWith($col_name, "i18n") && $col->auto == 0 && !StringUtils::startsWith($table->name, "i18n")) {
+                    $c .= StringUtils::println("public \$" . str_replace("_i18n", "", $col_name) . "=array();", 1);
+                }
+                if (StringUtils::endsWith($col_name, "_id_picture")) {
+                    $c .= StringUtils::println("public \$" . str_replace("_id_picture", "", $col_name) . "=null;", 1);
+                }
+                $c .= StringUtils::println("public \$$col_name" . (isset($col->default) ? "=" . (is_numeric($col->default) ? $col->default : "\"" . $col->default . "\"") : "") . ";", 1);
+            }
+
+            $c .= StringUtils::println();
+            $c .= StringUtils::println("public function __construct(){", 1);
+            $c .= StringUtils::println("}", 1);
+            $c .= StringUtils::println();
+            foreach ($table->columns as $col_name => $col) {
+                if ($col->auto == 0 && !in_array($col_name, array("trash"))) {
+                    $c .= StringUtils::println("public function get" . StringUtils::camelCase($col_name) . "() :" . $col->type_php . "{", 1);
+                    $c .= StringUtils::println("return " . $col->getAsVar("this") . ";", 2);
+                    $c .= StringUtils::println("}", 1);
+
+                    $c .= StringUtils::println("public function set" . StringUtils::camelCase($col_name) . "(" . $col->type_php . " \$" . $col->name . ") {", 1);
+                    $c .= StringUtils::println($col->getAsVar("this") . "= \$" . $col->name . ";", 2);
+                    $c .= StringUtils::println("}", 1);
+                }
+            }
+
+            $c .= StringUtils::printLn("}");
+            fwrite($file, $c);
+        }
+    }
+
+    private function generateController() {
+        Database::getHandler()->change($this->database);
+        $sql = "SHOW TABLES FROM " . $this->database;
+        $res_tables = Database::getHandler()->query($sql);
+
+        $tables = array();
+        while ($row = $res_tables->fetch()) {
+            $table = new Table();
+            $table->name = $row[0];
+            $table->columns = $this->getTableStructure($table->name);
+            $table->indexes = $this->getTableIndexes($table->name, $table->columns);
+            $table->onetomany = $this->getOneToManyTable($table->name);
+            $table->manytomany = $this->getManyToManyTable($table->name);
+            $tables[$table->name] = $table;
+        }
+        foreach ($tables as $name => $table) {
+            if (strpos($name, "_has_") !== false) {
+                continue;
+            }
+            $class = StringUtils::camelCase($name);
+
+            $filename = $this->pathImp . "/../Controllers/Base/" . $class . "BaseController.php";
+            if (file_exists($filename)) {
+                unlink($filename);
+            }
+            $file = fopen($filename, "w+");
+            $trash = false;
+            if (isset($table->columns['trash'])) {
+                $trash = true;
+            }
+
+            $c = StringUtils::printLn("<?php");
+            $c .= StringUtils::println("namespace RadImp\Controllers\Base;");
+            foreach ($this->baseRequire as $require) {
+                $c .= "use " . StringUtils::printLn($require . ";");
+            }
+            $c .= StringUtils::println("use Rad\Http\Request;");
+            $c .= StringUtils::println("use Rad\Http\Response;");
+            $c .= StringUtils::println("use Rad\Route\Route;");
+            $c .= "use " . StringUtils::println($this->namespaceService . "\\Service" . StringUtils::camelCase($class) . ";");
+            $c .= "use " . StringUtils::println($this->namespaceClass . "\\" . StringUtils::camelCase($class) . ";");
+            $c .= "use " . StringUtils::println("\\Rad\\Controller\\Controller;");
+            $c .= StringUtils::printLn("class " . $class . "BaseController extends Controller {");
+            $c .= StringUtils::println();
+            $c .= StringUtils::println("public function __construct(){", 1);
+            $c .= StringUtils::println("}", 1);
+            $c .= StringUtils::println();
+            $c .= StringUtils::println("/**", 1);
+            $c .= StringUtils::println(" * @api 1", 1);
+            $c .= StringUtils::println(" * @get /^" . $table->name . "$/", 1);
+            $c .= StringUtils::println(" * @produce json", 1);
+            $c .= StringUtils::println(" */", 1);
+            $c .= StringUtils::println("public function getAll" . $class . "(Request \$request,Response \$response,Route \$route){", 1);
+            $c .= StringUtils::println("return Service" . $class . "::getAll" . $class . '($request->offset, $request->limit, $request->isCache(), $request->get_datas);', 2);
+            $c .= StringUtils::println("}", 1);
+
+            $c .= StringUtils::println("/**", 1);
+            $c .= StringUtils::println(" * @api 1", 1);
+            $c .= StringUtils::println(" * @get /^" . $table->name . "\/([0-9]*)$/", 1);
+            $c .= StringUtils::println(" * @produce json", 1);
+            $c .= StringUtils::println(" */", 1);
+            $c .= StringUtils::println("public function get" . $class . "(Request \$request,Response \$response,Route \$route){", 1);
+            $c .= StringUtils::println("return Service" . $class . "::get" . $class . "(\$route->getArgs()[0],\$request->isCache());");
+            $c .= StringUtils::println("}", 1);
+
+
+            $c .= StringUtils::println("/**", 1);
+            $c .= StringUtils::println(" * @api 1", 1);
+            $c .= StringUtils::println(" * @post /^" . $table->name . "\/([0-9]*)$/", 1);
+            $c .= StringUtils::println(" * @produce json", 1);
+            $c .= StringUtils::println(" */", 1);
+            $c .= StringUtils::println("public function post" . $class . "(Request \$request,Response \$response,Route \$route){", 1);
+            $c .= StringUtils::println("}", 1);
+
+            $c .= StringUtils::println("/**", 1);
+            $c .= StringUtils::println(" * @api 1", 1);
+            $c .= StringUtils::println(" * @put /^" . $table->name . "$/", 1);
+            $c .= StringUtils::println(" * @produce json", 1);
+            $c .= StringUtils::println(" */", 1);
+            $c .= StringUtils::println("public function put" . $class . "(Request \$request,Response \$response,Route \$route){", 1);
+            $c .= StringUtils::println("}", 1);
+
+            $c .= StringUtils::println("/**", 1);
+            $c .= StringUtils::println(" * @api 1");
+            $c .= StringUtils::println(" * @patch /^" . $table->name . "\/([0-9]*)$/", 1);
+            $c .= StringUtils::println(" * @produce json", 1);
+            $c .= StringUtils::println(" */", 1);
+            $c .= StringUtils::println("public function patch" . $class . "(Request \$request,Response \$response,Route \$route){", 1);
+            $c .= StringUtils::println("}", 1);
+
+            $c .= StringUtils::println("/**", 1);
+            $c .= StringUtils::println(" * @api 1", 1);
+            $c .= StringUtils::println(" * @options /^" . $table->name . "\/([0-9]*)$/", 1);
+            $c .= StringUtils::println(" * @produce json", 1);
+            $c .= StringUtils::println(" */", 1);
+            $c .= StringUtils::println("public function options" . $class . "(Request \$request,Response \$response,Route \$route){", 1);
+            $c .= StringUtils::println("}", 1);
+
 
 
             $c .= StringUtils::printLn("}");

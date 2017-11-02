@@ -49,6 +49,8 @@ class Column {
                 return "`" . $this->name . "`";
             case "php":
                 return '$' . $this->name;
+            case "php_prefix":
+                return ''.$this->type_php.' $' . $this->name;
             case "sql_cond":
                 if ($this->name == "password") {
                     return "`" . $this->name . "` = PASSWORD(:" . $this->name . ")";
@@ -56,7 +58,12 @@ class Column {
                     return "`" . $this->name . "` = :" . $this->name;
                 }
             case "sql_param":
-                return ":" . $this->name;
+                if ($this->name == "password") {
+                    return "PASSWORD(:" . $this->name . ")";
+                } else {
+                    return ":" . $this->name;
+                }
+
             case "bind":
                 return '":' . $this->name . '"' . ' => $' . $this->name;
 
