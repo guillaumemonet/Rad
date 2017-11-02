@@ -26,6 +26,7 @@
 
 namespace Rad\Cache;
 
+use PDO;
 use Psr\SimpleCache\CacheInterface;
 use Rad\Database\Database;
 use Rad\Encryption\Encryption;
@@ -45,37 +46,12 @@ use Rad\Encryption\Encryption;
 final class Mysql_CacheHandler implements CacheInterface {
 
     private $read = "SELECT content FROM output_cache WHERE id IN(%s)";
-    private $write = "INSERT INTO output_cache (id,modified,content) VALUES(\"%s\",%d,\"%s\") ON DUPLICATE KEY UPDATE content=\"%s\",modified=%d";
+    private $write = "INSERT INTO output_cache (id,modified,content) VALUES (\"%s\",%d,\"%s\") ON DUPLICATE KEY UPDATE content=\"%s\",modified=%d";
     private $purge = "DELETE FROM output_cache WHERE modified < %d";
     private $delete = "DELETE FROM output_cache WHERE id=\"%s\"";
 
-    public function read(array $keys) {
-        $ret = array();
-        foreach ($keys as $k) {
-            $_k = Encryption::hashMd5($k);
-            $r = sprintf($this->read, $_k);
-            $res = Database::query($r);
-            if ($row = Database::fetch_assoc($res)) {
-                $ret[$k] = stripslashes($row["content"]);
-            }
-        }
-        return $ret;
-    }
-
-    public function write(array $keys, $expire = null) {
-        foreach ($keys as $k => $v) {
-            $_k = Encryption::hashMd5($k);
-            $r = sprintf($this->write, $_k, time(), addslashes($v), addslashes($v), time());
-            Database::query($r);
-        }
-    }
-
-    public function delete(array $keys) {
-        array_map(Encryption::hashMd5, $keys);
-        foreach ($keys as $k) {
-            $_k = Encryption::hashMd5($k);
-            Database::query(sprintf($this->delete, $_k));
-        }
+    public function delete($key) {
+        Database::getHandler()->query(sprintf($this->delete, Encryption::hashMd5($key)));
     }
 
     public function purge() {
@@ -85,27 +61,34 @@ final class Mysql_CacheHandler implements CacheInterface {
     public function clear(): bool {
         
     }
-
+    
     public function deleteMultiple($keys): bool {
-        
+        foreach ($keys as $k) {
+            $this->delete($k);
+        }
+        return true;
     }
 
     public function get($key, $default = null) {
-        $res = Database::query(sprintf($this->read, Encryption::hashMd5($key)));
-        if ($row = Database::fetch_assoc($res)) {
-            return $row["content"];
+        $res = Database::getHandler()->query(sprintf($this->read, Encryption::hashMd5($key)));
+        if ($row = $res->fetch(PDO::FETCH_ASSOC)) {
+            return stripslashes($row["content"]);
         } else {
             return $default;
         }
     }
 
     public function getMultiple($keys, $default = null) {
-        
+        $ret = array();
+        foreach ($keys as $k) {
+            $ret[$k] = $this->get($k, $default);
+        }
+        return $ret;
     }
 
     public function has($key): bool {
-        $res = Database::query(sprintf($this->read, Encryption::hashMd5($key)));
-        if ($row = Database::fetch_assoc($res)) {
+        $res = Database::getHandler()->query(sprintf($this->read, Encryption::hashMd5($key)));
+        if ($row = $res->fetch()) {
             return true;
         } else {
             return false;
@@ -113,11 +96,15 @@ final class Mysql_CacheHandler implements CacheInterface {
     }
 
     public function set($key, $value, $ttl = null): bool {
-        
+        $r = sprintf($this->write, Encryption::hashMd5($key), time() + $ttl, addslashes($v), addslashes($v), time());
+        Database::getHandler()->query($r);
     }
 
     public function setMultiple($values, $ttl = null): bool {
-        
+        $time = time();
+        foreach ($values as $key => $value) {
+            $this->set($key, $value, $time + $ttl);
+        }
     }
 
 }
