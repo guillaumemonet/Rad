@@ -45,8 +45,8 @@
         "swiftmailer/swiftmailer": "^v6",
         "phpoffice/phpexcel": "^1.8",
         "setasign/fpdf": "^1.8",
-        "smarty/smarty": "v3.1.31",
-        "html2text/html2text": "4.1.0"
+        "smarty/smarty": "^v3.1",
+        "html2text/html2text": "^4.1"
     },
     "require-dev": {
         "phpunit/php-timer": "^1.0."
