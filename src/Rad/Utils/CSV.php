@@ -43,7 +43,11 @@ class CSV {
         $this->separator = $separator;
     }
 
-    public function read() {
+    /**
+     * 
+     * @return type
+     */
+    public function read() :array{
         $all_rows = array();
         $header = null;
         $file = fopen($this->filename, 'r+');
