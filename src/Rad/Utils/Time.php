@@ -35,7 +35,7 @@ use Rad\Cache\QuickCache;
  */
 abstract class Time {
 
-    private $counter = 0;
+    private $counter = null;
 
     private function __construct() {
         
@@ -48,16 +48,19 @@ abstract class Time {
      */
     public static function get_microtime() {
         list($tps_usec, $tps_sec) = explode(' ', microtime());
-
         return (float) $tps_usec + (float) $tps_sec;
     }
 
     public static function startCounter() {
-        
+        self::$counter = self::get_microtime();
     }
 
     public static function endCounter() {
-        
+        if (self::$counter !== null) {
+            return self::get_microtime() - $counter;
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -65,13 +68,13 @@ abstract class Time {
      * @param int $date
      * @return bool
      */
-    public static function isFrenchHoliday($date = null) {
+    public static function isFrenchHoliday($unixTimeStamp = null) {
 
-        if ($date === null) {
-            $date = time();
+        if ($unixTimeStamp === null) {
+            $unixTimeStamp = time();
         }
 
-        $date = strtotime(date('m/d/Y', $date));
+        $date = strtotime(date('m/d/Y', $unixTimeStamp));
 
 
         $year = date('Y', $date);
