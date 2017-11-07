@@ -65,21 +65,12 @@ abstract class Time {
 
     /**
      * Return french holiday
-     * @param int $date
+     * @param int $unixTimeStamp
      * @return bool
      */
     public static function isFrenchHoliday($unixTimeStamp = null) {
-
-        if ($unixTimeStamp === null) {
-            $unixTimeStamp = time();
-        }
-
-        $date = strtotime(date('m/d/Y', $unixTimeStamp));
-
-
+        $date = strtotime(date('m/d/Y', $unixTimeStamp == null ? time() : $unixTimeStamp));
         $year = date('Y', $date);
-
-
         $holidays = QuickCache::getDatas($year);
         if ($holidays == null) {
             $easterDate = easter_date($year) + 3 * 3600;
