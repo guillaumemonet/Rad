@@ -154,19 +154,15 @@ class Mysql_DatabaseHandler extends DatabaseAdapter {
      * @return boolean
      */
     public function ping() {
-        if ($this != null) {
-            try {
-                $status = $this->getAttribute(PDO::ATTR_CONNECTION_STATUS);
-                if ($status === null) {
-                    return false;
-                } else {
-                    return true;
-                }
-            } catch (PDOException $ex) {
-                Log::getHandler()->error($ex->getMessage());
+        try {
+            $status = $this->getAttribute(PDO::ATTR_CONNECTION_STATUS);
+            if ($status === null) {
+                return false;
+            } else {
+                return true;
             }
-        } else {
-            return false;
+        } catch (PDOException $ex) {
+            Log::getHandler()->error($ex->getMessage());
         }
     }
 
