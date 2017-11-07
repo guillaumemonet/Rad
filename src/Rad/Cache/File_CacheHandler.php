@@ -68,11 +68,7 @@ class File_CacheHandler implements CacheInterface {
         foreach ($keys as $k) {
             if (file_exists(Config::get('install', 'path') . Config::get("cache_file", "path") . Encryption::hashMd5($k))) {
                 $tmp = file_get_contents(Config::get('install', 'path') . Config::get("cache_file", "path") . Encryption::hashMd5($k));
-                if ($tmp !== false) {
-                    $ret[$k] = $tmp;
-                } else {
-                    $ret[$k] = $default;
-                }
+                $ret[$k] = $tmp !== false ? $tmp : $default;
             }
         }
         return $ret;
@@ -96,11 +92,10 @@ class File_CacheHandler implements CacheInterface {
 
     public function clear(): bool {
         $t = time();
-        if ($handle = opendir(Config::get('install', 'path') . Config::get("cache_file", "path"))) {
-            while (false !== ($file = readdir($handle))) {
-                if ($file != ".." && $file != "." && @filectime(Config::get('install', 'path') . Config::get("cache_file", "path") . $file) < ($t - (int) Config::get("cache_file", "lifetime"))) {
-                    @unlink(Config::get('install', 'path') . Config::get("cache_file", "path") . $file);
-                }
+        $handle = opendir(Config::get('install', 'path') . Config::get("cache_file", "path"));
+        while ($handle !== false && false !== ($file = readdir($handle))) {
+            if ($file != ".." && $file != "." && @filectime(Config::get('install', 'path') . Config::get("cache_file", "path") . $file) < ($t - (int) Config::get("cache_file", "lifetime"))) {
+                @unlink(Config::get('install', 'path') . Config::get("cache_file", "path") . $file);
             }
         }
     }
