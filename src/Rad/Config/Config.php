@@ -57,17 +57,9 @@ final class Config {
             self::load();
         }
         if ($row == null) {
-            if (isset(self::$config[$section])) {
-                return self::$config[$section];
-            } else {
-                return null;
-            }
+            return isset(self::$config[$section]) ? self::$config[$section] : null;
         } else {
-            if (isset(self::$config[$section][$row])) {
-                return self::$config[$section][$row];
-            } else {
-                return null;
-            }
+            return isset(self::$config[$section][$row]) ? self::$config[$section][$row] : null;
         }
     }
 
