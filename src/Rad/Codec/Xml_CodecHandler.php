@@ -60,7 +60,7 @@ class Xml_CodecHandler implements CodecInterface {
         return $result;
     }
 
-    public function sign($secret) {
+    public function sign($datas, $secret) {
         
     }
 

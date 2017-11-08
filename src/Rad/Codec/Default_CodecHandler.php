@@ -49,7 +49,7 @@ class Default_CodecHandler implements CodecInterface {
         return "Do Nothing Codec";
     }
 
-    public function sign($secret, $datas) {
+    public function sign($datas, $secret) {
         return Encryption::sign($datas, $secret);
     }
 

@@ -49,7 +49,7 @@ class Object_CodecHandler implements CodecInterface {
         return "Default PHP serialize/deserialize";
     }
 
-    public function sign($secret) {
+    public function sign($datas, $secret) {
         
     }
 
