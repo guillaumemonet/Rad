@@ -834,16 +834,6 @@ final class GenerateBase {
         return $columns;
     }
 
-    /**
-     * $ks = $this->search_keys($indexes, $col_name);
-      foreach ($ks as $t) {
-      if (isset($keys[$col_name])) {
-      $indexes[$t[0]][$col_name] = $keys[$col_name];
-      } else {
-      $indexes[$t[0]][$col_name] = $columns[$col_name];
-      }
-      }
-     */
     public function getManyToManyTable($table) {
         $tables = array();
         $sql = "SHOW TABLES FROM bb WHERE Tables_in_bb LIKE '" . $table . "_has_%'";
@@ -903,18 +893,6 @@ WHERE
             }
         }
         return $tmp_array;
-    }
-
-    public function search_keys($ar, $sr) {
-        $ret = array();
-        foreach ($ar as $k => $v) {
-            foreach ($v as $k1 => $v1) {
-                if ($k1 == $sr) {
-                    $ret[] = array($k, $k1);
-                }
-            }
-        }
-        return $ret;
     }
 
 }
