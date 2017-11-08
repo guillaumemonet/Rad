@@ -40,34 +40,10 @@ final class Smarty_TemplateHandler extends Smarty implements TemplateInterface {
         $this->caching = (int) Config::get('template', 'caching');
         $this->cache_locking = 1;
         $this->cache_lifetime = (int) Config::get('template', 'cache_lifetime');
-        $this->registerDefaultTemplateHandler(__NAMESPACE__ . '\\' . 'Smarty_TemplateHandler::getDefault_template');
         $this->template_dir = Config::get('install', 'path') . Config::get('template', 'template_dir');
         $this->compile_dir = Config::get('install', 'path') . Config::get('template', 'compile_dir');
         $this->config_dir = Config::get('install', 'path') . Config::get('template', 'config_dir');
         $this->cache_dir = Config::get('install', 'path') . Config::get('template', 'cache_dir');
-    }
-
-    /**
-     * 
-     * @param type $resource_type
-     * @param type $resource_name
-     * @param type $template_source
-     * @param type $template_timestamp
-     * @param type $smarty_obj
-     * @return boolean
-     */
-    public static function getDefault_template($resource_type, $resource_name, &$template_source, &$template_timestamp, $smarty_obj) {
-        $tpl = Config::get('install', 'path') . Config::get('template', 'template_dir') . $resource_name;
-        error_log($tpl);
-        if ($resource_type == 'file' && is_file($tpl)) {
-            if ($fp = fopen($tpl, 'r')) {
-                $template_source = fread($fp, filesize($tpl));
-                $template_timestamp = filemtime($tpl);
-                fclose($fp);
-                return true;
-            }
-        }
-        return false;
     }
 
 }
