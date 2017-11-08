@@ -47,26 +47,21 @@ class Column {
      * @return string
      */
     public function getAsVar(string $type) {
-        switch ($type) {
-            case "name":
-                return $this->name;
-            case "sql_name":
-                return "`" . $this->name . "`";
-            case "php":
-                return '$' . $this->name;
-            case "php_prefix":
-                return '' . $this->type_php . ' $' . $this->name;
-            case "sql_cond":
-                return $this->name == "password" ? "`" . $this->name . "` = PASSWORD(:" . $this->name . ")" : "`" . $this->name . "` = :" . $this->name;
-            case "sql_param":
-                return $this->name == "password" ? "PASSWORD(:" . $this->name . ")" : ":" . $this->name;
-            case "bind":
-                return '":' . $this->name . '"' . ' => $' . $this->name;
-            case "bind_this":
-                return '":' . $this->name . '"' . ' => $this->' . $this->name;
-            case "this":
-                return '$this->' . $this->name;
-        }
+        return $this->generateFormatTab()[$type];
+    }
+
+    private function generateFormatTab() {
+        return array(
+            "name" => $this->name,
+            "sql_name" => "`" . $this->name . "`",
+            "php" => '$' . $this->name,
+            "php_prefix" => '' . $this->type_php . ' $' . $this->name,
+            "sql_cond" => $this->name == "password" ? "`" . $this->name . "` = PASSWORD(:" . $this->name . ")" : "`" . $this->name . "` = :" . $this->name,
+            "sql_param" => $this->name == "password" ? "PASSWORD(:" . $this->name . ")" : ":" . $this->name,
+            "bind" => '":' . $this->name . '"' . ' => $' . $this->name,
+            "bind_this" => '":' . $this->name . '"' . ' => $this->' . $this->name,
+            "this" => '$this->' . $this->name
+        );
     }
 
 }
