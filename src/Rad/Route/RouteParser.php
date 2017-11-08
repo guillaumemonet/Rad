@@ -63,7 +63,7 @@ abstract class RouteParser {
         $routes = array();
         array_map(function($class) use(&$routes) {
             $methods = get_class_methods($class);
-            array_map(function($method)use ($routes, $class) {
+            array_map(function($method)use (&$routes, $class) {
                 $route = new Route();
                 $route->setClassName($class)->setMethodName($method);
                 self::parseClassAnnotations($class, $route);
