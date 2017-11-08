@@ -30,8 +30,11 @@ use Psr\SimpleCache\CacheInterface;
 use Rad\Cache\Cache;
 use Rad\Database\Database;
 use Rad\Database\DatabaseAdapter;
+use Rad\Http\Request;
+use Rad\Http\Response;
 use Rad\Mail\Mail;
 use Rad\Observer\Observable;
+use Rad\Route\Route;
 use Rad\Template\Template;
 use Rad\Template\TemplateInterface;
 use Rad\Worker\Orderer;
@@ -45,12 +48,66 @@ use Rad\Worker\Orderer;
 abstract class Controller extends Observable {
 
     /**
+     *
+     * @var Request
+     */
+    protected $request;
+
+    /**
+     *
+     * @var Response
+     */
+    protected $response;
+
+    /**
+     *
+     * @var Route
+     */
+    protected $route;
+
+    /**
+     * 
+     * @param Request $request
+     * @param Response $response
+     * @param Route $route
+     */
+    public function __construct(Request $request = null, Response $response = null, Route $route = null) {
+        $this->request = $request;
+        $this->response = $response;
+        $this->route = $route;
+    }
+
+    /**
+     * 
+     * @return Request
+     */
+    protected function getRequest() {
+        return $this->request;
+    }
+
+    /**
+     * 
+     * @return Response
+     */
+    protected function getResponse() {
+        return $this->response;
+    }
+
+    /**
+     * 
+     * @return Route
+     */
+    protected function getRoute() {
+        return $this->route;
+    }
+
+    /**
      * Call For an asynchronous order
      * @param type $queue
      * @param type $messageType
      * @param type $message
      */
-    public function makeOrder($queue, $messageType, $message) {
+    protected function makeOrder($queue, $messageType, $message) {
         Orderer::sendMessage($queue, $messageType, $message);
     }
 
