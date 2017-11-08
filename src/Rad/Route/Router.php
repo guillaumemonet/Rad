@@ -149,15 +149,17 @@ class Router implements RouterInterface {
         $version = $request->version;
         $method = $request->method;
         $path = $request->path;
+        Log::getHandler()->debug($version . " : " . $method . " Finding ");
         if (isset($this->path_array[$version][$method])) {
+            Log::getHandler()->debug($method . " : " . $path . " Finding ");
             $route = $this->filterRoutes($path, $this->path_array[$version][$method]);
             Log::getHandler()->debug($method . " : " . $path . " Matching " . $route->getRegExp());
             $middleware = new Middleware($route->getMiddlewares());
             $classController = $route->getClassName();
             $method = $route->getMethodName();
-            $controller = new $classController();
-            $route->applyObservers($controller);
-            $datas = $middleware->call($request, $response, $route, function($request, $response, $route) use($controller, $method) {
+            $datas = $middleware->call($request, $response, $route, function($request, $response, $route) use($classController, $method) {
+                $controller = new $classController($request, $response, $route);
+                $route->applyObservers($controller);
                 return $controller->{$method}($request, $response, $route);
             });
             $response->setData($datas);
