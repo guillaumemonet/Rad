@@ -2,6 +2,7 @@ RAD Micro Framework
 ==========================
 
 [![Latest Stable Version](https://poser.pugx.org/rad/rad-framework/v/stable)](https://packagist.org/packages/rad/rad-framework)
+[![Build Status](https://travis-ci.org/guillaumemonet/Rad.svg?branch=master)](https://travis-ci.org/guillaumemonet/Rad)
 [![Total Downloads](https://poser.pugx.org/rad/rad-framework/downloads)](https://packagist.org/packages/rad/rad-framework)
 [![Latest Unstable Version](https://poser.pugx.org/rad/rad-framework/v/unstable)](https://packagist.org/packages/rad/rad-framework)
 [![License](https://poser.pugx.org/rad/rad-framework/license)](https://packagist.org/packages/rad/rad-framework)
