@@ -15,6 +15,25 @@
             "Rad\\": "src/Rad/"
         }
     },
+    "repositories": [
+        {
+            "type": "package",
+            "package": {
+                "name": "rad/rad-framework",
+                "version": "dev-master",
+                "source": {
+                    "url": "git://github.com/guillaumemonet/rad.git",
+                    "type": "git",
+                    "reference": "master"
+                },
+                "autoload": {
+                    "psr-4": {
+                        "Rad\\": "src/Rad/"
+                    }
+                }
+            }
+        }
+    ],
     "require": {
         "php": " ^7.0",
         "psr/log": "^1",
