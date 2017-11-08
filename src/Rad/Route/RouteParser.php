@@ -61,9 +61,9 @@ abstract class RouteParser {
     public static function parseRoutes(array $classes) {
         Log::getHandler()->debug("Generating Routes");
         $routes = array();
-        foreach ($classes as $class) {
+        array_map(function($class) use(&$routes) {
             $methods = get_class_methods($class);
-            foreach ($methods as $method) {
+            array_map(function($method)use ($routes, $class) {
                 $route = new Route();
                 $route->setClassName($class)->setMethodName($method);
                 self::parseClassAnnotations($class, $route);
@@ -71,8 +71,8 @@ abstract class RouteParser {
                 if (in_array($route->getVerb(), self::$allowed_methods)) {
                     $routes[] = $route;
                 }
-            }
-        }
+            }, $methods);
+        }, $classes);
         return $routes;
     }
 
