@@ -1,6 +1,12 @@
 RAD Micro Framework
 ==========================
 
+[![Latest Stable Version](https://poser.pugx.org/rad/rad-framework/v/stable)](https://packagist.org/packages/rad/rad-framework)
+[![Total Downloads](https://poser.pugx.org/rad/rad-framework/downloads)](https://packagist.org/packages/rad/rad-framework)
+[![Latest Unstable Version](https://poser.pugx.org/rad/rad-framework/v/unstable)](https://packagist.org/packages/rad/rad-framework)
+[![License](https://poser.pugx.org/rad/rad-framework/license)](https://packagist.org/packages/rad/rad-framework)
+[![Maintainability](https://api.codeclimate.com/v1/badges/8e095176dd6216eea653/maintainability)](https://codeclimate.com/github/guillaumemonet/Rad/maintainability)
+
 ## WARNING WIP Framework
 
 ## What is RAD?
@@ -51,7 +57,7 @@ $app->run();
 * [psr-4](http://www.php-fig.org/psr/psr-4/)
 * [psr-7](http://www.php-fig.org/psr/psr-7/) WIP
 * [psr-11](http://www.php-fig.org/psr/psr-11/) WIP
-* [psr-16](http://www.php-fig.org/psr/psr-16/) WIP
+* [psr-16](http://www.php-fig.org/psr/psr-16/)
 
 
 
