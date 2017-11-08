@@ -70,7 +70,6 @@ final class GenerateBase {
         $this->i18n_translate_class = StringUtils::camelCase($this->i18n_translate_table);
         $this->picture_class = StringUtils::camelCase($this->picture_table);
         $this->language_class = StringUtils::camelCase($this->language_table);
-
         $this->pathClass = $dir . "/" . $this->pathClass;
         $this->pathImp = $dir . "/" . $this->pathImp;
         $this->pathService = $dir . "/" . $this->pathService;
@@ -87,7 +86,7 @@ final class GenerateBase {
         $this->generateController();
     }
 
-    private function generateClass() {
+    private function generateArrayTables() {
         Database::getHandler()->change($this->database);
         $sql = "SHOW TABLES FROM " . $this->database;
         error_log($sql);
@@ -103,6 +102,11 @@ final class GenerateBase {
             $table->manytomany = $this->getManyToManyTable($table->name);
             $tables[$table->name] = $table;
         }
+        return $tables;
+    }
+
+    private function generateClass() {
+        $tables = $this->generateArrayTables();
         foreach ($tables as $name => $table) {
             if (strpos($name, "_has_") !== false) {
                 continue;
@@ -455,20 +459,7 @@ final class GenerateBase {
     }
 
     private function generateServices() {
-        Database::getHandler()->change($this->database);
-        $sql = "SHOW TABLES FROM " . $this->database;
-        $res_tables = Database::getHandler()->query($sql);
-
-        $tables = array();
-        while ($row = $res_tables->fetch()) {
-            $table = new Table();
-            $table->name = $row[0];
-            $table->columns = $this->getTableStructure($table->name);
-            $table->indexes = $this->getTableIndexes($table->name, $table->columns);
-            $table->onetomany = $this->getOneToManyTable($table->name);
-            $table->manytomany = $this->getManyToManyTable($table->name);
-            $tables[$table->name] = $table;
-        }
+        $tables = $this->generateArrayTables();
         foreach ($tables as $name => $table) {
             if (strpos($name, "_has_") !== false) {
                 continue;
@@ -622,20 +613,7 @@ final class GenerateBase {
     }
 
     private function generateImp() {
-        Database::getHandler()->change($this->database);
-        $sql = "SHOW TABLES FROM " . $this->database;
-        $res_tables = Database::getHandler()->query($sql);
-
-        $tables = array();
-        while ($row = $res_tables->fetch()) {
-            $table = new Table();
-            $table->name = $row[0];
-            $table->columns = $this->getTableStructure($table->name);
-            $table->indexes = $this->getTableIndexes($table->name, $table->columns);
-            $table->onetomany = $this->getOneToManyTable($table->name);
-            $table->manytomany = $this->getManyToManyTable($table->name);
-            $tables[$table->name] = $table;
-        }
+        $tables = $this->generateArrayTables();
         foreach ($tables as $name => $table) {
             if (strpos($name, "_has_") !== false) {
                 continue;
@@ -710,20 +688,7 @@ final class GenerateBase {
     }
 
     private function generateController() {
-        Database::getHandler()->change($this->database);
-        $sql = "SHOW TABLES FROM " . $this->database;
-        $res_tables = Database::getHandler()->query($sql);
-
-        $tables = array();
-        while ($row = $res_tables->fetch()) {
-            $table = new Table();
-            $table->name = $row[0];
-            $table->columns = $this->getTableStructure($table->name);
-            $table->indexes = $this->getTableIndexes($table->name, $table->columns);
-            $table->onetomany = $this->getOneToManyTable($table->name);
-            $table->manytomany = $this->getManyToManyTable($table->name);
-            $tables[$table->name] = $table;
-        }
+        $tables = $this->generateArrayTables();
         foreach ($tables as $name => $table) {
             if (strpos($name, "_has_") !== false) {
                 continue;
