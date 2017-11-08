@@ -3,10 +3,8 @@
 require(__DIR__ . "/../vendor/autoload.php");
 
 use Rad\Api;
+use Rad\Config\Config;
 use Rad\Controller\Controller;
-use Rad\Http\Request;
-use Rad\Http\Response;
-use Rad\Route\Route;
 
 /*
  * The MIT License
@@ -50,15 +48,21 @@ class App extends Api {
 class MyController extends Controller {
 
     /**
-     * @api 1
-     * @get /
+     * @api 0
+     * @get /^$|^\/$/
      * @produce html
      */
-    public function helloWorld(Request $request, Response $response, Route $route) {
-        $response->setData("<b>Hello World</b>");
+    public function helloWorld() {
+        return "<b>Hello World</b>";
     }
 
 }
 
+Config::set("cache", "type", "file");
+Config::set("cache", "enabled", 0);
+Config::set("log", "type", "file");
+Config::set("log", "error", 1);
+Config::set("log", "debug", 1);
+Config::set("log", "enabled", 1);
 $app = new App();
 $app->run();
