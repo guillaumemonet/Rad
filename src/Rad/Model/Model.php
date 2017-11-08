@@ -48,36 +48,45 @@ abstract class Model extends ModelDAO implements JsonSerializable {
      * @return Model
      */
     public final static function hydrate($object) {
-        if (is_object($object) && isset($object->resource_name)) {
-            $c = $object->resource_namespace . "\\" . $object->resource_name;
-            $className = $c;
-            $new = new $className();
-            foreach ($object as $key => $val) {
-                if (is_object($val)) {
-                    $new->$key = self::hydrate($val);
-                } else if (is_array($val)) {
-                    foreach ($val as $k => $v) {
-                        $val[$k] = self::hydrate($v);
-                    }
-                }
-                $new->$key = $val;
-            }
-            return $new;
-        } else if ($object !== null && is_array($object)) {
+
+        if (is_object($object)) {
+            $model = self::createObject($object);
+            self::buildObjectContent($object, $model);
+            return $model;
+        } else if (is_array($object)) {
             $array = array();
-            foreach ($object as $key => $val) {
-                if (is_object($val)) {
-                    $array[$key] = self::hydrate($val);
-                } else if (is_array($val)) {
-                    foreach ($val as $k => $v) {
-                        $array[$k] = self::hydrate($v);
-                    }
-                }
-            }
+            self::buildArrayContent($object, $array);
             return $array;
         } else {
-            return null;
+            return $object;
         }
+    }
+
+    /**
+     * 
+     * @param type $object
+     * @return mixed
+     */
+    private static function createObject($object) {
+        $model = new \stdClass();
+        if (isset($object->resource_name)) {
+            $className = $object->resource_namespace . "\\" . $object->resource_name;
+            $model = new $className();
+        }
+        return $model;
+    }
+
+    private static function buildObjectContent($object, $model) {
+        array_walk($object, function($val, $key) use ($model) {
+            $model->$key = self::hydrate($val);
+        });
+    }
+
+    private static function buildArrayContent($object, array &$array) {
+        array_walk($object, function($val, $key) use (&$array) {
+            error_log($val);
+            $array[$key] = self::hydrate($val);
+        });
     }
 
 }
