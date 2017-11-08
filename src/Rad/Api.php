@@ -66,10 +66,10 @@ abstract class Api {
     /**
      * 
      */
-    public function __construct() {
-        $this->router = new Router();
-        $this->request = new Request();
-        $this->response = new Response();
+    public function __construct($router = Router::class, $request = Request::class, $response = Response::class) {
+        $this->router = new $router;
+        $this->request = new $request;
+        $this->response = new $response;
     }
 
     /**
@@ -84,8 +84,7 @@ abstract class Api {
                 $this->getRouter()->save();
             }
             $this->getRouter()->route(
-                    $this->getRequest()
-                    , $this->getResponse()
+                    $this->getRequest(), $this->getResponse()
             );
         } catch (ErrorException $ex) {
             Log::getHandler()->error($ex->getMessage());
