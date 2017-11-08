@@ -27,8 +27,7 @@
 namespace Rad\Http;
 
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\StreamInterface;
-use Rad\Encryption\Encryption;
+use Rad\Codec\Codec;
 use Rad\Utils\Mime;
 use Rad\Utils\StringUtils;
 
@@ -36,6 +35,8 @@ use Rad\Utils\StringUtils;
  * 
  */
 final class Response implements ResponseInterface {
+
+    use ResponseTrait;
 
     private $datas = null;
     private $time = null;
@@ -61,44 +62,11 @@ final class Response implements ResponseInterface {
     public function send() {
         self::doResponse($this->type);
         self::addHeader("Application-Nonce", $this->time);
-        switch ($this->type) {
-            case "xml":
-                $xml = StringUtils::toXML($this->datas, "response");
-                if ($this->secret != null) {
-                    self::addHeader("Signature", Encryption::sign($xml, $this->secret));
-                }
-                echo $xml;
-                break;
-            case "text":
-            case "txt":
-                $txt = serialize($this->datas);
-                if ($this->secret != null) {
-                    self::addHeader("Signature", Encryption::sign($txt, $this->secret));
-                }
-                echo $txt;
-                break;
-            case "json":
-                $json = json_encode($this->datas);
-                if ($this->secret != null) {
-                    self::addHeader("Signature", Encryption::sign($json, $this->secret));
-                }
-                echo $json;
-                break;
-            case "gif":
-            case "jpeg":
-            case "jpg":
-            case "pdf":
-                if ($this->secret != null) {
-                    self::addHeader("Signature", Encryption::sign(base64_encode($this->datas), $this->secret));
-                }
-                echo $this->datas;
-                break;
-            case "html":
-                echo $this->datas;
-                break;
-            default:
-                echo $this->datas;
+        $datas = Codec::getHandler($this->type)->serialize($this->datas);
+        if ($this->secret != null) {
+            self::addHeader("Signature", Codec::getHandler($this->type)->sign($datas, $this->secret));
         }
+        echo $datas;
     }
 
     /**
@@ -107,17 +75,18 @@ final class Response implements ResponseInterface {
      * @param string $allow_origin
      * @param string $vary
      */
-    public static function doResponse($type = "json", $allow_origin = "*", $vary = "User-Agent", $encoding = "utf-8") {
+    public function doResponse($type = "json", $allow_origin = "*", $vary = "User-Agent", $encoding = "utf-8") {
         if ($allow_origin !== null) {
-            header('Access-Control-Allow-Origin: ' . $allow_origin);
+            $this->addHeader('Access-Control-Allow-Origin', $allow_origin);
         }
+        $this->addHeader("Access-Control-Expose-Headers", "Content-Range");
         if (isset(Mime::MIME_TYPES[$type]) && Mime::MIME_TYPES[$type][0] !== null) {
-            header('Content-Type: ' . Mime::MIME_TYPES[$type][0] . "; charset=" . $encoding);
+            $this->addHeader('Content-Type', Mime::MIME_TYPES[$type][0] . '; charset=' . $encoding);
         } else {
-            header('Content-Type: ' . Mime::MIME_TYPES["json"][0] . "; charset=" . $encoding);
+            $this->addHeader('Content-Type', Mime::MIME_TYPES["json"][0] . '; charset=' . $encoding);
         }
         if ($vary !== null) {
-            header('Vary: ' . $vary);
+            $this->addHeader('Vary', $vary);
         }
     }
 
@@ -156,62 +125,6 @@ final class Response implements ResponseInterface {
         header("Connection: close"); //or redirect to some url: header('Location: http://www.google.com');
         ob_end_flush();
         flush(); //really send content, can't change the order:1.ob buffer to normal buffer, 2.normal buffer to output
-    }
-
-    public function getBody(): StreamInterface {
-        
-    }
-
-    public function getHeader($name): array {
-        
-    }
-
-    public function getHeaderLine($name): string {
-        
-    }
-
-    public function getHeaders(): array {
-        
-    }
-
-    public function getProtocolVersion(): string {
-        
-    }
-
-    public function getReasonPhrase(): string {
-        
-    }
-
-    public function getStatusCode(): int {
-        
-    }
-
-    public function hasHeader($name): bool {
-        
-    }
-
-    public function withAddedHeader($name, $value): self {
-        
-    }
-
-    public function withBody(StreamInterface $body): self {
-        
-    }
-
-    public function withHeader($name, $value): self {
-        
-    }
-
-    public function withProtocolVersion($version): self {
-        
-    }
-
-    public function withStatus($code, $reasonPhrase = ''): self {
-        
-    }
-
-    public function withoutHeader($name): self {
-        
     }
 
 }
