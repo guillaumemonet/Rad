@@ -24,19 +24,21 @@
  * THE SOFTWARE.
  */
 
-namespace Rad\bin\scripts;
+namespace Rad\bin\scripts\elements;
 
 /**
- * Description of Index
+ * Description of Table
  *
  * @author guillaume
  */
-class Index {
+class Table {
 
     use BaseElementTrait;
 
     public $name;
-    public $columns;
-    public $unique = 0;
+    public $columns = array();
+    public $indexes = array();
+    public $onetomany = array();
+    public $manytomany = array();
 
 }

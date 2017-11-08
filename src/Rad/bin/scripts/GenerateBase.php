@@ -27,6 +27,9 @@
 namespace Rad\bin\scripts;
 
 use PDO;
+use Rad\bin\scripts\elements\Column;
+use Rad\bin\scripts\elements\Index;
+use Rad\bin\scripts\elements\Table;
 use Rad\Database\Database;
 use Rad\Utils\StringUtils;
 

@@ -24,44 +24,19 @@
  * THE SOFTWARE.
  */
 
-namespace Rad\bin\scripts;
+namespace Rad\bin\scripts\elements;
 
 /**
- * Description of Column
+ * Description of Index
  *
  * @author guillaume
  */
-class Column {
+class Index {
+
+    use BaseElementTrait;
 
     public $name;
-    public $type_sql;
-    public $type_php;
-    public $auto = 0;
-    public $param;
-    public $default;
-    public $key;
-
-    /**
-     * 
-     * @param string $type
-     * @return string
-     */
-    public function getAsVar(string $type) {
-        return $this->generateFormatTab()[$type];
-    }
-
-    private function generateFormatTab() {
-        return array(
-            "name" => $this->name,
-            "sql_name" => "`" . $this->name . "`",
-            "php" => '$' . $this->name,
-            "php_prefix" => '' . $this->type_php . ' $' . $this->name,
-            "sql_cond" => $this->name == "password" ? "`" . $this->name . "` = PASSWORD(:" . $this->name . ")" : "`" . $this->name . "` = :" . $this->name,
-            "sql_param" => $this->name == "password" ? "PASSWORD(:" . $this->name . ")" : ":" . $this->name,
-            "bind" => '":' . $this->name . '"' . ' => $' . $this->name,
-            "bind_this" => '":' . $this->name . '"' . ' => $this->' . $this->name,
-            "this" => '$this->' . $this->name
-        );
-    }
+    public $columns;
+    public $unique = 0;
 
 }
