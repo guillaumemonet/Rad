@@ -37,19 +37,12 @@ class Filter {
      * Return mathing objects with get filter
      * @param array $datas
      * @param array $get
-     * @return array
      */
-    public static function matchFilter(array $datas, array $get) {
+    public static function matchFilter(array &$datas, array $get) {
         if (sizeof($get) > 0) {
-            $match = array();
-            foreach ($datas as $obj) {
-                if (array_intersect_assoc((array) $obj, $get) == $get) {
-                    $match[] = $obj;
-                }
-            }
-            return $match;
-        } else {
-            return $datas;
+            array_filter($datas, function($obj) use($get) {
+                return array_intersect_assoc((array) $obj, $get) == $get;
+            });
         }
     }
 
