@@ -58,17 +58,16 @@ abstract class RouteParser {
             $methods = get_class_methods($class);
             foreach ($methods as $method) {
                 $tmp_route = new Route();
-                $tmp_route->setClassName($class)
-                        ->setMethodName($method);
-                self::parseClassAnnotation($class, $tmp_route);
-                self::parseMethodAnnotation($class, $method, $tmp_route);
+                $tmp_route->setClassName($class)->setMethodName($method);
+                self::parseClassAnnotations($class, $tmp_route);
+                self::parseMethodAnnotations($class, $method, $tmp_route);
                 $routes[] = $tmp_route;
             }
         }
         return $routes;
     }
 
-    private static function parseClassAnnotation($class, $route) {
+    private static function parseClassAnnotations($class, $route) {
         $rclass = new ReflectionClass($class);
         $ccomment = $rclass->getDocComment();
         $classAnnotations = self::getInfos($ccomment);
@@ -85,26 +84,25 @@ abstract class RouteParser {
      * @param type $method
      * @param type $route
      */
-    private static function parseMethodAnnotation($class, $method, $route) {
+    private static function parseMethodAnnotations($class, $method, $route) {
         $rmethod = new ReflectionMethod($class, $method);
         $comment = $rmethod->getDocComment();
         $annotations = self::getInfos($comment);
-        if (count(array_intersect(self::$allowed_methods, array_keys($annotations))) > 0) {
-            foreach ($annotations as $key => $annotation) {
-                if (in_array(strtolower($key), self::$allowed_methods)) {
-                    $route->setVerb($key)
-                            ->setRegExp($annotation[0]);
-                } else if ($key == self::$middle) {
-                    $route->setMiddlewares($annotation);
-                } else if ($key == self::$version) {
-                    $route->setVersion($annotation[0]);
-                } else if ($key == self::$consume) {
-                    $route->setConsume($annotation[0]);
-                } else if ($key == self::$produce) {
-                    $route->setProduce($annotation[0]);
-                }
+        //if (count(array_intersect(self::$allowed_methods, array_keys($annotations))) > 0) {
+        array_walk($annotations, function($key, $annotation) use ($route) {
+            if (in_array(strtolower($key), self::$allowed_methods)) {
+                $route->setVerb($key)->setRegExp($annotation[0]);
+            } else if ($key == self::$middle) {
+                $route->setMiddlewares($annotation);
+            } else if ($key == self::$version) {
+                $route->setVersion($annotation[0]);
+            } else if ($key == self::$consume) {
+                $route->setConsume($annotation[0]);
+            } else if ($key == self::$produce) {
+                $route->setProduce($annotation[0]);
             }
-        }
+        });
+        //}
     }
 
     /**
