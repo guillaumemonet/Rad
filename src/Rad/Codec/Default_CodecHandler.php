@@ -34,19 +34,23 @@ namespace Rad\Codec;
 class Default_CodecHandler implements CodecInterface {
 
     public function deserialize(string $string) {
-        return unserialize($string);
+        return $string;
     }
 
     public function getMimeTypes(): array {
-        return array("*");
+        return null;
     }
 
     public function serialize($object): string {
-        return serialize($object);
+        return $object;
     }
 
     public function __toString() {
-        return "Default PHP serialize/deserialize";
+        return "Do Nothing Codec";
+    }
+
+    public function sign($secret, $datas) {
+        return Encryption::sign($datas, $secret);
     }
 
 }

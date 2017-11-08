@@ -26,38 +26,27 @@
 
 namespace Rad\Codec;
 
-use ErrorException;
-
 /**
- * Description of Xml_CodecHandler
+ * Description of DefaultCodec
  *
  * @author guillaume
  */
-class Xml_CodecHandler implements CodecInterface {
-
-    public function __toString() {
-        return "XML encode/decode (to array)";
-    }
+class Object_CodecHandler implements CodecInterface {
 
     public function deserialize(string $string) {
-        throw new ErrorException("Not supported yet!");
+        return unserialize($string);
     }
 
     public function getMimeTypes(): array {
-        return array("xml");
+        return array("php");
     }
 
     public function serialize($object): string {
-        $backup = libxml_disable_entity_loader(true);
-        $backup_errors = libxml_use_internal_errors(true);
-        $result = simplexml_load_string($object);
-        libxml_disable_entity_loader($backup);
-        libxml_clear_errors();
-        libxml_use_internal_errors($backup_errors);
-        if ($result === false) {
-            return null;
-        }
-        return $result;
+        return serialize($object);
+    }
+
+    public function __toString() {
+        return "Default PHP serialize/deserialize";
     }
 
     public function sign($secret) {

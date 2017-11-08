@@ -59,4 +59,8 @@ class Json_CodecHandler implements CodecInterface {
         return array("json");
     }
 
+    public function sign($secret) {
+        
+    }
+
 }

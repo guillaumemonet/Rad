@@ -24,43 +24,72 @@
  * THE SOFTWARE.
  */
 
-namespace Rad\Codec;
+namespace Rad\Http;
 
-use ErrorException;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamInterface;
 
 /**
- * Description of Xml_CodecHandler
+ * Description of ResponseTrait
  *
  * @author guillaume
  */
-class Xml_CodecHandler implements CodecInterface {
+trait ResponseTrait {
 
-    public function __toString() {
-        return "XML encode/decode (to array)";
+    //put your code here
+    public function getBody(): StreamInterface {
+        
     }
 
-    public function deserialize(string $string) {
-        throw new ErrorException("Not supported yet!");
+    public function getHeader($name): array {
+        
     }
 
-    public function getMimeTypes(): array {
-        return array("xml");
+    public function getHeaderLine($name): string {
+        
     }
 
-    public function serialize($object): string {
-        $backup = libxml_disable_entity_loader(true);
-        $backup_errors = libxml_use_internal_errors(true);
-        $result = simplexml_load_string($object);
-        libxml_disable_entity_loader($backup);
-        libxml_clear_errors();
-        libxml_use_internal_errors($backup_errors);
-        if ($result === false) {
-            return null;
-        }
-        return $result;
+    public function getHeaders(): array {
+        
     }
 
-    public function sign($secret) {
+    public function getProtocolVersion(): string {
+        
+    }
+
+    public function getReasonPhrase(): string {
+        
+    }
+
+    public function getStatusCode(): int {
+        
+    }
+
+    public function hasHeader($name): bool {
+        
+    }
+
+    public function withAddedHeader($name, $value): self {
+        
+    }
+
+    public function withBody(StreamInterface $body): self {
+        
+    }
+
+    public function withHeader($name, $value): self {
+        
+    }
+
+    public function withProtocolVersion($version): self {
+        
+    }
+
+    public function withStatus($code, $reasonPhrase = ''): self {
+        
+    }
+
+    public function withoutHeader($name): self {
         
     }
 

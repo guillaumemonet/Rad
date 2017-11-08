@@ -39,5 +39,7 @@ interface CodecInterface {
 
     public function deserialize(string $string);
 
+    public function sign($secret);
+
     public function __toString();
 }

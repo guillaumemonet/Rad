@@ -67,7 +67,7 @@ abstract class Codec {
         if (!isset(self::$codecHandlers[$handlerType])) {
             try {
                 $className = __NAMESPACE__ . "\\" . ucfirst($handlerType) . "_CodecHandler";
-                self::$codecHandlers[$handlerType] = new $className();
+                self::$codecHandlers[$handlerType] = file_exists($className . ".php") ? new $className() : new Default_CodecHandler();
             } catch (ErrorException $ex) {
                 throw new ErrorException($handlerType . " Cache Handler not found");
             }
