@@ -37,7 +37,7 @@ use ReflectionMethod;
  */
 abstract class RouteParser {
 
-    private static $allowed_methods = array("get", "post", "put", "patch", "delete", "options");
+    private static $allowed_methods = array("get", "post", "put", "patch", "delete", "options", "heads");
     private static $middle = "middle";
     private static $version = "api";
     private static $consume = "consume";
@@ -55,7 +55,6 @@ abstract class RouteParser {
         Log::getHandler()->debug("Generating Routes");
         $routes = array();
         foreach ($classes as $class) {
-
             $methods = get_class_methods($class);
             foreach ($methods as $method) {
                 $tmp_route = new Route();
@@ -96,32 +95,31 @@ abstract class RouteParser {
 
     /**
      * 
-     * @param string $comment
+     * @param string $comments
      * @return array
      */
-    private static function getInfos(string $comment) {
+    private static function getInfos(string $comments) {
         $infos = array();
-        foreach (preg_split("/(\r?\n)/", $comment) as $line) {
+        $array_comments = preg_split("/(\r?\n)/", $comments);
+        array_map(function($line) use($infos) {
             // if starts with an asterisk
             if (preg_match('/^(?=\s+?\*[^\/])(.+)/', $line, $matches)) {
                 $info = preg_replace('/^(\*\s+?)/', '', trim($matches[1]));
                 // if it doesn't start with an "@" symbol
                 // then add to the description
-                if ($info[0] === "@") {
-                    // get the name of the param
-                    preg_match('/@(\w+)/', $info, $matches);
-                    $param_name = $matches[1];
-                    // remove the param from the string
-                    $value = str_replace("@$param_name ", '', $info);
-                    // if the param hasn't been added yet, create a key for it
-                    if (!isset($infos[$param_name])) {
-                        $infos[$param_name] = array();
-                    }
-                    // push the param value into place
-                    $infos[$param_name][] = $value;
+                // get the name of the param
+                preg_match('/@(\w+)/', $info, $matches);
+                $param_name = $matches[1];
+                // remove the param from the string
+                $value = str_replace("@$param_name ", '', $info);
+                // if the param hasn't been added yet, create a key for it
+                if (!isset($infos[$param_name])) {
+                    $infos[$param_name] = array();
                 }
+                // push the param value into place
+                $infos[$param_name][] = $value;
             }
-        }
+        }, $array_comments);
         return $infos;
     }
 
