@@ -45,9 +45,9 @@ class CSV {
 
     /**
      * 
-     * @return type
+     * @return array
      */
-    public function read() :array{
+    public function read(): array {
         $all_rows = array();
         $header = null;
         $file = fopen($this->filename, 'r+');
