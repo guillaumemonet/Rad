@@ -69,7 +69,7 @@ abstract class Cache {
         if (!isset(self::$cacheHandlers[$handlerType])) {
             try {
                 $className = __NAMESPACE__ . "\\" . ucfirst($handlerType) . "_CacheHandler";
-                self::$cacheHandlers[$handlerType] = new $className();
+                self::$cacheHandlers[$handlerType] = (file_exists($className . ".php") && Config::get("cache", "enabled") == 1) ? new $className() : new No_CacheHandler();
             } catch (ErrorException $ex) {
                 throw new ErrorException($handlerType . " Cache Handler not found");
             }

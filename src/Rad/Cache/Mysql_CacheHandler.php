@@ -54,14 +54,10 @@ final class Mysql_CacheHandler implements CacheInterface {
         Database::getHandler()->query(sprintf($this->delete, Encryption::hashMd5($key)));
     }
 
-    public function purge() {
+    public function clear(): bool {
         Database::query(sprintf($this->purge, time()));
     }
 
-    public function clear(): bool {
-        
-    }
-    
     public function deleteMultiple($keys): bool {
         foreach ($keys as $k) {
             $this->delete($k);
@@ -108,5 +104,3 @@ final class Mysql_CacheHandler implements CacheInterface {
     }
 
 }
-
-?>
