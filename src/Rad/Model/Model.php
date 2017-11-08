@@ -8,6 +8,7 @@ namespace Rad\Model;
 
 use JsonSerializable;
 use Rad\Config\Config;
+use stdClass;
 
 /**
  * Description of IObject.
@@ -45,10 +46,9 @@ abstract class Model extends ModelDAO implements JsonSerializable {
     /**
      * 
      * @param type $object
-     * @return Model
+     * @return mixed
      */
     public final static function hydrate($object) {
-
         if (is_object($object)) {
             $model = self::createObject($object);
             self::buildObjectContent($object, $model);
@@ -68,7 +68,7 @@ abstract class Model extends ModelDAO implements JsonSerializable {
      * @return mixed
      */
     private static function createObject($object) {
-        $model = new \stdClass();
+        $model = new stdClass();
         if (isset($object->resource_name)) {
             $className = $object->resource_namespace . "\\" . $object->resource_name;
             $model = new $className();
@@ -76,15 +76,24 @@ abstract class Model extends ModelDAO implements JsonSerializable {
         return $model;
     }
 
+    /**
+     * 
+     * @param type $object
+     * @param type $model
+     */
     private static function buildObjectContent($object, $model) {
         array_walk($object, function($val, $key) use ($model) {
             $model->$key = self::hydrate($val);
         });
     }
 
+    /**
+     * 
+     * @param type $object
+     * @param array $array
+     */
     private static function buildArrayContent($object, array &$array) {
         array_walk($object, function($val, $key) use (&$array) {
-            error_log($val);
             $array[$key] = self::hydrate($val);
         });
     }
