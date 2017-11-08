@@ -60,37 +60,51 @@ abstract class RouteParser {
                 $tmp_route = new Route();
                 $tmp_route->setClassName($class)
                         ->setMethodName($method);
-                $rclass = new ReflectionClass($class);
-                $ccomment = $rclass->getDocComment();
-                $classAnnotations = self::getInfos($ccomment);
-                foreach ($classAnnotations as $key => $annotation) {
-                    if ($key == "observer") {
-                        $tmp_route->setObservers($annotation);
-                    }
-                }
-                $rmethod = new ReflectionMethod($class, $method);
-                $comment = $rmethod->getDocComment();
-                $annotations = self::getInfos($comment);
-                if (count(array_intersect(self::$allowed_methods, array_keys($annotations))) > 0) {
-                    foreach ($annotations as $key => $annotation) {
-                        if (in_array(strtolower($key), self::$allowed_methods)) {
-                            $tmp_route->setVerb($key)
-                                    ->setRegExp($annotation[0]);
-                        } else if ($key == self::$middle) {
-                            $tmp_route->setMiddlewares($annotation);
-                        } else if ($key == self::$version) {
-                            $tmp_route->setVersion($annotation[0]);
-                        } else if ($key == self::$consume) {
-                            $tmp_route->setConsume($annotation[0]);
-                        } else if ($key == self::$produce) {
-                            $tmp_route->setProduce($annotation[0]);
-                        }
-                    }
-                    $routes[] = $tmp_route;
-                }
+                self::parseClassAnnotation($class, $tmp_route);
+                self::parseMethodAnnotation($class, $method, $tmp_route);
+                $routes[] = $tmp_route;
             }
         }
         return $routes;
+    }
+
+    private static function parseClassAnnotation($class, $route) {
+        $rclass = new ReflectionClass($class);
+        $ccomment = $rclass->getDocComment();
+        $classAnnotations = self::getInfos($ccomment);
+        foreach ($classAnnotations as $key => $annotation) {
+            if ($key == "observer") {
+                $route->setObservers($annotation);
+            }
+        }
+    }
+
+    /**
+     * 
+     * @param type $class
+     * @param type $method
+     * @param type $route
+     */
+    private static function parseMethodAnnotation($class, $method, $route) {
+        $rmethod = new ReflectionMethod($class, $method);
+        $comment = $rmethod->getDocComment();
+        $annotations = self::getInfos($comment);
+        if (count(array_intersect(self::$allowed_methods, array_keys($annotations))) > 0) {
+            foreach ($annotations as $key => $annotation) {
+                if (in_array(strtolower($key), self::$allowed_methods)) {
+                    $route->setVerb($key)
+                            ->setRegExp($annotation[0]);
+                } else if ($key == self::$middle) {
+                    $route->setMiddlewares($annotation);
+                } else if ($key == self::$version) {
+                    $route->setVersion($annotation[0]);
+                } else if ($key == self::$consume) {
+                    $route->setConsume($annotation[0]);
+                } else if ($key == self::$produce) {
+                    $route->setProduce($annotation[0]);
+                }
+            }
+        }
     }
 
     /**
