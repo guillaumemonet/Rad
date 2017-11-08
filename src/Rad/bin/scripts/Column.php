@@ -41,7 +41,12 @@ class Column {
     public $default;
     public $key;
 
-    public function getAsVar($type) {
+    /**
+     * 
+     * @param string $type
+     * @return string
+     */
+    public function getAsVar(string $type) {
         switch ($type) {
             case "name":
                 return $this->name;
@@ -50,26 +55,15 @@ class Column {
             case "php":
                 return '$' . $this->name;
             case "php_prefix":
-                return ''.$this->type_php.' $' . $this->name;
+                return '' . $this->type_php . ' $' . $this->name;
             case "sql_cond":
-                if ($this->name == "password") {
-                    return "`" . $this->name . "` = PASSWORD(:" . $this->name . ")";
-                } else {
-                    return "`" . $this->name . "` = :" . $this->name;
-                }
+                return $this->name == "password" ? "`" . $this->name . "` = PASSWORD(:" . $this->name . ")" : "`" . $this->name . "` = :" . $this->name;
             case "sql_param":
-                if ($this->name == "password") {
-                    return "PASSWORD(:" . $this->name . ")";
-                } else {
-                    return ":" . $this->name;
-                }
-
+                return $this->name == "password" ? "PASSWORD(:" . $this->name . ")" : ":" . $this->name;
             case "bind":
                 return '":' . $this->name . '"' . ' => $' . $this->name;
-
             case "bind_this":
                 return '":' . $this->name . '"' . ' => $this->' . $this->name;
-
             case "this":
                 return '$this->' . $this->name;
         }
