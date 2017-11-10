@@ -36,6 +36,8 @@ use Psr\Http\Message\UriInterface;
 
 class Uri implements UriInterface {
 
+    use UriTrait;
+
     const defaultHost = 'localhost';
 
     private $scheme = null;
@@ -78,85 +80,6 @@ class Uri implements UriInterface {
                 . ($this->path ? $this->path : '')
                 . ($this->query ? '?' . http_build_query($this->query) : '')
                 . ($this->fragment ? '#' . $this->fragment : '');
-    }
-
-    public function getAuthority(): string {
-        return $this->host . ':' . $this->port;
-    }
-
-    public function getFragment(): string {
-        return $this->fragment;
-    }
-
-    public function getHost(): string {
-        return $this->host;
-    }
-
-    public function getPath(): string {
-        return $this->path;
-    }
-
-    public function getPort() {
-        return $this->port;
-    }
-
-    public function getQuery(): string {
-        return $this->query;
-    }
-
-    public function getQueryArray() {
-        return null !== $this->query ? parse_str($this->query) : null;
-    }
-
-    public function getScheme(): string {
-        return $this->scheme;
-    }
-
-    public function getUserInfo(): string {
-        return $this->user . ':' . $this->password;
-    }
-
-    public function withFragment($fragment): self {
-        $uri = clone $this;
-        $uri->fragment = $fragment;
-        return $uri;
-    }
-
-    public function withHost($host): self {
-        $uri = clone $this;
-        $uri->host = $host;
-        return $uri;
-    }
-
-    public function withPath($path): self {
-        $uri = clone $this;
-        $uri->path = $path;
-        return $uri;
-    }
-
-    public function withPort($port): self {
-        $uri = clone $this;
-        $uri->port = $port;
-        return $uri;
-    }
-
-    public function withQuery($query): self {
-        $uri = clone $this;
-        $uri->query = $query;
-        return $uri;
-    }
-
-    public function withScheme($scheme): self {
-        $uri = clone $this;
-        $uri->scheme = $scheme;
-        return $uri;
-    }
-
-    public function withUserInfo($user, $password = null): self {
-        $uri = clone $this;
-        $uri->user = $user;
-        $uri->password = $password;
-        return $uri;
     }
 
     /**
