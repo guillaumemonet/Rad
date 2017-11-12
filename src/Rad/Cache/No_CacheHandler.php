@@ -41,19 +41,19 @@ class No_CacheHandler implements CacheInterface {
     }
 
     public function delete($key): bool {
-        return true;
+        return false;
     }
 
     public function deleteMultiple($keys): bool {
-        return true;
+        return false;
     }
 
     public function get($key, $default = null) {
-        return null;
+        return $default;
     }
 
     public function getMultiple($keys, $default = null) {
-        return null;
+        return $default;
     }
 
     public function has($key): bool {
@@ -61,7 +61,7 @@ class No_CacheHandler implements CacheInterface {
     }
 
     public function set($key, $value, $ttl = null): bool {
-        return true;
+        return false;
     }
 
     public function setMultiple($values, $ttl = null): bool {

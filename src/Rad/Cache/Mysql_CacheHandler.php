@@ -67,11 +67,7 @@ final class Mysql_CacheHandler implements CacheInterface {
 
     public function get($key, $default = null) {
         $res = Database::getHandler()->query(sprintf($this->read, Encryption::hashMd5($key)));
-        if ($row = $res->fetch(PDO::FETCH_ASSOC)) {
-            return stripslashes($row["content"]);
-        } else {
-            return $default;
-        }
+        return $row = $res->fetch(PDO::FETCH_ASSOC) ? stripslashes($row["content"]) : $default;
     }
 
     public function getMultiple($keys, $default = null) {
@@ -92,7 +88,7 @@ final class Mysql_CacheHandler implements CacheInterface {
     }
 
     public function set($key, $value, $ttl = null): bool {
-        $r = sprintf($this->write, Encryption::hashMd5($key), time() + $ttl, addslashes($v), addslashes($v), time());
+        $r = sprintf($this->write, Encryption::hashMd5($key), time() + $ttl, addslashes($value), addslashes($value), time());
         Database::getHandler()->query($r);
     }
 
