@@ -48,7 +48,7 @@ abstract class Log {
      * @param string $type
      * @param AbstractLogger $logger
      */
-    public static function addLogHandler(string $type, AbstractLogger $logger) {
+    public static function addHandler(string $type, AbstractLogger $logger) {
         self::$logHandlers[$type] = $logger;
     }
 
@@ -60,12 +60,12 @@ abstract class Log {
      */
     public static function getHandler(string $handlerType = null): AbstractLogger {
         if ($handlerType === null) {
-            $handlerType = (string) Config::get("log", "type");
+            $handlerType = Config::get("log", "type") !== null ? Config::get("log", "type") : "default";
         }
         if (!isset(self::$logHandlers[$handlerType])) {
             try {
                 $className = __NAMESPACE__ . "\\" . ucfirst($handlerType) . "_LogHandler";
-                self::$logHandlers[$handlerType] = new $className();
+                self::$logHandlers[$handlerType] = file_exists($className) ? new $className() : new Default_LogHandler();
             } catch (ErrorException $ex) {
                 throw new ErrorException($handlerType . " Log Handler not found");
             }
