@@ -33,29 +33,20 @@ use Rad\Utils\StringUtils;
  *
  * @author guillaume
  */
-trait GenerateService {
+trait GenerateClassTrait {
 
-    private function generateServices() {
-        $tables = $this->generateArrayTables();
+    private function generateClassTrait(array $tables) {
         foreach ($tables as $name => $table) {
             if (strpos($name, "_has_") !== false) {
                 continue;
             }
             $class = StringUtils::camelCase($name);
 
-            $filename = $this->pathService . "/Service" . $class . ".php";
+            $filename = $this->pathClass . '/' . $class . 'Trait.php';
             if (file_exists($filename)) {
                 unlink($filename);
             }
             $file = fopen($filename, "w+");
-
-            $sql = "\$sql";
-            $id = "\$id";
-            $query = "\$result = Database::getHandler()->query(\$sql)";
-            $prepare = "\$result = Database::getHandler()->prepare(\$sql)";
-            $execute = "\$result->execute(%s)";
-            $result = "\$res = \$result->fetchAll(\PDO::FETCH_ASSOC)";
-
 
             $trash = false;
             if (isset($table->columns['trash'])) {
@@ -79,16 +70,7 @@ trait GenerateService {
                     $c .= StringUtils::printLn("use $this->namespaceClass\\" . StringUtils::camelCase($linked_table["to"]) . ";");
                 }
             }
-            $c .= StringUtils::printLn("abstract class Service$class{");
-
-
-            $c .= StringUtils::println();
-            $c .= StringUtils::println("private function __construct(){", 1);
-            $c .= StringUtils::println("}", 1);
-            $c .= StringUtils::println();
-
-            //$c .= StringUtils::printLn("}");
-            //fwrite($file, $c);
+            $c .= StringUtils::printLn('trait ' . $class . 'Trait{');
 
 
             /**
@@ -97,8 +79,6 @@ trait GenerateService {
              * INDEX return array of 0 or N objects
              * SEARCH is fulltext search
              */
-            //error_log(print_r($table->indexes, true));
-            //exit;
             foreach ($table->indexes as $k => $i) {
                 if ($i->name == "PRIMARY") {
                     $c .= StringUtils::println("public static function get" . ucfirst($table->name) . "(" . implode(",", $i->getColumns("php_prefix")) . ",\$use_cache=false){", 1);

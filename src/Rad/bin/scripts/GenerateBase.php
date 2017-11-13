@@ -26,44 +26,23 @@
 
 namespace Rad\bin\scripts;
 
-use Rad\bin\scripts\elements\Column;
-use Rad\bin\scripts\elements\Table;
-use Rad\Database\Database;
-use Rad\Utils\StringUtils;
-
 final class GenerateBase {
 
     use GenerateTrait;
     use GenerateClass;
-    use GenerateService;
+    use GenerateClassTrait;
     use GenerateController;
     use GenerateImp;
+    use CommonClassTrait;
 
     private $database = null;
+    private $basepath = null;
     private $pathClass = null;
     private $pathService = null;
     private $pathImp = null;
     private $namespaceClass = null;
     private $namespaceService = null;
     private $namespaceImp = null;
-    private $baseRequire = array(
-        "PDO",
-        "Rad\\Model\\Model",
-        "Rad\\Model\\ModelDAO",
-        "Rad\\Database\\Database",
-        "Rad\\Cache\\Cache",
-        "Rad\\Log\\Log",
-        "Rad\\Utils\\StringUtils",
-        "Rad\\Encryption\\Encryption"
-    );
-    private $i18n_translate_table = "i18n_translate";
-    private $i18n_table = "i18n";
-    private $i18n_translate_class;
-    private $i18n_class;
-    private $picture_table = "picture";
-    private $picture_class;
-    private $language_table = "language";
-    private $language_class;
 
     public function __construct($database = "bb", $dir = "", $basePath = "", $prefixClassesPath = "", $prefixServicesPath = "", $prefixImpsPath = "") {
         $this->database = $database;
@@ -73,24 +52,36 @@ final class GenerateBase {
         $this->namespaceService = rtrim(str_replace("/", "\\", $this->pathService), "\\");
         $this->pathImp = $basePath . "/" . $prefixImpsPath;
         $this->namespaceImp = rtrim(str_replace("/", "\\", $this->pathImp), "\\");
-        $this->i18n_class = StringUtils::camelCase($this->i18n_table);
-        $this->i18n_translate_class = StringUtils::camelCase($this->i18n_translate_table);
-        $this->picture_class = StringUtils::camelCase($this->picture_table);
-        $this->language_class = StringUtils::camelCase($this->language_table);
         $this->pathClass = $dir . "/" . $this->pathClass;
         $this->pathImp = $dir . "/" . $this->pathImp;
         $this->pathService = $dir . "/" . $this->pathService;
+        $this->generateClassName();
+    }
+
+    public function setDatabase(string $database) {
+        $this->database = $database;
+        return $this;
+    }
+
+    public function setBasePath(string $basepath) {
+        $this->basepath = $basepath;
+        return $this;
+    }
+
+    public function setDaoPath(string $daopath) {
+        
     }
 
     public function generate(bool $generateImp = false) {
+        $tables = $this->generateArrayTables();
         mkdir($this->pathClass, 0777, true);
         mkdir($this->pathService, 0777, true);
-        $this->generateClass();
-        $this->generateServices();
-        if ($generateImp) {
-            $this->generateImp();
-        }
-        $this->generateController();
+        $this->generateClass($tables);
+        $this->generateClassTrait($tables);
+        /* if ($generateImp) {
+          $this->generateImp();
+          }
+          $this->generateController(); */
     }
 
 }
