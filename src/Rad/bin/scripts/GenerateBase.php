@@ -30,7 +30,6 @@ final class GenerateBase {
 
     use GenerateTrait;
     use GenerateClass;
-    use GenerateClassTrait;
     use GenerateController;
     use GenerateImp;
     use CommonClassTrait;
@@ -77,7 +76,7 @@ final class GenerateBase {
         mkdir($this->pathClass, 0777, true);
         mkdir($this->pathService, 0777, true);
         $this->generateClass($tables);
-        $this->generateClassTrait($tables);
+
         /* if ($generateImp) {
           $this->generateImp();
           }

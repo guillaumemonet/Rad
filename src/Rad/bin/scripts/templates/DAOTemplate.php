@@ -2,6 +2,7 @@
 
 namespace Rad\bin\scripts\templates;
 
+use Rad\bin\scripts\CommonClassTrait;
 use Rad\Utils\StringUtils;
 
 /*
@@ -42,8 +43,9 @@ class DAOTemplate {
     use DAOTemplateParseTrait;
     use DAOOneToManyTrait;
     use DAOManyToManyTrait;
+    use DAOTemplateTraitTrait;
     use RequestTrait;
-    use \Rad\bin\scripts\CommonClassTrait;
+    use CommonClassTrait;
 
     public $namespace = null;
     private $tableName = null;
@@ -99,6 +101,11 @@ class DAOTemplate {
         return array_reduce($this->useclasses, function($carry, $item) {
             return $carry . StringUtils::println('use ' . $item . ';');
         });
+    }
+
+    public function printStartTrait() {
+        $c = StringUtils::println('trait ' . $this->className . 'Trait {');
+        return $c;
     }
 
     public function printStartClass() {
