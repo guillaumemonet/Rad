@@ -92,14 +92,10 @@ class Uri implements UriInterface {
 
     /**
      * 
-     * @return Url
+     * @return Uri
      */
-    public static function getCurrentUrl(): Url {
-        $url = new Url();
-        $url->parseUrl('http' . (isset($_SERVER['HTTPS']) ? 's' : '') . '://' . "{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}");
-        if (!$_SERVER['HTTPS'] && $_SERVER['SERVER_PORT'] != 80 || $_SERVER['HTTPS'] && $_SERVER['SERVER_PORT'] != 443) {
-            $url->port = $_SERVER['SERVER_PORT'];
-        }
+    public static function getCurrentUrl(): Uri {
+        $url = new Uri('http' . (isset($_SERVER['HTTPS']) ? 's' : '') . '://' . "{$_SERVER['HTTP_HOST']}:{$_SERVER['SERVER_PORT']}{$_SERVER['REQUEST_URI']}");
         return $url;
     }
 
