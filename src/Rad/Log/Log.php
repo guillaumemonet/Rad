@@ -65,7 +65,7 @@ abstract class Log {
         if (!isset(self::$logHandlers[$handlerType])) {
             try {
                 $className = __NAMESPACE__ . "\\" . ucfirst($handlerType) . "_LogHandler";
-                self::$logHandlers[$handlerType] = file_exists($className) ? new $className() : new Default_LogHandler();
+                self::$logHandlers[$handlerType] = file_exists($className . '.php') ? new $className() : new Default_LogHandler();
             } catch (ErrorException $ex) {
                 throw new ErrorException($handlerType . " Log Handler not found");
             }
