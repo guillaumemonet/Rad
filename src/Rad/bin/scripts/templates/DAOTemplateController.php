@@ -58,11 +58,7 @@ trait DAOTemplateController {
     }
 
     public function printControllerGetAll() {
-        $c = StringUtils::println("/**", 1);
-        $c .= StringUtils::println(" * @api 1", 1);
-        $c .= StringUtils::println(" * @get /^" . $this->tableName . "$/", 1);
-        $c .= StringUtils::println(" * @produce json", 1);
-        $c .= StringUtils::println(" */", 1);
+        $c = $this->printComments("get", "/^" . $this->tableName . "$/");
         $c .= StringUtils::println('public function getAll' . $this->className . '(){', 1);
         $c .= StringUtils::println('return ' . $this->className . "::getAll" . $this->className . '($this->getRequest()->offset, $this->getRequest()->limit, $this->getRequest()->isCache(), $this->getRequest()->get_datas);', 2);
         $c .= StringUtils::println("}", 1);
@@ -70,11 +66,7 @@ trait DAOTemplateController {
     }
 
     public function printControllerGetOne() {
-        $c = StringUtils::println("/**", 1);
-        $c .= StringUtils::println(" * @api 1", 1);
-        $c .= StringUtils::println(" * @get /^" . $this->tableName . "\/([0-9]*)$/", 1);
-        $c .= StringUtils::println(" * @produce json", 1);
-        $c .= StringUtils::println(" */", 1);
+        $c = $this->printComments("get", "/^" . $this->tableName . "\/([0-9]*)$/");
         $c .= StringUtils::println("public function get" . $this->className . "(){", 1);
         $c .= StringUtils::println('return ' . $this->className . "::get" . $this->className . '($this->getRoute()->getArgs()[0],$this->getRequest()->isCache());', 2);
         $c .= StringUtils::println("}", 1);
@@ -82,46 +74,39 @@ trait DAOTemplateController {
     }
 
     public function printControllerPostOne() {
-        $c = StringUtils::println("/**", 1);
-        $c .= StringUtils::println(" * @api 1", 1);
-        $c .= StringUtils::println(" * @post /^" . $this->tableName . "\/([0-9]*)$/", 1);
-        $c .= StringUtils::println(" * @produce json", 1);
-        $c .= StringUtils::println(" */", 1);
+        $c = $this->printComments("post", "/^" . $this->tableName . "\/([0-9]*)$/");
         $c .= StringUtils::println("public function post" . $this->className . "(){", 1);
         $c .= StringUtils::println("}", 1);
         return $c;
     }
 
     public function printControllerPutOne() {
-        $c = StringUtils::println("/**", 1);
-        $c .= StringUtils::println(" * @api 1", 1);
-        $c .= StringUtils::println(" * @put /^" . $this->tableName . "$/", 1);
-        $c .= StringUtils::println(" * @produce json", 1);
-        $c .= StringUtils::println(" */", 1);
+        $c = $this->printComments("put", "/^" . $this->tableName . "\/([0-9]*)$/");
         $c .= StringUtils::println("public function put" . $this->className . "(){", 1);
         $c .= StringUtils::println("}", 1);
         return $c;
     }
 
     public function printControllerPatchOne() {
-        $c = StringUtils::println("/**", 1);
-        $c .= StringUtils::println(" * @api 1", 1);
-        $c .= StringUtils::println(" * @patch /^" . $this->tableName . "\/([0-9]*)$/", 1);
-        $c .= StringUtils::println(" * @produce json", 1);
-        $c .= StringUtils::println(" */", 1);
+        $c = $this->printComments("patch", "/^" . $this->tableName . "\/([0-9]*)$/");
         $c .= StringUtils::println("public function patch" . $this->className . "(){", 1);
         $c .= StringUtils::println("}", 1);
         return $c;
     }
 
     public function printControllerDeleteOne() {
-        $c = StringUtils::println("/**", 1);
-        $c .= StringUtils::println(" * @api 1", 1);
-        $c .= StringUtils::println(" * @delete /^" . $this->tableName . "\/([0-9]*)$/", 1);
-        $c .= StringUtils::println(" * @produce json", 1);
-        $c .= StringUtils::println(" */", 1);
+        $c = $this->printComments("delete", "/^" . $this->tableName . "\/([0-9]*)$/");
         $c .= StringUtils::println("public function patch" . $this->className . "(){", 1);
         $c .= StringUtils::println("}", 1);
+        return $c;
+    }
+
+    public function printComments($method, $regex) {
+        $c = StringUtils::println("/**", 1);
+        $c .= StringUtils::println(" * @api 1", 1);
+        $c .= StringUtils::println(" * @" . $method . " " . $regex, 1);
+        $c .= StringUtils::println(" * @produce json", 1);
+        $c .= StringUtils::println(" */", 1);
         return $c;
     }
 

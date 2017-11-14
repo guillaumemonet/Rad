@@ -30,7 +30,6 @@ final class GenerateBase {
 
     use GenerateTrait;
     use GenerateClass;
-    use GenerateController;
     use GenerateImp;
     use CommonClassTrait;
 
