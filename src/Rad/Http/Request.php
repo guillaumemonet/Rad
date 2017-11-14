@@ -26,6 +26,7 @@
 
 namespace Rad\Http;
 
+use Psr\Http\Message\RequestInterface;
 use Rad\Error\Http\MethodNotAllowedException;
 use Rad\Error\Http\RequestedRangeException;
 
@@ -34,13 +35,15 @@ use Rad\Error\Http\RequestedRangeException;
  *
  * @author Admin
  */
-final class Request { //extends \Psr\Http\Message implements ServerRequestInterface {
+final class Request {//implements RequestInterface {
+
+    //use MessageTrait;
+    //use RequestTrait;
 
     /**
      *
      * @var array
      */
-
     private $allowed_method = array("POST", "GET", "PATCH", "PUT", "OPTIONS");
     private $_datas = null;
     private $cache = false;
@@ -62,6 +65,7 @@ final class Request { //extends \Psr\Http\Message implements ServerRequestInterf
     public $offset = null;
     public $version = null;
     public $path = null;
+    public $uri = null;
 
     public function __construct() {
 
@@ -92,7 +96,7 @@ final class Request { //extends \Psr\Http\Message implements ServerRequestInterf
             $this->user_token = $array_authority[1];
         }
         if (isset($_SERVER["REQUEST_URI"])) {
-            $path = explode("/", trim($_SERVER["REQUEST_URI"], "/"));
+            $path = explode("/", trim(Uri::getCurrentUrl()->getPath(), "/"));
             $this->version = (int) str_replace("v", "", array_shift($path));
             $this->path = trim(filter_var(implode("/", $path), FILTER_SANITIZE_STRING), "/");
             if ($this->method == "POST") {
@@ -113,6 +117,30 @@ final class Request { //extends \Psr\Http\Message implements ServerRequestInterf
                     $this->get_datas[$key] = $value;
                 }
             }
+        }
+    }
+
+    public function enabledCors() {
+        if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+            if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD']) && (
+                    $_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD'] == 'POST' ||
+                    $_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD'] == 'DELETE' ||
+                    $_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD'] == 'PUT' ||
+                    $_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD'] == 'GET' )) {
+                header('Access-Control-Allow-Origin: *');
+                header("Access-Control-Allow-Credentials: true");
+                header('Access-Control-Allow-Headers: X-Requested-With');
+                header('Access-Control-Allow-Headers: Content-Type');
+                header('Access-Control-Allow-Headers: Accept-Type');
+                header('Access-Control-Allow-Headers: Range');
+                header('Access-Control-Allow-Headers: Content-Range');
+                header('Access-Control-Allow-Headers: Appname');
+                header('Access-Control-Allow-Headers: Context');
+                header('Access-Control-Allow-Headers: Signature');
+                header('Access-Control-Allow-Methods: POST, GET, OPTIONS, DELETE, PUT'); // http://stackoverflow.com/a/7605119/578667
+                header('Access-Control-Max-Age: 86400');
+            }
+            exit;
         }
     }
 
