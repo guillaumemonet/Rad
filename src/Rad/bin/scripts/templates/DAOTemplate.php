@@ -44,14 +44,17 @@ class DAOTemplate {
     use DAOOneToManyTrait;
     use DAOManyToManyTrait;
     use DAOTemplateTraitTrait;
+    use DAOTemplateController;
     use RequestTrait;
     use CommonClassTrait;
 
     public $namespace = null;
-    private $tableName = null;
-    private $className = null;
-    private $tableStructure = null;
-    private $useclasses = array(
+    public $namespaceController;
+    public $namespaceImp;
+    public $tableName = null;
+    public $className = null;
+    public $tableStructure = null;
+    public $useclasses = array(
         'PDO',
         'Rad\\Model\\Model',
         'Rad\\Model\\ModelDAO',
@@ -63,11 +66,10 @@ class DAOTemplate {
     );
     private $trash = false;
 
-    public function __construct($className, $namespace, $tableName, $tableStructure) {
+    public function __construct($className, $tableName, $tableStructure) {
         $this->tableName = $tableName;
         $this->className = $className;
         $this->tableStructure = $tableStructure;
-        $this->namespace = $namespace;
         $this->trash = false;
         if (isset($this->tableStructure->columns['trash'])) {
             $this->trash = true;
@@ -75,6 +77,21 @@ class DAOTemplate {
         $this->generateClassName();
         $this->generateOneToManyUse();
         $this->generateManyToManyUse();
+    }
+
+    public function setClassNamespace(string $namespace) {
+        $this->namespace = $namespace;
+        return $this;
+    }
+
+    public function setControllerNamespace($namespacecontroller) {
+        $this->namespaceController = $namespacecontroller;
+        return $this;
+    }
+
+    public function setImpNamespace($namespaceimp) {
+        $this->namespaceImp = $namespaceimp;
+        return $this;
     }
 
     private function generateOneToManyUse() {
@@ -104,8 +121,7 @@ class DAOTemplate {
     }
 
     public function printStartTrait() {
-        $c = StringUtils::println('trait ' . $this->className . 'Trait {');
-        return $c;
+        return StringUtils::println('trait ' . $this->className . 'Trait {');
     }
 
     public function printStartClass() {

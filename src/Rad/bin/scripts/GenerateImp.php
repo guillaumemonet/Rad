@@ -90,8 +90,7 @@ trait GenerateImp {
             }
 
             $c .= StringUtils::println();
-            $c .= StringUtils::println("public function __construct(){", 1);
-            $c .= StringUtils::println("}", 1);
+
             $c .= StringUtils::println();
             foreach ($table->columns as $col_name => $col) {
                 if ($col->auto == 0 && !in_array($col_name, array("trash"))) {

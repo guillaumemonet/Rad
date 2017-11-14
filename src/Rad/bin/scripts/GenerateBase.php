@@ -37,23 +37,13 @@ final class GenerateBase {
     private $database = null;
     private $basepath = null;
     private $pathClass = null;
-    private $pathService = null;
+    private $pathController = null;
     private $pathImp = null;
     private $namespaceClass = null;
-    private $namespaceService = null;
+    private $namespaceController = null;
     private $namespaceImp = null;
 
-    public function __construct($database = "bb", $dir = "", $basePath = "", $prefixClassesPath = "", $prefixServicesPath = "", $prefixImpsPath = "") {
-        $this->database = $database;
-        $this->pathClass = $basePath . "/" . $prefixClassesPath;
-        $this->namespaceClass = rtrim(str_replace("/", "\\", $this->pathClass), "\\");
-        $this->pathService = $basePath . "/" . $prefixServicesPath;
-        $this->namespaceService = rtrim(str_replace("/", "\\", $this->pathService), "\\");
-        $this->pathImp = $basePath . "/" . $prefixImpsPath;
-        $this->namespaceImp = rtrim(str_replace("/", "\\", $this->pathImp), "\\");
-        $this->pathClass = $dir . "/" . $this->pathClass;
-        $this->pathImp = $dir . "/" . $this->pathImp;
-        $this->pathService = $dir . "/" . $this->pathService;
+    public function __construct() {
         $this->generateClassName();
     }
 
@@ -68,19 +58,42 @@ final class GenerateBase {
     }
 
     public function setDaoPath(string $daopath) {
-        
+        $this->pathClass = $this->basepath . '/' . $daopath;
+        $this->namespaceClass = $this->pathToNamespace($daopath);
+        return $this;
+    }
+
+    public function setControllerPath(string $controllerpath) {
+        $this->pathController = $this->basepath . '/' . $controllerpath;
+        $this->namespaceController = $this->pathToNamespace($controllerpath);
+        return $this;
+    }
+
+    public function setImpPath(string $imppath) {
+        $this->pathImp = $this->basepath . '/' . $imppath;
+        $this->namespaceImp = $this->pathToNamespace($imppath);
+        return $this;
+    }
+
+    public function makeDir($force = false) {
+        mkdir($this->pathClass, 0777, $force);
+        mkdir($this->pathController, 0777, $force);
+        mkdir($this->pathImp, 0777, $force);
+        return $this;
     }
 
     public function generate(bool $generateImp = false) {
         $tables = $this->generateArrayTables();
-        mkdir($this->pathClass, 0777, true);
-        mkdir($this->pathService, 0777, true);
         $this->generateClass($tables);
 
         /* if ($generateImp) {
           $this->generateImp();
-          }
-          $this->generateController(); */
+          } */
+        
+    }
+
+    private function pathToNamespace($path) {
+        return rtrim(str_replace("/", "\\", str_replace($this->basepath, '', $path)), "\\");
     }
 
 }
