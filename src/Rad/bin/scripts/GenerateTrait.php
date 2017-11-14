@@ -82,25 +82,7 @@ trait GenerateTrait {
         while ($row = $result->fetch()) {
             $column = new Column();
             $column->name = $row["Field"];
-            if (strstr($row["Type"], "char") !== false || strstr($row["Type"], "text") !== false) {
-                $column->type_sql = "\\PDO::PARAM_STR";
-                $column->type_php = "string";
-            } else if (strstr($row["Type"], "tinyint") !== false) {
-                $column->type_sql = "\\PDO::PARAM_INT";
-                $column->type_php = "boolean";
-            } else if (strstr($row["Type"], "blob") !== false) {
-                $column->type_sql = "\\PDO::PARAM_LOB";
-                $column->type_php = "binary";
-            } else if (strstr($row["Type"], "int") !== false) {
-                $column->type_sql = "\\PDO::PARAM_INT";
-                $column->type_php = "int";
-            } else if (strstr("float", $row["Type"]) !== false || strstr("long", $row["Type"]) !== false || strstr("double", $row["Type"]) !== false) {
-                $column->type_sql = "\\PDO::PARAM_STR";
-                $column->type_php = "decimal";
-            } else {
-                $column->type_sql = "\\PDO::PARAM_STR";
-                $column->type_php = "string";
-            }
+            $this->setType($row, $column);
             $column->key = $row["Key"];
 
             $column->default = isset($row["Default"]) ? $row["Default"] : null;
@@ -110,6 +92,28 @@ trait GenerateTrait {
             $columns[$column->name] = $column;
         }
         return $columns;
+    }
+
+    private function setType($row, $column) {
+        if (strstr($row["Type"], "char") !== false || strstr($row["Type"], "text") !== false) {
+            $column->type_sql = "\\PDO::PARAM_STR";
+            $column->type_php = "string";
+        } else if (strstr($row["Type"], "tinyint") !== false) {
+            $column->type_sql = "\\PDO::PARAM_INT";
+            $column->type_php = "boolean";
+        } else if (strstr($row["Type"], "blob") !== false) {
+            $column->type_sql = "\\PDO::PARAM_LOB";
+            $column->type_php = "binary";
+        } else if (strstr($row["Type"], "int") !== false) {
+            $column->type_sql = "\\PDO::PARAM_INT";
+            $column->type_php = "int";
+        } else if (strstr("float", $row["Type"]) !== false || strstr("long", $row["Type"]) !== false || strstr("double", $row["Type"]) !== false) {
+            $column->type_sql = "\\PDO::PARAM_STR";
+            $column->type_php = "decimal";
+        } else {
+            $column->type_sql = "\\PDO::PARAM_STR";
+            $column->type_php = "string";
+        }
     }
 
     public function getManyToManyTable($table) {
