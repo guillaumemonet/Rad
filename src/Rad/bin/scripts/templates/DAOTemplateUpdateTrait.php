@@ -48,7 +48,7 @@ trait DAOTemplateUpdateTrait {
             if (StringUtils::endsWith($col_name, "_i18n") && $col->auto == 0 && !StringUtils::startsWith($this->tableStructure->name, "i18n")) {
                 //TODO Rajouter les conditions de test pour la creation d'une trad
                 $c .= StringUtils::println("foreach(\$this->" . str_replace("_i18n", "", $col_name) . " as \$lang=>\$datas){", 2);
-                $c .= StringUtils::println("\$ti18n = Service" . $this->i18n_translate_class . "::getTranslation(" . $col->getAsVar("this") . ",\$lang);", 3);
+                $c .= StringUtils::println("\$ti18n = " . $this->i18n_translate_class . "::getTranslation(" . $col->getAsVar("this") . ",\$lang);", 3);
                 $c .= StringUtils::println("\$ti18n->datas=\$datas;", 3);
                 $c .= StringUtils::println("\$ti18n->update();", 3);
                 $c .= StringUtils::println("}", 2);
