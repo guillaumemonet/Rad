@@ -38,7 +38,7 @@ class Default_CodecHandler implements CodecInterface {
     }
 
     public function getMimeTypes(): array {
-        return null;
+        return array("html", "txt", "plain");
     }
 
     public function serialize($object): string {
@@ -46,7 +46,7 @@ class Default_CodecHandler implements CodecInterface {
     }
 
     public function __toString() {
-        return "Do Nothing Codec";
+        return "Default Codec Handler";
     }
 
     public function sign($datas, $secret) {
