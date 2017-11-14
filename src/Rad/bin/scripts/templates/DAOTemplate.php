@@ -45,6 +45,7 @@ class DAOTemplate {
     use DAOManyToManyTrait;
     use DAOTemplateTraitTrait;
     use DAOTemplateController;
+    use DAOTemplateImp;
     use RequestTrait;
     use CommonClassTrait;
 
@@ -54,16 +55,6 @@ class DAOTemplate {
     public $tableName = null;
     public $className = null;
     public $tableStructure = null;
-    public $useclasses = array(
-        'PDO',
-        'Rad\\Model\\Model',
-        'Rad\\Model\\ModelDAO',
-        'Rad\\Database\\Database',
-        'Rad\\Cache\\Cache',
-        'Rad\\Log\\Log',
-        'Rad\\Utils\\StringUtils',
-        'Rad\\Encryption\\Encryption'
-    );
     private $trash = false;
 
     public function __construct($className, $tableName, $tableStructure) {
@@ -74,9 +65,13 @@ class DAOTemplate {
         if (isset($this->tableStructure->columns['trash'])) {
             $this->trash = true;
         }
+    }
+
+    public function init() {
         $this->generateClassName();
         $this->generateOneToManyUse();
         $this->generateManyToManyUse();
+        return $this;
     }
 
     public function setClassNamespace(string $namespace) {
@@ -115,7 +110,7 @@ class DAOTemplate {
     }
 
     public function printUseClasses() {
-        return array_reduce($this->useclasses, function($carry, $item) {
+        return array_reduce($this->baseRequire, function($carry, $item) {
             return $carry . StringUtils::println('use ' . $item . ';');
         });
     }
@@ -138,11 +133,6 @@ class DAOTemplate {
         $c = StringUtils::println('public function __construct(){', 1);
         $c .= StringUtils::println("}", 1);
         return $c;
-    }
-
-    public function addUseClasse(string $classname) {
-        $this->useclasses[$classname] = $classname;
-        return $this;
     }
 
     public function printToString() {

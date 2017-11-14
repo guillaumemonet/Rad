@@ -36,7 +36,7 @@ use Rad\Utils\StringUtils;
 trait DAOTemplateController {
 
     protected $useController = array(
-        'Rad\\Http\\Request;',
+        'Rad\\Http\\Request',
         'Rad\\Http\\Response',
         'Rad\\Route\\Route',
         'Rad\\Controller\\Controller'
@@ -51,8 +51,9 @@ trait DAOTemplateController {
     }
 
     public function printControllerUseClasses() {
-        $this->useController[] = StringUtils::println($this->namespace . "\\" . StringUtils::camelCase($this->className));
-        return array_reduce($this->useclasses, function($carry, $item) {
+        $this->useController = array_merge($this->baseRequire, $this->useController);
+        $this->useController[] = $this->namespace . "\\" . StringUtils::camelCase($this->className);
+        return array_reduce($this->useController, function($carry, $item) {
             return $carry . StringUtils::println('use ' . $item . ';');
         });
     }

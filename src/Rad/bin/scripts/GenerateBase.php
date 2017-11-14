@@ -26,11 +26,13 @@
 
 namespace Rad\bin\scripts;
 
+use Rad\bin\scripts\templates\DAOTemplate;
+use Rad\Log\Log;
+use Rad\Utils\StringUtils;
+
 final class GenerateBase {
 
     use GenerateTrait;
-    use GenerateClass;
-    use GenerateImp;
     use CommonClassTrait;
 
     private $database = null;
@@ -81,18 +83,102 @@ final class GenerateBase {
         return $this;
     }
 
-    public function generate(bool $generateImp = false) {
+    public function generate() {
         $tables = $this->generateArrayTables();
         $this->generateClass($tables);
-
-        /* if ($generateImp) {
-          $this->generateImp();
-          } */
-        
     }
 
     private function pathToNamespace($path) {
         return rtrim(str_replace("/", "\\", str_replace($this->basepath, '', $path)), "\\");
+    }
+
+    private function generateClass(array $tables) {
+        foreach ($tables as $name => $table) {
+            if (strpos($name, "_has_") !== false) {
+                continue;
+            }
+
+            $class = StringUtils::camelCase($name);
+
+            Log::getHandler()->debug('Generating ' . $class . ' to ' . $this->pathClass);
+            $daomodel = new DAOTemplate($class, $name, $table);
+            $daomodel->setClassNamespace($this->namespaceClass)
+                    ->setControllerNamespace($this->namespaceController)
+                    ->setImpNamespace($this->namespaceImp)
+                    ->init();
+            $this->printClass($daomodel);
+            $this->printTrait($daomodel);
+            $this->printController($daomodel);
+            $this->printImp($daomodel);
+        }
+    }
+
+    public function printClass(DAOTemplate $daomodel) {
+        $filenameClass = $this->pathClass . '/' . $daomodel->className . '.php';
+        file_exists($filenameClass) ? unlink($filenameClass) : '';
+        $fileClass = fopen($filenameClass, "w+");
+        $c = StringUtils::println("<?php");
+        $c .= $daomodel->printNamespace();
+        $c .= $daomodel->printUseClasses();
+        $c .= $daomodel->printStartClass();
+        $c .= $daomodel->printAttributes();
+        $c .= $daomodel->printContructor();
+        $c .= $daomodel->printGetId();
+        $c .= $daomodel->printToString();
+        $c .= $daomodel->printParse();
+        $c .= $daomodel->printCreate();
+        $c .= $daomodel->printRead();
+        $c .= $daomodel->printUpdate();
+        $c .= $daomodel->printDelete();
+        $c .= $daomodel->printOneToMany();
+        $c .= $daomodel->printManyToMany();
+        $c .= $daomodel->printEndClass();
+        fwrite($fileClass, $c);
+    }
+
+    public function printTrait(DAOTemplate $daomodel) {
+        $filenameTrait = $this->pathClass . '/' . $daomodel->className . 'Trait.php';
+        file_exists($filenameTrait) ? unlink($filenameTrait) : '';
+        $fileTrait = fopen($filenameTrait, "w+");
+        $c = StringUtils::println("<?php");
+        $c .= $daomodel->printNamespace();
+        $c .= $daomodel->printUseClasses();
+        $c .= $daomodel->printStartTrait();
+        $c .= $daomodel->printIndexesGetter();
+        $c .= $daomodel->printEndClass();
+        fwrite($fileTrait, $c);
+    }
+
+    public function printController(DAOTemplate $daomodel) {
+        $filenameController = $this->pathController . '/' . $daomodel->className . 'BaseController.php';
+        file_exists($filenameController) ? unlink($filenameController) : '';
+        $fileController = fopen($filenameController, "w+");
+        $c = StringUtils::println("<?php");
+        $c .= $daomodel->printControllerNamespace();
+        $c .= $daomodel->printControllerUseClasses();
+        $c .= $daomodel->printStartController();
+        $c .= $daomodel->printControllerGetAll();
+        $c .= $daomodel->printControllerGetOne();
+        $c .= $daomodel->printControllerPostOne();
+        $c .= $daomodel->printControllerDeleteOne();
+        $c .= $daomodel->printControllerPutOne();
+        $c .= $daomodel->printControllerPatchOne();
+        $c .= $daomodel->printEndClass();
+        fwrite($fileController, $c);
+    }
+
+    public function printImp(DAOTemplate $daomodel) {
+        $filenameImp = $this->pathImp . '/' . $daomodel->className . 'Imp.php';
+        file_exists($filenameImp) ? unlink($filenameImp) : '';
+        $fileImp = fopen($filenameImp, "w+");
+        $c = StringUtils::println("<?php");
+        $c .= $daomodel->printImpNamespace();
+        $c .= $daomodel->printImpUseClasses();
+        $c .= $daomodel->printImpClassStart();
+        $c .= $daomodel->printImpAttributes();
+        $c .= $daomodel->printImpSetterGetter();
+        $c .= $daomodel->printEndClass();
+        fwrite($fileImp, $c);
     }
 
 }

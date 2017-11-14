@@ -59,6 +59,23 @@ trait CommonClassTrait {
         $this->i18n_translate_class = StringUtils::camelCase($this->i18n_translate_table);
         $this->picture_class = StringUtils::camelCase($this->picture_table);
         $this->language_class = StringUtils::camelCase($this->language_table);
+        if (StringUtils::camelCase($this->tableName) != $this->i18n_translate_class) {
+            $this->addUseClasse($this->namespace . "\\" . $this->i18n_translate_class);
+        }
+        if (StringUtils::camelCase($this->tableName) != $this->i18n_class) {
+            $this->addUseClasse($this->namespace . "\\" . $this->i18n_class);
+        }
+        if (StringUtils::camelCase($this->tableName) != $this->picture_class) {
+            $this->addUseClasse($this->namespace . "\\" . $this->picture_class);
+        }
+        if (StringUtils::camelCase($this->tableName) != $this->language_class) {
+            $this->addUseClasse($this->namespace . "\\" . $this->language_class);
+        }
+    }
+
+    public function addUseClasse(string $classname) {
+        $this->baseRequire[] = $classname;
+        return $this;
     }
 
 }
