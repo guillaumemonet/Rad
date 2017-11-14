@@ -26,10 +26,9 @@
 
 namespace Rad\Cache;
 
-use Exception;
 use Psr\SimpleCache\CacheInterface;
 use Rad\Config\Config;
-use Rad\Log\Log;
+use Rad\Encryption\Encryption;
 use Redis;
 
 /**
@@ -39,7 +38,9 @@ use Redis;
  */
 final class Redis_CacheHandler implements CacheInterface {
 
-    //@var Redis
+    /**
+     * @var Redis
+     */
     private $redis = null;
 
     public function __construct() {
@@ -47,71 +48,53 @@ final class Redis_CacheHandler implements CacheInterface {
         $this->connect(Config::get("cache_redis", "host"), Config::get("cache_redis", "port"));
     }
 
-    public function delete(array $keys) {
-        try {
-            foreach ($keys as $k => $v) {
-                // deleting the value from redis
-                $this->redis->del($k);
-            }
-        } catch (Exception $e) {
-            Log::getHandler()->error($e->getMessage());
-        }
+    public function clear(): bool {
+        $this->redis->flushDB();
+        return true;
     }
 
-    public function read(array $keys) {
-        $ret = array();
-        try {
-            foreach ($keys as $k => $v) {
-                $ret[] = $this->redis->get($k);
-            }
-        } catch (Exception $e) {
-            Log::getHandler()->error($e->getMessage());
+    public function delete($key) {
+        return $this->redis->del(Encryption::hashMd5($key));
+    }
+
+    public function deleteMultiple($keys): bool {
+        $ret = true;
+        foreach ($keys as $key) {
+            $ret &= $this->delete(Encryption::hashMd5($key));
         }
         return $ret;
     }
 
-    public function write(array $keys, $expire = null) {
-        try {
-            if ($expire !== null) {
-                foreach ($keys as $k => $v) {
-                    $this->redis->setex($k, $expire, $v);
-                }
-            } else {
-                foreach ($keys as $k => $v) {
-                    $this->redis->setex($k, $v);
-                }
-            }
-        } catch (Exception $e) {
-            Log::getHandler()->error($e->getMessage());
-        }
-    }
-
-    public function clear(): bool {
-        $this->redis->flushAll();
-    }
-
-    public function deleteMultiple($keys): bool {
-        
-    }
-
     public function get($key, $default = null) {
-        
+        return $this->redis->get(Encryption::hashMd5($key));
     }
 
     public function getMultiple($keys, $default = null) {
-        
+        $ret = array();
+        foreach ($keys as $k) {
+            $ret[$k] = $this->get($k, $default);
+        }
+        return $ret;
     }
 
     public function has($key): bool {
-        
+        return $this->exists(Encryption::hashMd5($key));
     }
 
     public function set($key, $value, $ttl = null): bool {
-        
+        if ($ttl === null) {
+            return $this->set(Encryption::hashMd5($key), $value);
+        } else {
+            return $this->setex(Encryption::hashMd5($key), $ttl, $value);
+        }
     }
 
     public function setMultiple($values, $ttl = null): bool {
-        
+        $ret = true;
+        foreach ($values as $key => $value) {
+            $ret &= $this->set($key, $value, $ttl);
+        }
+        return $ret;
     }
 
 }
