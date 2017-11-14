@@ -47,7 +47,7 @@ trait DAOTemplateTraitTrait {
             if ($i->name == "PRIMARY") {
                 $c .= $this->printPrimaryIndexGetter($k, $i);
             } else if ($i->unique) {
-                $c .= $this->printUniqueIndexGetter($k,$i);
+                $c .= $this->printUniqueIndexGetter($k, $i);
             } else {
                 $c .= $this->printOtherIndexGetter($k, $i);
             }
@@ -116,7 +116,7 @@ trait DAOTemplateTraitTrait {
     }
 
     public function printGetAll() {
-        $c .= StringUtils::println("public static function getAll" . ucfirst($this->tableName) . "(\$offset = null, \$limit = null,\$use_cache = false){", 1);
+        $c = StringUtils::println("public static function getAll" . ucfirst($this->tableName) . "(\$offset = null, \$limit = null,\$use_cache = false){", 1);
         $c .= StringUtils::println("\$c_key = \"key_" . $this->className . "_all_" . $this->tableName . "_\".\$limit.\"_\".\$offset;", 2);
         $c .= StringUtils::println("\$ret = null;", 2);
         $c .= StringUtils::println("if(\$use_cache){", 2);
@@ -131,7 +131,7 @@ trait DAOTemplateTraitTrait {
         $c .= StringUtils::println("\$result->execute();", 3);
         $c .= StringUtils::println("\$ret = array();", 3);
         $c .= StringUtils::println("while(\$row = \$result->fetch(\PDO::FETCH_ASSOC)){", 3);
-        $c .= StringUtils::println("\$$this->tableName = new $class();", 4);
+        $c .= StringUtils::println("\$$this->tableName = new $this->className();", 4);
         $c .= StringUtils::println("\$" . $this->tableName . "->parse(\$row,\$use_cache);", 4);
         $c .= StringUtils::println("\$ret[] = \$$this->tableName;", 4);
         $c .= StringUtils::println("}", 3);
@@ -141,6 +141,7 @@ trait DAOTemplateTraitTrait {
         $c .= StringUtils::println("}", 2);
         $c .= StringUtils::println("return \$ret;", 2);
         $c .= StringUtils::println("}", 1);
+        return $c;
     }
 
 }
