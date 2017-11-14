@@ -61,7 +61,7 @@ trait DAOTemplateParseTrait {
         foreach ($this->tableStructure->columns as $col_name => $col) {
             if (StringUtils::endsWith($col_name, "_i18n") && $col->auto == 0 && !StringUtils::startsWith($this->tableStructure->name, "i18n")) {
                 $c .= StringUtils::println("if(\$this->" . str_replace("_i18n", "", $col_name) . " == null){", 2);
-                $c .= StringUtils::println("\$ti18ns = Service" . $this->i18n_translate_class . "::getTranslationFromId(" . $col->getAsVar("this") . ",null,null,\$use_cache);", 3);
+                $c .= StringUtils::println("\$ti18ns = " . $this->i18n_translate_class . "::getTranslationFromId(" . $col->getAsVar("this") . ",null,null,\$use_cache);", 3);
                 $c .= StringUtils::println("foreach(\$ti18ns as \$i18n){", 3);
                 $c .= StringUtils::println("\$this->" . str_replace("_i18n", "", $col_name) . "[\$i18n->language_slug] = \$i18n;", 4);
                 $c .= StringUtils::println("}", 3);
