@@ -150,7 +150,7 @@ class DAOTemplate {
         foreach ($this->tableStructure->columns as $col_name => $col) {
             if ($col->auto > 0) {
                 $c = StringUtils::println('public function getId(){', 1);
-                $c .= StringUtils::println('return \$this->' . $col_name . ';', 2);
+                $c .= StringUtils::println('return $this->' . $col_name . ';', 2);
                 $c .= StringUtils::println('}', 1);
                 return $c;
             }

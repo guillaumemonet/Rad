@@ -84,7 +84,6 @@ trait GenerateTrait {
             $column->name = $row["Field"];
             $this->setType($row, $column);
             $column->key = $row["Key"];
-
             $column->default = isset($row["Default"]) ? $row["Default"] : null;
             if (isset($row["Extra"]) && $row["Extra"] == "auto_increment") {
                 $column->auto = 1;

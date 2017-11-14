@@ -97,7 +97,7 @@ trait DAOTemplateController {
 
     public function printControllerDeleteOne() {
         $c = $this->printComments("delete", "/^" . $this->tableName . "\/([0-9]*)$/");
-        $c .= StringUtils::println("public function patch" . $this->className . "(){", 1);
+        $c .= StringUtils::println("public function delete" . $this->className . "(){", 1);
         $c .= StringUtils::println("}", 1);
         return $c;
     }
