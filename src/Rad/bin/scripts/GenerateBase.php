@@ -144,7 +144,9 @@ final class GenerateBase {
         $c .= $daomodel->printNamespace();
         $c .= $daomodel->printUseClasses();
         $c .= $daomodel->printStartTrait();
+        $c .= $daomodel->printGetAll();
         $c .= $daomodel->printIndexesGetter();
+        
         $c .= $daomodel->printEndClass();
         fwrite($fileTrait, $c);
     }
