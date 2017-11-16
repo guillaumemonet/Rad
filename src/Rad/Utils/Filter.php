@@ -38,7 +38,7 @@ class Filter {
      * @param array $datas
      * @param array $get
      */
-    public static function matchFilter(array &$datas, array $get): array {
+    public static function matchFilter(array &$datas, array $get) {
         if (sizeof($get) > 0) {
             $datas = array_filter($datas, function($obj) use($get) {
                 return array_intersect_assoc((array) $obj, $get) == $get;
@@ -46,7 +46,7 @@ class Filter {
         }
     }
 
-    public static function containsFilter(array &$datas, array $get): array {
+    public static function containsFilter(array &$datas, array $get) {
         if (count($get) > 0) {
             $datas = array_filter($datas, function($obj) use($get) {
                 return count(array_uintersect_assoc((array) $obj, $get, function($a, $b) {
