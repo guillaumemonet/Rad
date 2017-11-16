@@ -38,10 +38,20 @@ class Filter {
      * @param array $datas
      * @param array $get
      */
-    public static function matchFilter(array &$datas, array $get) {
+    public static function matchFilter(array &$datas, array $get): array {
         if (sizeof($get) > 0) {
-            array_filter($datas, function($obj) use($get) {
+            $datas = array_filter($datas, function($obj) use($get) {
                 return array_intersect_assoc((array) $obj, $get) == $get;
+            });
+        }
+    }
+
+    public static function containsFilter(array &$datas, array $get): array {
+        if (count($get) > 0) {
+            $datas = array_filter($datas, function($obj) use($get) {
+                return count(array_uintersect_assoc((array) $obj, $get, function($a, $b) {
+                                    return !stristr($a, $b);
+                                })) > 0;
             });
         }
     }
