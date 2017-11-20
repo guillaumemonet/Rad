@@ -114,9 +114,7 @@ final class GenerateBase {
     }
 
     public function printClass(DAOTemplate $daomodel) {
-        $filenameClass = $this->pathClass . '/' . $daomodel->className . '.php';
-        file_exists($filenameClass) ? unlink($filenameClass) : '';
-        $fileClass = fopen($filenameClass, "w+");
+        $fileClass = $this->createFile($this->pathClass . '/' . $daomodel->className . '.php');
         $c = StringUtils::println("<?php");
         $c .= $daomodel->printNamespace();
         $c .= $daomodel->printUseClasses();
@@ -137,24 +135,20 @@ final class GenerateBase {
     }
 
     public function printTrait(DAOTemplate $daomodel) {
-        $filenameTrait = $this->pathClass . '/' . $daomodel->className . 'Trait.php';
-        file_exists($filenameTrait) ? unlink($filenameTrait) : '';
-        $fileTrait = fopen($filenameTrait, "w+");
+        $fileTrait = $this->createFile($this->pathClass . '/' . $daomodel->className . 'Trait.php');
         $c = StringUtils::println("<?php");
         $c .= $daomodel->printNamespace();
         $c .= $daomodel->printUseClasses();
         $c .= $daomodel->printStartTrait();
         $c .= $daomodel->printGetAll();
         $c .= $daomodel->printIndexesGetter();
-        
+
         $c .= $daomodel->printEndClass();
         fwrite($fileTrait, $c);
     }
 
     public function printController(DAOTemplate $daomodel) {
-        $filenameController = $this->pathController . '/' . $daomodel->className . 'BaseController.php';
-        file_exists($filenameController) ? unlink($filenameController) : '';
-        $fileController = fopen($filenameController, "w+");
+        $fileController = $this->createFile($this->pathController . '/' . $daomodel->className . 'BaseController.php');
         $c = StringUtils::println("<?php");
         $c .= $daomodel->printControllerNamespace();
         $c .= $daomodel->printControllerUseClasses();
@@ -170,9 +164,7 @@ final class GenerateBase {
     }
 
     public function printImp(DAOTemplate $daomodel) {
-        $filenameImp = $this->pathImp . '/' . $daomodel->className . 'Imp.php';
-        file_exists($filenameImp) ? unlink($filenameImp) : '';
-        $fileImp = fopen($filenameImp, "w+");
+        $fileImp = $this->createFile($this->pathImp . '/' . $daomodel->className . 'Imp.php');
         $c = StringUtils::println("<?php");
         $c .= $daomodel->printImpNamespace();
         $c .= $daomodel->printImpUseClasses();
@@ -181,6 +173,11 @@ final class GenerateBase {
         $c .= $daomodel->printImpSetterGetter();
         $c .= $daomodel->printEndClass();
         fwrite($fileImp, $c);
+    }
+
+    private function createFile($filename) {
+        file_exists($filename) ? unlink($filename) : '';
+        return fopen($filename, "w+");
     }
 
 }
