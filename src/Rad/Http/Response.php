@@ -34,16 +34,19 @@ use Rad\Utils\StringUtils;
 /**
  * 
  */
-final class Response implements ResponseInterface {
+class Response implements ResponseInterface {
 
+    use MessageTrait;
     use ResponseTrait;
 
+    protected $code = 200;
+    protected $reasonPhrase = '';
     private $datas = null;
     private $time = null;
     private $type = null;
     private $secret = null;
 
-    public function __construct() {
+    public function __construct($code = 200, $reasonPhrase = '', $headers = array()) {
         $this->time = time();
     }
 
@@ -88,6 +91,7 @@ final class Response implements ResponseInterface {
         if ($vary !== null) {
             $this->addHeader('Vary', $vary);
         }
+        $this->addHeader('X-Powered-By', 'Rad Framework');
     }
 
     public static function addHeader($type, $content) {

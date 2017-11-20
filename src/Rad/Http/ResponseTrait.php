@@ -26,9 +26,6 @@
 
 namespace Rad\Http;
 
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\StreamInterface;
-
 /**
  * Description of ResponseTrait
  *
@@ -36,61 +33,19 @@ use Psr\Http\Message\StreamInterface;
  */
 trait ResponseTrait {
 
-    //put your code here
-    public function getBody(): StreamInterface {
-        
-    }
-
-    public function getHeader($name): array {
-        
-    }
-
-    public function getHeaderLine($name): string {
-        
-    }
-
-    public function getHeaders(): array {
-        
-    }
-
-    public function getProtocolVersion(): string {
-        
-    }
-
     public function getReasonPhrase(): string {
-        
+        return $this->reasonPhrase;
     }
 
     public function getStatusCode(): int {
-        
-    }
-
-    public function hasHeader($name): bool {
-        
-    }
-
-    public function withAddedHeader($name, $value): self {
-        
-    }
-
-    public function withBody(StreamInterface $body): self {
-        
-    }
-
-    public function withHeader($name, $value): self {
-        
-    }
-
-    public function withProtocolVersion($version): self {
-        
+        return $this->code;
     }
 
     public function withStatus($code, $reasonPhrase = ''): self {
-        
-    }
-
-    public function withoutHeader($name): self {
-        
+        $ret = clone $this;
+        $ret->code = $code;
+        $ret->reasonPhrase = $reasonPhrase;
+        return $ret;
     }
 
 }
