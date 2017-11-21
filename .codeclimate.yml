@@ -5,12 +5,3 @@ exclude_paths:
 engines:
   sonar-php:
     enabled: true
-plugins:
-  phpmd:
-    enabled: true
-  phpcodesniffer:
-    enabled: true
-  phan:
-    enabled: true
-    config:
-      file_extensions: "php"
