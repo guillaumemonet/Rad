@@ -40,14 +40,14 @@ class Uri implements UriInterface {
 
     const defaultHost = 'localhost';
 
-    private $scheme = null;
-    private $host = null;
-    private $port = null;
-    private $user = null;
-    private $password = null;
-    private $path = null;
-    private $query = null;
-    private $fragment = null;
+    protected $scheme = null;
+    protected $host = null;
+    protected $port = null;
+    protected $user = null;
+    protected $password = null;
+    protected $path = null;
+    protected $query = null;
+    protected $fragment = null;
 
     public function __construct(string $uri = '') {
         $this->parseUrl($uri);
