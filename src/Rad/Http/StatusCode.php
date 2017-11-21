@@ -31,13 +31,12 @@ namespace Rad\Http;
  *
  * @author Guillaume Monet
  */
-class StatusCode {
+abstract class StatusCode {
 
-    // [Informational 1xx]
+    // Informational 1xx
     const HTTP_CONTINUE = 100;
     const HTTP_SWITCHING_PROTOCOLS = 101;
-    // [Successful 2xx]
-
+    // Successful 2xx
     const HTTP_OK = 200;
     const HTTP_CREATED = 201;
     const HTTP_ACCEPTED = 202;
@@ -45,8 +44,7 @@ class StatusCode {
     const HTTP_NO_CONTENT = 204;
     const HTTP_RESET_CONTENT = 205;
     const HTTP_PARTIAL_CONTENT = 206;
-    // [Redirection 3xx]
-
+    // Redirection 3xx
     const HTTP_MULTIPLE_CHOICES = 300;
     const HTTP_MOVED_PERMANENTLY = 301;
     const HTTP_FOUND = 302;
@@ -55,8 +53,7 @@ class StatusCode {
     const HTTP_USE_PROXY = 305;
     const HTTP_UNUSED = 306;
     const HTTP_TEMPORARY_REDIRECT = 307;
-    // [Client Error 4xx]
-
+    // Client Error 4xx
     const HTTP_BAD_REQUEST = 400;
     const HTTP_UNAUTHORIZED = 401;
     const HTTP_PAYMENT_REQUIRED = 402;
@@ -75,8 +72,7 @@ class StatusCode {
     const HTTP_UNSUPPORTED_MEDIA_TYPE = 415;
     const HTTP_REQUESTED_RANGE_NOT_SATISFIABLE = 416;
     const HTTP_EXPECTATION_FAILED = 417;
-    // [Server Error 5xx]
-
+    // Server Error 5xx
     const HTTP_INTERNAL_SERVER_ERROR = 500;
     const HTTP_NOT_IMPLEMENTED = 501;
     const HTTP_BAD_GATEWAY = 502;
@@ -85,11 +81,10 @@ class StatusCode {
     const HTTP_VERSION_NOT_SUPPORTED = 505;
 
     private static $messages = array(
-        // [Informational 1xx]
-
+        // Informational 1xx
         100 => '100 Continue',
         101 => '101 Switching Protocols',
-        // [Successful 2xx]
+        // Successful 2xx
         200 => '200 OK',
         201 => '201 Created',
         202 => '202 Accepted',
@@ -97,7 +92,7 @@ class StatusCode {
         204 => '204 No Content',
         205 => '205 Reset Content',
         206 => '206 Partial Content',
-        // [Redirection 3xx]
+        // Redirection 3xx
         300 => '300 Multiple Choices',
         301 => '301 Moved Permanently',
         302 => '302 Found',
@@ -106,7 +101,7 @@ class StatusCode {
         305 => '305 Use Proxy',
         306 => '306 (Unused)',
         307 => '307 Temporary Redirect',
-        // [Client Error 4xx]
+        // Client Error 4xx
         400 => '400 Bad Request',
         401 => '401 Unauthorized',
         402 => '402 Payment Required',
@@ -125,7 +120,7 @@ class StatusCode {
         415 => '415 Unsupported Media Type',
         416 => '416 Requested Range Not Satisfiable',
         417 => '417 Expectation Failed',
-        // [Server Error 5xx]
+        // Server Error 5xx
         500 => '500 Internal Server Error',
         501 => '501 Not Implemented',
         502 => '502 Bad Gateway',
@@ -134,13 +129,17 @@ class StatusCode {
         505 => '505 HTTP Version Not Supported'
     );
 
+    private function __construct() {
+        
+    }
+
     /**
      * 
      * @param int $code
      * @return string
      */
     public static function httpHeaderFor(int $code): string {
-        return 'HTTP/1.1 ' . self::$messages[$code];
+        return isset(self::$messages[$code]) ? 'HTTP/1.1 ' . self::$messages[$code] : null;
     }
 
     /**
@@ -149,7 +148,7 @@ class StatusCode {
      * @return string
      */
     public static function getMessageForCode(int $code): string {
-        return self::$messages[$code];
+        return isset(self::$messages[$code]) ? self::$messages[$code] : null;
     }
 
     /**
