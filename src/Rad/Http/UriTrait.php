@@ -27,7 +27,7 @@
 namespace Rad\Http;
 
 /**
- * UriInterface psr 7 compilant
+ * UriInterface psr7 compilant
  *
  * @author guillaume
  */
