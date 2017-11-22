@@ -33,83 +33,30 @@ namespace Rad\Http;
  */
 trait UriTrait {
 
-    public function getAuthority(): string {
-        return $this->host . ':' . $this->port;
+    /**
+     * 
+     * @return bool
+     */
+    public function isSecure(): bool {
+        return in_array($this->scheme, ['https', 'sftp']);
     }
 
-    public function getFragment(): string {
-        return $this->fragment;
+    /**
+     * 
+     * @return Uri
+     */
+    public static function getCurrentUrl(): Uri {
+        $url = new Uri('http' . (isset($_SERVER['HTTPS']) ? 's' : '') . '://' . "{$_SERVER['HTTP_HOST']}:{$_SERVER['SERVER_PORT']}{$_SERVER['REQUEST_URI']}");
+        return $url;
     }
 
-    public function getHost(): string {
-        return $this->host;
-    }
-
-    public function getPath(): string {
-        return $this->path;
-    }
-
-    public function getPort() {
-        return $this->port;
-    }
-
-    public function getQuery(): string {
-        return $this->query;
-    }
-
-    public function getQueryArray() {
-        return null !== $this->query ? parse_str($this->query) : null;
-    }
-
-    public function getScheme(): string {
-        return $this->scheme;
-    }
-
-    public function getUserInfo(): string {
-        return $this->user . ':' . $this->password;
-    }
-
-    public function withFragment($fragment): self {
-        $uri = clone $this;
-        $uri->fragment = $fragment;
-        return $uri;
-    }
-
-    public function withHost($host): self {
-        $uri = clone $this;
-        $uri->host = $host;
-        return $uri;
-    }
-
-    public function withPath($path): self {
-        $uri = clone $this;
-        $uri->path = $path;
-        return $uri;
-    }
-
-    public function withPort($port): self {
-        $uri = clone $this;
-        $uri->port = $port;
-        return $uri;
-    }
-
-    public function withQuery($query): self {
-        $uri = clone $this;
-        $uri->query = $query;
-        return $uri;
-    }
-
-    public function withScheme($scheme): self {
-        $uri = clone $this;
-        $uri->scheme = $scheme;
-        return $uri;
-    }
-
-    public function withUserInfo($user, $password = null): self {
-        $uri = clone $this;
-        $uri->user = $user;
-        $uri->password = $password;
-        return $uri;
+    /**
+     * Valid if current provided string is an URL
+     * @param string $url
+     * @return bool
+     */
+    public static function isURL(string $url): bool {
+        return (boolean) !(filter_var($url, FILTER_SANITIZE_URL | FILTER_VALIDATE_URL) === false);
     }
 
 }
