@@ -19,7 +19,7 @@ use Rad\Route\Route;
  */
 class Middleware {
 
-    private $layers;
+    protected $layers;
 
     /**
      * 
