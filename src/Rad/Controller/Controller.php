@@ -26,6 +26,8 @@
 
 namespace Rad\Controller;
 
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\SimpleCache\CacheInterface;
 use Rad\Cache\Cache;
 use Rad\Database\Database;
@@ -49,13 +51,13 @@ abstract class Controller extends Observable {
 
     /**
      *
-     * @var Request
+     * @var ServerRequestInterface
      */
     protected $request;
 
     /**
      *
-     * @var Response
+     * @var ResponseInterface
      */
     protected $response;
 
@@ -71,7 +73,7 @@ abstract class Controller extends Observable {
      * @param Response $response
      * @param Route $route
      */
-    public function __construct(Request $request = null, Response $response = null, Route $route = null) {
+    public function __construct(ServerRequestInterface $request = null, ResponseInterface $response = null, Route $route = null) {
         $this->request = $request;
         $this->response = $response;
         $this->route = $route;
@@ -79,17 +81,17 @@ abstract class Controller extends Observable {
 
     /**
      * 
-     * @return Request
+     * @return ServerRequestInterface
      */
-    protected function getRequest() {
+    protected function getRequest(): ServerRequestInterface {
         return $this->request;
     }
 
     /**
      * 
-     * @return Response
+     * @return ResponseInterface
      */
-    protected function getResponse() {
+    protected function getResponse(): ResponseInterface {
         return $this->response;
     }
 
@@ -97,7 +99,7 @@ abstract class Controller extends Observable {
      * 
      * @return Route
      */
-    protected function getRoute() {
+    protected function getRoute(): Route {
         return $this->route;
     }
 
