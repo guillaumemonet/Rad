@@ -29,8 +29,10 @@ namespace Rad;
 use ErrorException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Rad\Http\Request;
+use Psr\Http\Message\ServerRequestInterface;
+use Rad\Error\Http\NotFoundException;
 use Rad\Http\Response;
+use Rad\Http\ServerRequest;
 use Rad\Log\Log;
 use Rad\Route\RouteParser;
 use Rad\Route\Router;
@@ -66,7 +68,7 @@ abstract class Api {
     /**
      * 
      */
-    public function __construct($router = Router::class, $request = Request::class, $response = Response::class) {
+    public function __construct($router = Router::class, $request = ServerRequest::class, $response = Response::class) {
         $this->router = new $router;
         $this->request = new $request;
         $this->response = new $response;
@@ -83,16 +85,15 @@ abstract class Api {
                 $this->getRouter()->setRoutes(RouteParser::parseRoutes($this->addControllers()));
                 $this->getRouter()->save();
             }
-            $this->getRouter()->route(
-                    $this->getRequest(), $this->getResponse()
-            );
+            $this->getRouter()->route($this->getRequest(), $this->getResponse());
+            $this->getResponse()->send();
         } catch (ErrorException $ex) {
             Log::getHandler()->error($ex->getMessage());
-            $this->getResponse()->headerStatus($ex->getCode());
-            $this->getResponse()->setDataType($this->getRequest()->accept_type);
-            $this->getResponse()->setData($ex);
+            $response = new Response($ex->getCode());
+            $response->setDataType($this->getRequest()->accept_type);
+            $response->getBody()->write($ex);
+            $response->send();
         }
-        $this->getResponse()->send();
     }
 
     /**
@@ -100,7 +101,11 @@ abstract class Api {
      * @return RouterInterface
      */
     public function getRouter(): RouterInterface {
-        return $this->router;
+        if ($this->router !== null) {
+            return $this->router;
+        } else {
+            throw new NotFoundException("RouterInterface Not Defined");
+        }
     }
 
     /**
@@ -109,11 +114,12 @@ abstract class Api {
      */
     public function setRouter(RouterInterface $routeur) {
         $this->routeur = $routeur;
+        return $this;
     }
 
     /**
      * 
-     * @return Request
+     * @return ServerRequestInterface
      */
     public function getRequest() {
         return $this->request;
@@ -121,7 +127,7 @@ abstract class Api {
 
     /**
      * 
-     * @return Response
+     * @return ResponseInterface
      */
     public function getResponse() {
         return $this->response;
