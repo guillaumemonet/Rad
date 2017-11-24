@@ -95,9 +95,6 @@ class TreeNodeRoute {
     public function getRoute($array) {
         if (count($array) > 0) {
             $matching_nodes = $this->matchRoute(array_shift($array));
-            if (count($matching_nodes) == 0) {
-                return null;
-            }
             foreach ($matching_nodes as &$node) {
                 $ret = $node->getRoute($array);
                 if ($ret !== null) {
