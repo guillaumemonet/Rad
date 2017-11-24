@@ -17,12 +17,10 @@ trait RouteGetterTrait {
      * @return array
      */
     public function getMiddlewares() {
-        $ret = array();
+        $ret = [];
         foreach ($this->middlewares as $middle) {
             $ret[] = new $middle();
         }
-        $ret[] = new Pre_CheckConsume();
-        $ret[] = new Post_SetProduce();
         return $ret;
     }
 

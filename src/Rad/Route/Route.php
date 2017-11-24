@@ -23,11 +23,11 @@ class Route {
     protected $methodName;
     protected $verb;
     protected $regex;
-    protected $middlewares = array();
+    protected $middlewares = [];
     protected $produce = null;
     protected $consume = null;
-    protected $observers = array();
-    protected $args = array();
+    protected $observers = [];
+    protected $args = [];
 
     public function applyObservers(Observable $observable) {
         array_map(function($observer) use ($observable) {

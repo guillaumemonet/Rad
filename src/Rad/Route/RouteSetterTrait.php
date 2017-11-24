@@ -60,7 +60,6 @@ trait RouteSetterTrait {
      * @return $this
      */
     public function setArgs(array $args) {
-        array_shift($args);
         $this->args = $args;
         return $this;
     }

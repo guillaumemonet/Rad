@@ -26,6 +26,7 @@
 
 namespace Rad\Route;
 
+use Rad\Controller\Controller;
 use Rad\Log\Log;
 use ReflectionClass;
 use ReflectionMethod;
@@ -37,11 +38,7 @@ use ReflectionMethod;
  */
 abstract class RouteParser {
 
-    private static $allowed_methods = array("get", "post", "put", "patch", "delete", "options", "heads");
-    private static $middle = "middle";
-    private static $version = "api";
-    private static $consume = "consume";
-    private static $produce = "produce";
+    private static $allowed_methods = array("get", "post", "put", "patch", "delete");
     private static $annotationsArray = array(
         "middle" => "setMiddlewares",
         "api" => "setVersion",
@@ -60,18 +57,24 @@ abstract class RouteParser {
      */
     public static function parseRoutes(array $classes) {
         Log::getHandler()->debug("Generating Routes");
-        $routes = array();
+        $routes = [];
         array_map(function($class) use(&$routes) {
-            $methods = get_class_methods($class);
-            array_map(function($method)use (&$routes, $class) {
-                $route = new Route();
-                $route->setClassName($class)->setMethodName($method);
-                self::parseClassAnnotations($class, $route);
-                self::parseMethodAnnotations($class, $method, $route);
-                if (in_array($route->getVerb(), self::$allowed_methods)) {
-                    $routes[] = $route;
-                }
-            }, $methods);
+            Log::getHandler()->debug('Loading Class ' . $class);
+            if (is_subclass_of($class, Controller::class)) {
+                $methods = get_class_methods($class);
+                array_map(function($method)use (&$routes, $class) {
+                    Log::getHandler()->debug('Loading Method ' . $method);
+                    $route = new Route();
+                    $route->setClassName($class)->setMethodName($method);
+                    self::parseClassAnnotations($class, $route);
+                    self::parseMethodAnnotations($class, $method, $route);
+                    if (in_array($route->getVerb(), self::$allowed_methods)) {
+                        $routes[] = $route;
+                    }
+                }, $methods);
+            } else {
+                Log::debug("Not a Controller " . $class);
+            }
         }, $classes);
         return $routes;
     }
@@ -87,6 +90,11 @@ abstract class RouteParser {
         return self::getInfos($comments);
     }
 
+    /**
+     * 
+     * @param type $class
+     * @param type $route
+     */
     private static function parseClassAnnotations($class, $route) {
         $classAnnotations = self::getAnnotationsArray($class);
         array_walk($classAnnotations, function($annotation, $key) use ($route) {
@@ -121,7 +129,7 @@ abstract class RouteParser {
      * @return array
      */
     private static function getInfos(string $comments) {
-        $infos = array();
+        $infos = [];
         $array_comments = preg_split("/(\r?\n)/", $comments);
         array_map(function($line) use(&$infos) {
             // if starts with an asterisk
@@ -137,7 +145,7 @@ abstract class RouteParser {
                     $value = str_replace("@$param_name ", '', $info);
                     // if the param hasn't been added yet, create a key for it
                     if (!isset($infos[$param_name])) {
-                        $infos[$param_name] = array();
+                        $infos[$param_name] = [];
                     }
                     // push the param value into place
                     $infos[$param_name][] = $value;

@@ -26,22 +26,32 @@
 
 namespace Rad\Route;
 
+use Closure;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Rad\Cache\Cache;
+use Rad\Codec\Codec;
 use Rad\Error\Http\InternalErrorException;
 use Rad\Error\Http\NotFoundException;
-use Rad\Http\Request;
-use Rad\Http\Response;
 use Rad\Log\Log;
 use Rad\Middleware\Middleware;
 
 /**
- * Description of ApiRoute
+ * Description of Route
  *
  * @author Guillaume Monet
  */
 class Router implements RouterInterface {
 
-    private $path_array = array();
+    /**
+     *
+     * @var TreeNodeRoute[]
+     */
+    private $treeRoutes = [];
+
+    public function __construct() {
+        
+    }
 
     /**
      * 
@@ -49,9 +59,7 @@ class Router implements RouterInterface {
      * @return \self
      */
     public function addGetRoute(Route $route): self {
-        $this->path_array[$route->getVersion()]["GET"][] = $route;
-        Log::getHandler()->debug("GET Adding route " . $route->getRegExp());
-        return $this;
+        return $this->mapRoute('GET', $route);
     }
 
     /**
@@ -60,9 +68,7 @@ class Router implements RouterInterface {
      * @return \self
      */
     public function addPostRoute(Route $route): self {
-        $this->path_array[$route->getVersion()]["POST"][] = $route;
-        Log::getHandler()->debug("POST Adding route " . $route->getRegExp());
-        return $this;
+        return $this->mapRoute('POST', $route);
     }
 
     /**
@@ -71,9 +77,7 @@ class Router implements RouterInterface {
      * @return \self
      */
     public function addPutRoute(Route $route): self {
-        $this->path_array[$route->getVersion()]["PUT"][] = $route;
-        Log::getHandler()->debug("PUT Adding route " . $route->getRegExp());
-        return $this;
+        return $this->mapRoute('PUT', $route);
     }
 
     /**
@@ -82,9 +86,7 @@ class Router implements RouterInterface {
      * @return \self
      */
     public function addPatchRoute(Route $route): self {
-        $this->path_array[$route->getVersion()]["PATCH"][] = $route;
-        Log::getHandler()->debug("PATCH Adding route " . $route->getRegExp());
-        return $this;
+        return $this->mapRoute('PATCH', $route);
     }
 
     /**
@@ -93,9 +95,7 @@ class Router implements RouterInterface {
      * @return \self
      */
     public function addDeleteRoute(Route $route): self {
-        $this->path_array[$route->getVersion()]["DELETE"][] = $route;
-        Log::getHandler()->debug("DELETE Adding route " . $route->getRegExp());
-        return $this;
+        return $this->mapRoute('DELETE', $route);
     }
 
     /**
@@ -104,9 +104,7 @@ class Router implements RouterInterface {
      * @return \self
      */
     public function addOptionsRoute(Route $route): self {
-        $this->path_array[$route->getVersion()]["OPTIONS"][] = $route;
-        Log::getHandler()->debug("OPTIONS Adding route " . $route->getRegExp());
-        return $this;
+        return $this->mapRoute('OPTIONS', $route);
     }
 
     /**
@@ -117,7 +115,7 @@ class Router implements RouterInterface {
     public function setRoutes(array $routes): self {
         foreach ($routes as $route) {
             $method = "add" . ucfirst($route->getVerb()) . "Route";
-            $this->$method($route);
+            $this->{$method}($route);
         }
         return $this;
     }
@@ -131,38 +129,45 @@ class Router implements RouterInterface {
      * @return $this
      */
     public function mapRoute(string $method, Route $route) {
-        $this->{$method}($route);
+        if (!isset($this->treeRoutes[$method])) {
+            $this->treeRoutes[$method] = new TreeNodeRoute($method);
+        }
+        $this->treeRoutes[$method]->addFromArray(explode("/", trim($route->getRegExp(), '/')), $route);
+        Log::getHandler()->debug($method . ' Adding route ' . $route->getRegExp());
         return $this;
     }
 
+    /**
+     * 
+     * @return string
+     */
     public function __toString() {
         return print_r($this->path_array, true);
     }
 
     /**
      * 
-     * @param \Rad\Route\Request $request
-     * @param \Rad\Route\Response $response
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
      * @throws NotFoundException
      */
-    public function route(Request $request, Response $response) {
-        $version = $request->version;
-        $method = $request->method;
-        $path = $request->path;
-        Log::getHandler()->debug($version . " : " . $method . " Finding ");
-        if (isset($this->path_array[$version][$method])) {
-            Log::getHandler()->debug($method . " : " . $path . " Finding ");
-            $route = $this->filterRoutes($path, $this->path_array[$version][$method]);
+    public function route(ServerRequestInterface $request, ResponseInterface $response) {
+        $method = $request->getMethod();
+        $path = $request->getUri()->getPath();
+        $route = $this->treeRoutes[strtoupper($method)]->getRoute(explode('/', trim($path, '/')));
+        if ($route !== null) {
             Log::getHandler()->debug($method . " : " . $path . " Matching " . $route->getRegExp());
             $middleware = new Middleware($route->getMiddlewares());
             $classController = $route->getClassName();
-            $method = $route->getMethodName();
-            $datas = $middleware->call($request, $response, $route, function($request, $response, $route) use($classController, $method) {
+            $methodController = $route->getMethodName();
+            $datas = $middleware->call($request, $response, $route, function($request, $response, $route) use($classController, $methodController) {
                 $controller = new $classController($request, $response, $route);
                 $route->applyObservers($controller);
-                return $controller->{$method}($request, $response, $route);
+                return $controller->{$methodController}($request, $response, $route);
             });
-            $response->setData($datas);
+            $response->withAddedHeader('Content-Type', \Rad\Utils\Mime::getMimeTypesFromShort($route->getProcucedMimeType()));
+            $response->getBody()->write(Codec::getHandler($route->getProcucedMimeType())->serialize($datas));
+            return $response;
         } else {
             throw new NotFoundException("No Method " . $method . " found for " . $path);
         }
@@ -170,41 +175,19 @@ class Router implements RouterInterface {
 
     /**
      * 
-     * @param string $path
-     * @param array $routesArray
-     * @return Route
-     * @throws NotFoundException
-     * @throws InternalErrorException
      */
-    private function filterRoutes(string $path, array $routesArray): Route {
-        $ret = array_filter($routesArray, function($route) use ($path) {
-            $regExp = $route->getRegExp();
-            Log::getHandler()->debug("preg_match('$regExp','$path')");
-            $args = null;
-            if (preg_match($regExp, $path, $args)) {
-                $route->setArgs($args);
-                return true;
-            } else {
-                return false;
-            }
-        });
-        if (count($ret) == 1) {
-            return array_shift($ret);
-        } else if (count($ret) == 0) {
-            throw new NotFoundException("No route found for " . $path);
-        } else {
-            throw new InternalErrorException('Too much routes for ' . $path);
-        }
-    }
-
     public function save() {
-        Cache::getHandler()->set("RadRoute", serialize($this->path_array));
+        Cache::getHandler()->set("RadRoute", serialize($this->treeRoutes));
     }
 
+    /**
+     * 
+     * @return bool
+     */
     public function load(): bool {
         $routes = unserialize(Cache::getHandler()->get("RadRoute"));
         if (isset($routes) && $routes != null && sizeof($routes) > 0) {
-            $this->path_array = $routes;
+            $this->treeRoutes = $routes;
             return true;
         } else {
             return false;
