@@ -33,9 +33,15 @@ namespace Rad\Worker;
  */
 class Orderer {
 
-    public static function sendMessage($queue, $messageType, $message) {
+    /**
+     * 
+     * @param int $queue
+     * @param int $messageType
+     * @param mixed $message
+     */
+    public static function sendMessage(int $queue, int $messageType, $message): bool {
         $ip = msg_get_queue($queue);
-        msg_send($ip, $messageType, $message, true);
+        return msg_send($ip, $messageType, $message, true);
     }
 
 }
