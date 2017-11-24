@@ -26,26 +26,74 @@
 
 namespace Rad\Http;
 
+use Rad\Codec\Codec;
+use Rad\Utils\Mime;
+use Rad\Utils\StringUtils;
+
 /**
- * Description of ResponseTrait
+ * Non psr 7 methods
  *
  * @author guillaume
  */
 trait ResponseTrait {
 
-    public function getReasonPhrase(): string {
-        return $this->reasonPhrase;
+    private $type = null;
+    private $secret = null;
+
+    public function setDataType($type) {
+        $this->type = $type;
     }
 
-    public function getStatusCode(): int {
-        return $this->code;
+    public function setSecret($secret) {
+        $this->secret = $secret;
     }
 
-    public function withStatus($code, $reasonPhrase = ''): self {
-        $ret = clone $this;
-        $ret->code = $code;
-        $ret->reasonPhrase = $reasonPhrase;
-        return $ret;
+    public function send() {
+        $this->addHeader("Application-Nonce", $this->time);
+        $datas = Codec::getHandler($this->type)->serialize($this->getBody());
+        if ($this->secret != null) {
+            $this->addHeader("Signature", Codec::getHandler($this->type)->sign($datas, $this->secret));
+        }
+        foreach ($this->getHeaders() as $key => $value) {
+            header($key . ': ' . implode(';', $value));
+        }
+        echo $datas;
+    }
+
+    /**
+     * 
+     * @param string $type
+     * @param string $allow_origin
+     * @param string $vary
+     */
+    public function doResponse($type = "json", $allow_origin = "*", $vary = "User-Agent", $encoding = "utf-8") {
+        if ($allow_origin !== null) {
+            $this->addHeader('Access-Control-Allow-Origin', $allow_origin);
+        }
+        $this->addHeader("Access-Control-Expose-Headers", "Content-Range");
+        if (isset(Mime::MIME_TYPES[$type]) && Mime::MIME_TYPES[$type][0] !== null) {
+            $this->addHeader('Content-Type', Mime::MIME_TYPES[$type][0] . '; charset=' . $encoding);
+        } else {
+            $this->addHeader('Content-Type', Mime::MIME_TYPES["json"][0] . '; charset=' . $encoding);
+        }
+        if ($vary !== null) {
+            $this->addHeader('Vary', $vary);
+        }
+        $this->addHeader('X-Powered-By', 'Rad Framework');
+    }
+
+    /**
+     * @param int  $statusCode
+     * @param type $redirect_url
+     */
+    public static function headerStatus($statusCode, $redirect_url = null) {
+        if (StatusCode::httpHeaderFor($statusCode) !== null) {
+            header(StatusCode::httpHeaderFor($statusCode));
+            if ($redirect_url !== null && StringUtils::isURL($redirect_url)) {
+                header('Location: ' . $redirect_url);
+                exit;
+            }
+        }
     }
 
 }

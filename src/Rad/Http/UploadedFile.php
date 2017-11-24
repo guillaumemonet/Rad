@@ -26,37 +26,38 @@
 
 namespace Rad\Http;
 
+use Psr\Http\Message\StreamInterface;
+use Psr\Http\Message\UploadedFileInterface;
+
 /**
- * UriInterface psr7 non compilant method
+ * Description of UploadedFile
  *
  * @author guillaume
  */
-trait UriTrait {
+class UploadedFile implements UploadedFileInterface {
 
-    /**
-     * 
-     * @return bool
-     */
-    public function isSecure(): bool {
-        return in_array($this->scheme, ['https', 'sftp']);
+    public function getClientFilename() {
+        
     }
 
-    /**
-     * 
-     * @return Uri
-     */
-    public static function getCurrentUrl(): Uri {
-        $url = new Uri('http' . (isset($_SERVER['HTTPS']) ? 's' : '') . '://' . "{$_SERVER['HTTP_HOST']}:{$_SERVER['SERVER_PORT']}{$_SERVER['REQUEST_URI']}");
-        return $url;
+    public function getClientMediaType() {
+        
     }
 
-    /**
-     * Valid if current provided string is an URL
-     * @param string $url
-     * @return bool
-     */
-    public static function isURL(string $url): bool {
-        return (boolean) !(filter_var($url, FILTER_SANITIZE_URL | FILTER_VALIDATE_URL) === false);
+    public function getError(): int {
+        
+    }
+
+    public function getSize() {
+        
+    }
+
+    public function getStream(): StreamInterface {
+        
+    }
+
+    public function moveTo($targetPath) {
+        
     }
 
 }

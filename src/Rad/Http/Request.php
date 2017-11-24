@@ -27,6 +27,8 @@
 namespace Rad\Http;
 
 use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\StreamInterface;
+use Psr\Http\Message\UriInterface;
 use Rad\Error\Http\MethodNotAllowedException;
 use Rad\Error\Http\RequestedRangeException;
 
@@ -35,22 +37,34 @@ use Rad\Error\Http\RequestedRangeException;
  *
  * @author Admin
  */
-final class Request {//implements RequestInterface {
+class Request implements RequestInterface {
 
-    //use MessageTrait;
-    //use RequestTrait;
+    use MessageTrait;
+    use RequestTrait;
 
     /**
      *
-     * @var array
+     * @var UriInterface
      */
+    protected $uri = null;
+
+    /**
+     *
+     * @var string
+     */
+    protected $method = null;
+
+    /**
+     *
+     * @var string
+     */
+    protected $requestTarget;
     private $allowed_method = array("POST", "GET", "PATCH", "PUT", "OPTIONS");
     private $_datas = null;
     private $cache = false;
-    public $method = null;
-    public $path_datas = array();
-    public $get_datas = array();
-    public $post_datas = array();
+    public $path_datas = [];
+    public $get_datas = [];
+    public $post_datas = [];
     public $signature = null;
     public $authority = null;
     public $content_type = null;
@@ -63,24 +77,25 @@ final class Request {//implements RequestInterface {
     public $customer = null;
     public $limit = null;
     public $offset = null;
-    public $version = null;
     public $path = null;
-    public $uri = null;
 
-    public function __construct() {
+    public function __construct(string $method = 'GET', array $headers = [], UriInterface $uri = null, StreamInterface $body = null) {
 
-        $this->method = strtoupper(self::getHeader("REQUEST_METHOD"));
+        $this->body = $body ? $body : new Body(fopen('php://input', 'r+'));
+        $this->setHeaders($headers);
+        $this->uri = $uri;
+        $this->method = strtoupper($method);
         if (!in_array($this->method, $this->allowed_method)) {
             throw new MethodNotAllowedException();
         }
-        $this->authority = self::getHeader("HTTP_AUTHORITY");
-        $this->signature = self::getHeader("HTTP_SIGNATURE");
-        $this->content_type = self::getHeader("CONTENT_TYPE");
-        $this->accept_type = self::getHeader("HTTP_ACCEPT_TYPE");
-        $this->appname = self::getHeader("HTTP_APPNAME");
-        $this->context = self::getHeader("HTTP_CONTEXT");
-        $this->cache = !(self::getHeader("HTTP_CACHE_CONTROL") == "no-cache");
-        $range = self::getHeader("HTTP_RANGE");
+        $this->authority = $this->getHeader("HTTP_AUTHORITY");
+        $this->signature = $this->getHeader("HTTP_SIGNATURE");
+        $this->content_type = $this->getHeader("CONTENT_TYPE");
+        $this->accept_type = $this->getHeader("HTTP_ACCEPT_TYPE");
+        $this->appname = $this->getHeader("HTTP_APPNAME");
+        $this->context = $this->getHeader("HTTP_CONTEXT");
+        $this->cache = !($this->getHeader("HTTP_CACHE_CONTROL") == "no-cache");
+        $range = $this->getHeader("HTTP_RANGE");
         if ($range != null && strlen($range) > 0) {
             $limits = explode("-", $range);
             if (count($limits) > 2 || count($limits) == 0) {
@@ -99,9 +114,6 @@ final class Request {//implements RequestInterface {
             $path = explode("/", trim(Uri::getCurrentUrl()->getPath(), "/"));
             $this->version = (int) str_replace("v", "", array_shift($path));
             $this->path = trim(filter_var(implode("/", $path), FILTER_SANITIZE_STRING), "/");
-            if ($this->method == "POST") {
-                $this->_datas = file_get_contents("php://input");
-            }
         }
         $post = filter_input_array(INPUT_POST);
         if ($post !== null && is_array($post)) {
@@ -120,147 +132,28 @@ final class Request {//implements RequestInterface {
         }
     }
 
-    public function enabledCors() {
-        if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
-            if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD']) && (
-                    $_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD'] == 'POST' ||
-                    $_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD'] == 'DELETE' ||
-                    $_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD'] == 'PUT' ||
-                    $_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD'] == 'GET' )) {
-                header('Access-Control-Allow-Origin: *');
-                header("Access-Control-Allow-Credentials: true");
-                header('Access-Control-Allow-Headers: X-Requested-With');
-                header('Access-Control-Allow-Headers: Content-Type');
-                header('Access-Control-Allow-Headers: Accept-Type');
-                header('Access-Control-Allow-Headers: Range');
-                header('Access-Control-Allow-Headers: Content-Range');
-                header('Access-Control-Allow-Headers: Appname');
-                header('Access-Control-Allow-Headers: Context');
-                header('Access-Control-Allow-Headers: Signature');
-                header('Access-Control-Allow-Methods: POST, GET, OPTIONS, DELETE, PUT'); // http://stackoverflow.com/a/7605119/578667
-                header('Access-Control-Max-Age: 86400');
-            }
-            exit;
-        }
-    }
-
-    public function getRequestURI() {
-        return $_SERVER["REQUEST_URI"];
-    }
-
-    /**
-     * 
-     */
-    protected function checkMethod(): bool {
+    public function getRequestTarget(): string {
         
     }
 
-    public function getDatas() {
-        return $this->_datas;
+    public function getUri(): UriInterface {
+        return $this->uri;
     }
 
-    public function isCache() {
-        return $this->cache;
+    public function withMethod($method): self {
+        $ret = clone $this;
+        $ret->method = $method;
+        return $ret;
     }
 
-    public function getMethod() {
-        return $this->method;
+    public function withRequestTarget($requestTarget): self {
+        
     }
 
-    public function getPath() {
-        return $this->path;
-    }
-
-    /**
-     * Check if current connection is secure.
-     *
-     * @return bool
-     */
-    public function isSecure(): bool {
-        return (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERVER_PORT'] == 443;
-    }
-
-    /**
-     * Return if requested by a bot
-     */
-    public function isBot(): bool {
-        return Bot::isBot();
-    }
-
-    /**
-     * Return the current server name
-     * @return string
-     */
-    public function getHost(): string {
-        return $_SERVER['SERVER_NAME'];
-    }
-
-    /**
-     * 
-     * @return bool
-     */
-    public function isXhr(): bool {
-        return isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
-    }
-
-    /**
-     * 
-     * @return strings
-     */
-    public function getDomain() {
-        $h = $_SERVER['SERVER_NAME'];
-        $a = explode(".", $h);
-        if (count($a) > 1) {
-            return $a[count($a) - 2] . "." . $a[count($a) - 1];
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * If your visitor comes from proxy server you have use another function
-     * to get a real IP address:
-     * @return string or false if no ip get
-     */
-    public function getRealIPAddress() {
-        $ip = null;
-        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-            //check ip from share internet
-            $ip = $_SERVER['HTTP_CLIENT_IP'];
-        } else if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            //to check ip is pass from proxy
-            $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-        } else {
-            $ip = $_SERVER['REMOTE_ADDR'];
-        }
-        return filter_var($ip, FILTER_VALIDATE_IP);
-    }
-
-    /**
-     * 
-     * @param string $header
-     * @return string
-     */
-    public function getHeader($header) {
-        if (isset($_SERVER[$header])) {
-            return $_SERVER[$header];
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * 
-     * @return array
-     */
-    public function getHeaders() {
-        $headers = array();
-        foreach ($_SERVER as $name => $value) {
-            if (substr($name, 0, 5) == 'HTTP_') {
-                $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
-            }
-        }
-        return $headers;
+    public function withUri(UriInterface $uri, $preserveHost = false): self {
+        $ret = clone $this;
+        $uri = $this->getUri()->getAuthority() . "";
+        return $ret;
     }
 
 }

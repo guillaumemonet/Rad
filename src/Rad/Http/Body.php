@@ -27,36 +27,10 @@
 namespace Rad\Http;
 
 /**
- * UriInterface psr7 non compilant method
+ * Description of Body
  *
  * @author guillaume
  */
-trait UriTrait {
-
-    /**
-     * 
-     * @return bool
-     */
-    public function isSecure(): bool {
-        return in_array($this->scheme, ['https', 'sftp']);
-    }
-
-    /**
-     * 
-     * @return Uri
-     */
-    public static function getCurrentUrl(): Uri {
-        $url = new Uri('http' . (isset($_SERVER['HTTPS']) ? 's' : '') . '://' . "{$_SERVER['HTTP_HOST']}:{$_SERVER['SERVER_PORT']}{$_SERVER['REQUEST_URI']}");
-        return $url;
-    }
-
-    /**
-     * Valid if current provided string is an URL
-     * @param string $url
-     * @return bool
-     */
-    public static function isURL(string $url): bool {
-        return (boolean) !(filter_var($url, FILTER_SANITIZE_URL | FILTER_VALIDATE_URL) === false);
-    }
-
+class Body extends Stream {
+    
 }

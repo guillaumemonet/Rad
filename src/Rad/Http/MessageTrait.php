@@ -38,8 +38,13 @@ use Psr\Http\Message\StreamInterface;
  */
 trait MessageTrait {
 
-    protected $headers = array();
+    protected $headers = [];
     protected $version = '1.1';
+
+    /**
+     *
+     * @var StreamInterface
+     */
     protected $body = null;
 
     public function getBody(): StreamInterface {
@@ -99,16 +104,22 @@ trait MessageTrait {
 
     protected function addHeader($name, $value) {
         if (!$this->hasHeader($name)) {
-            $this->headers[$name] = array();
+            $this->headers[$name] = [];
         }
         $this->headers[$name][] = $value;
     }
 
     protected function setHeader($name, $value) {
         if (!$this->hasHeader($name)) {
-            $this->headers[$name] = array();
+            $this->headers[$name] = [];
         }
-        $this->headers[$name] = array($value);
+        $this->headers[$name] = [$value];
+    }
+
+    protected function setHeaders(array $headers) {
+        array_walk($headers, function($value, $key) {
+            $this->addHeader($key, $value);
+        });
     }
 
 }
