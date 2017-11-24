@@ -40,7 +40,7 @@ abstract class Model extends ModelDAO implements JsonSerializable {
     }
 
     public function generateResourceURI() {
-        $this->resource_uri = Config::get("api", "url") . "v" . Config::get("api", "version") . "/" . strtolower($this->getResourceName()) . "/" . $this->getID();
+        $this->resource_uri = Config::get('api', 'url') . '/' . strtolower($this->getResourceName()) . '/' . $this->getID();
     }
 
     /**
