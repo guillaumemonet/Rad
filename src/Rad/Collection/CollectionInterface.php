@@ -28,14 +28,14 @@ namespace Rad\Collection;
 
 use ArrayAccess;
 use Countable;
-use Psr\Container\ContainerInterface;
+use IteratorAggregate;
 
 /**
  * Description of CollectionInterface
  *
  * @author guillaume
  */
-interface CollectionInterface extends ArrayAccess, Countable, IteratorAggregate, ContainerInterface {
+interface CollectionInterface extends ArrayAccess, Countable, IteratorAggregate {
 
     public function set(string $key, $value);
 

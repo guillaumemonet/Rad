@@ -38,7 +38,7 @@ class Collection implements CollectionInterface {
     /**
      * @var array
      */
-    protected $data = array();
+    protected $data = [];
 
     /**
      * 
@@ -114,7 +114,7 @@ class Collection implements CollectionInterface {
      * 
      */
     public function clear() {
-        $this->data = array();
+        $this->data = [];
     }
 
     /**
