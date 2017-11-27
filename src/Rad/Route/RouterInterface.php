@@ -52,5 +52,5 @@ interface RouterInterface {
 
     public function setRoutes(array $routes);
 
-    public function route(ServerRequestInterface $request, ResponseInterface $response);
+    public function route(ServerRequestInterface &$request, ResponseInterface &$response);
 }

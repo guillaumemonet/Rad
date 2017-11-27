@@ -26,15 +26,14 @@
 
 namespace Rad\Route;
 
-use Closure;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Rad\Cache\Cache;
 use Rad\Codec\Codec;
-use Rad\Error\Http\InternalErrorException;
 use Rad\Error\Http\NotFoundException;
 use Rad\Log\Log;
 use Rad\Middleware\Middleware;
+use Rad\Utils\Mime;
 
 /**
  * Description of Route
@@ -151,7 +150,7 @@ class Router implements RouterInterface {
      * @param ResponseInterface $response
      * @throws NotFoundException
      */
-    public function route(ServerRequestInterface $request, ResponseInterface $response) {
+    public function route(ServerRequestInterface &$request, ResponseInterface &$response) {
         $method = $request->getMethod();
         $path = $request->getUri()->getPath();
         $route = $this->treeRoutes[strtoupper($method)]->getRoute(explode('/', trim($path, '/')));
@@ -160,12 +159,12 @@ class Router implements RouterInterface {
             $middleware = new Middleware($route->getMiddlewares());
             $classController = $route->getClassName();
             $methodController = $route->getMethodName();
-            $datas = $middleware->call($request, $response, $route, function($request, $response, $route) use($classController, $methodController) {
+            $datas = $middleware->call($request, $response, $route, function(&$request, &$response, &$route) use($classController, $methodController) {
                 $controller = new $classController($request, $response, $route);
                 $route->applyObservers($controller);
-                return $controller->{$methodController}($request, $response, $route);
+                return $controller->{$methodController}();
             });
-            $response->withAddedHeader('Content-Type', \Rad\Utils\Mime::getMimeTypesFromShort($route->getProcucedMimeType()));
+            $response = $response->withAddedHeader('Content-Type', Mime::getMimeTypesFromShort($route->getProcucedMimeType())[0]);
             $response->getBody()->write(Codec::getHandler($route->getProcucedMimeType())->serialize($datas));
             return $response;
         } else {

@@ -37,7 +37,7 @@ class Route {
     }
 
     public function __toString() {
-        return "Route " . strtoupper($this->verb) . " : /v" . $this->version . "/" . $this->regex . " call " . $this->className . "->" . $this->methodName;
+        return "Route " . strtoupper($this->verb) .  "/" . $this->regex . " call " . $this->className . "->" . $this->methodName;
     }
 
 }
