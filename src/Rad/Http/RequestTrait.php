@@ -26,8 +26,6 @@
 
 namespace Rad\Http;
 
-use Psr\Http\Message\UriInterface;
-
 /**
  * Description of RequestTrait
  *

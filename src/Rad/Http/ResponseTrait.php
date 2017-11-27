@@ -49,13 +49,14 @@ trait ResponseTrait {
     }
 
     public function send() {
+        $this->doResponse();
         $this->addHeader("Application-Nonce", $this->time);
         $datas = Codec::getHandler($this->type)->serialize($this->getBody());
         if ($this->secret != null) {
             $this->addHeader("Signature", Codec::getHandler($this->type)->sign($datas, $this->secret));
         }
         foreach ($this->getHeaders() as $key => $value) {
-            header($key . ': ' . implode(';', $value));
+            header($key . ': ' . $this->getHeaderLine($key));
         }
         echo $datas;
     }

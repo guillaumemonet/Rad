@@ -52,7 +52,7 @@ trait MessageTrait {
     }
 
     public function getHeader($name) {
-        return isset($this->headers[strtolower($name)]) ? $this->headers[strtolower($name)] : null;
+        return isset($this->headers[$name]) ? $this->headers[$name] : null;
     }
 
     public function getHeaderLine($name): string {
