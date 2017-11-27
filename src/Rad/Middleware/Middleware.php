@@ -10,8 +10,6 @@ use Closure;
 use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Rad\Http\Request;
-use Rad\Http\Response;
 use Rad\Route\Route;
 
 /**
@@ -56,7 +54,7 @@ class Middleware {
      * @param Closure $core
      * @return type
      */
-    public function call(ServerRequestInterface $request, ResponseInterface &$response, Route $route, Closure $core) {
+    public function call(ServerRequestInterface &$request, ResponseInterface &$response, Route &$route, Closure $core) {
         $coreFunction = $this->createCoreFunction($core);
         $layers = $this->layers;
         $completeOnion = array_reduce($layers, function($nextLayer, $layer) {
@@ -79,8 +77,8 @@ class Middleware {
      * @return Closure
      */
     private function createCoreFunction(Closure $core): Closure {
-        return function(ServerRequestInterface $request, ResponseInterface &$response, Route $route) use($core) {
-            return call_user_func_array($core, [$request, &$response, $route]);
+        return function(ServerRequestInterface &$request, ResponseInterface &$response, Route &$route) use($core) {
+            return call_user_func_array($core, [&$request, &$response, &$route]);
         };
     }
 
@@ -91,8 +89,8 @@ class Middleware {
      * @return Closure
      */
     private function createLayer($nextLayer, $layer): Closure {
-        return function(ServerRequestInterface $request, ResponseInterface &$response, Route $route) use($nextLayer, $layer) {
-            return call_user_func_array([$layer, 'call'], [$request, &$response, $route, $nextLayer]);
+        return function(ServerRequestInterface $request, ResponseInterface &$response, Route &$route) use($nextLayer, $layer) {
+            return call_user_func_array([$layer, 'call'], [&$request, &$response, &$route, $nextLayer]);
         };
     }
 
