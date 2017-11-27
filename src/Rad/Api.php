@@ -30,6 +30,7 @@ use ErrorException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Rad\Controller\Controller;
 use Rad\Error\Http\NotFoundException;
 use Rad\Http\Response;
 use Rad\Http\ServerRequest;
@@ -43,7 +44,7 @@ use Rad\Route\RouterInterface;
  *
  * @author Guillaume Monet
  */
-abstract class Api {
+class Api {
 
     const VERSION = '1.0';
 
@@ -66,6 +67,12 @@ abstract class Api {
     protected $response = null;
 
     /**
+     *
+     * @var Controller[] 
+     */
+    private $controllers = [];
+
+    /**
      * 
      */
     public function __construct($router = Router::class, $request = ServerRequest::class, $response = Response::class) {
@@ -82,10 +89,10 @@ abstract class Api {
     public final function run() {
         try {
             if (!$this->getRouter()->load()) {
-                $this->getRouter()->setRoutes(RouteParser::parseRoutes($this->addControllers()));
+                $this->getRouter()->setRoutes(RouteParser::parseRoutes($this->getControllers()));
                 $this->getRouter()->save();
             }
-            $this->getRouter()->route($this->getRequest(), $this->getResponse());
+            $this->getRouter()->route($this->request, $this->response);
             $this->getResponse()->send();
         } catch (ErrorException $ex) {
             Log::getHandler()->error($ex->getMessage());
@@ -133,5 +140,42 @@ abstract class Api {
         return $this->response;
     }
 
-    public abstract function addControllers(): array;
+    /**
+     * 
+     * @param array $controllers
+     * @return $this
+     */
+    public function addControllers(array $controllers) {
+        $this->controllers += $controllers;
+        return $this;
+    }
+
+    /**
+     * 
+     * @param array $controllers
+     * @return $this
+     */
+    public function setControllers(array $controllers) {
+        $this->controllers = $controllers;
+        return $this;
+    }
+
+    /**
+     * 
+     * @param Controller $controller
+     * @return $this
+     */
+    public function addController($controller) {
+        $this->controllers[] = $controller;
+        return $this;
+    }
+
+    /**
+     * 
+     * @return Controller[]
+     */
+    public function getControllers() {
+        return $this->controllers;
+    }
+
 }
