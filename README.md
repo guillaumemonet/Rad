@@ -37,15 +37,6 @@ use Rad\Utils\Time;
  *
  * @author Guillaume Monet
  */
-class App extends Api {
-
-    public function addControllers(): array {
-        return array(
-            MyController::class
-        );
-    }
-
-}
 
 class MyController extends Controller {
 
@@ -90,8 +81,10 @@ Config::set("log", "type", "file");
 Config::set("log", "error", 1);
 Config::set("log", "debug", 1);
 Config::set("log", "enabled", 1);
-$app = new App();
-$app->run();
+$app = new Api();
+$app->addControllers([
+    MyController::class
+    ])->run();
 $ltime = Time::get_microtime();
 Log::getHandler()->error("API REQUEST [" . round($ltime - $time, 5) . "]");
 
