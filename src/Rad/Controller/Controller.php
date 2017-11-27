@@ -32,8 +32,6 @@ use Psr\SimpleCache\CacheInterface;
 use Rad\Cache\Cache;
 use Rad\Database\Database;
 use Rad\Database\DatabaseAdapter;
-use Rad\Http\Request;
-use Rad\Http\Response;
 use Rad\Mail\Mail;
 use Rad\Observer\Observable;
 use Rad\Route\Route;
@@ -69,8 +67,8 @@ abstract class Controller extends Observable {
 
     /**
      * 
-     * @param Request $request
-     * @param Response $response
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
      * @param Route $route
      */
     public function __construct(ServerRequestInterface $request = null, ResponseInterface $response = null, Route $route = null) {
