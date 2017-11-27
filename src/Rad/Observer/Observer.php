@@ -33,5 +33,5 @@ namespace Rad\Observer;
  */
 abstract class Observer {
 
-    abstract function update(Observable $observable);
+    public function update(Observable $observable);
 }
