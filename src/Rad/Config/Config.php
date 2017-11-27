@@ -29,11 +29,11 @@ namespace Rad\Config;
 /**
  * 
  */
-final class Config {
+abstract class Config {
 
     private static $config = array();
 
-    private function __construc() {
+    private function __construct() {
         
     }
 
@@ -52,11 +52,8 @@ final class Config {
      * @param string $row
      * @return string
      */
-    public static function get($section, $row = null) {
-        if (count(self::$config) === 0) {
-            self::load();
-        }
-        if ($row == null) {
+    public static function get(string $section, $row = null) {
+        if ($row === null) {
             return isset(self::$config[$section]) ? self::$config[$section] : null;
         } else {
             return isset(self::$config[$section][$row]) ? self::$config[$section][$row] : null;
@@ -67,9 +64,19 @@ final class Config {
      * 
      * @param type $section
      * @param type $row
+     * @return type
+     */
+    public static function has(string $section, $row = null) {
+        return $row === null ? isset(self::$config[$section]) : isset(self::$config[$section][$row]);
+    }
+
+    /**
+     * 
+     * @param type $section
+     * @param type $row
      * @param type $value
      */
-    public static function set($section, $row, $value) {
+    public static function set(string $section, string $row, $value) {
         self::$config[$section][$row] = $value;
     }
 
