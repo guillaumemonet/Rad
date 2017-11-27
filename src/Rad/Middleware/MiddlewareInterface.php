@@ -7,8 +7,8 @@
 namespace Rad\Middleware;
 
 use Closure;
-use Rad\Http\Request;
-use Rad\Http\Response;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Rad\Route\Route;
 
 /**
@@ -20,18 +20,18 @@ interface MiddlewareInterface {
 
     /**
      * 
-     * @param Request $request
-     * @param Response $response
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
      * @param Route $route
      * @param Closure $next
      */
-    public function call(Request $request, Response $response, Route $route, Closure $next);
+    public function call(ServerRequestInterface &$request, ResponseInterface &$response, Route &$route, Closure $next);
 
     /**
      * 
-     * @param Request $request
-     * @param Response $response
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
      * @param Route $route
      */
-    public function middle(Request $request, Response $response, Route $route);
+    public function middle(ServerRequestInterface &$request, ResponseInterface &$response, Route &$route);
 }
