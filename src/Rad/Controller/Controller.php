@@ -81,7 +81,7 @@ abstract class Controller extends Observable {
      * 
      * @return ServerRequestInterface
      */
-    protected function getRequest(): ServerRequestInterface {
+    public function getRequest(): ServerRequestInterface {
         return $this->request;
     }
 
@@ -89,7 +89,7 @@ abstract class Controller extends Observable {
      * 
      * @return ResponseInterface
      */
-    protected function getResponse(): ResponseInterface {
+    public function getResponse(): ResponseInterface {
         return $this->response;
     }
 
@@ -97,7 +97,7 @@ abstract class Controller extends Observable {
      * 
      * @return Route
      */
-    protected function getRoute(): Route {
+    public function getRoute(): Route {
         return $this->route;
     }
 
