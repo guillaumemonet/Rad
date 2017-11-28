@@ -40,7 +40,7 @@ abstract class RouteParser {
 
     private static $allowed_methods = array("get", "post", "put", "patch", "delete");
     private static $annotationsArray = array(
-        "middle" => "setMiddlewares",
+        "middleware" => "setMiddlewares",
         "api" => "setVersion",
         "consume" => "setConsume",
         "produce" => "setProduce",
