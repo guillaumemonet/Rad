@@ -30,7 +30,6 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
 use Rad\Error\Http\MethodNotAllowedException;
-use Rad\Error\Http\RequestedRangeException;
 
 /**
  * Description of Request.
@@ -60,8 +59,6 @@ class Request implements RequestInterface {
      */
     protected $requestTarget;
     private $allowed_method = array("POST", "GET", "PATCH", "PUT", "OPTIONS");
-    private $_datas = null;
-    private $cache = false;
     public $path_datas = [];
     public $get_datas = [];
     public $post_datas = [];
@@ -80,56 +77,13 @@ class Request implements RequestInterface {
     public $path = null;
 
     public function __construct(string $method = 'GET', array $headers = [], UriInterface $uri = null, StreamInterface $body = null) {
-
-        $this->body = $body ? $body : new Body(fopen('php://input', 'r+'));
-        $this->setHeaders($headers);
-        $this->uri = $uri;
         $this->method = strtoupper($method);
         if (!in_array($this->method, $this->allowed_method)) {
             throw new MethodNotAllowedException();
         }
-        $this->authority = $this->getHeader("HTTP_AUTHORITY");
-        $this->signature = $this->getHeader("HTTP_SIGNATURE");
-        $this->content_type = $this->getHeader("CONTENT_TYPE");
-        $this->accept_type = $this->getHeader("HTTP_ACCEPT_TYPE");
-        $this->appname = $this->getHeader("HTTP_APPNAME");
-        $this->context = $this->getHeader("HTTP_CONTEXT");
-        $this->cache = !($this->getHeader("HTTP_CACHE_CONTROL") == "no-cache");
-        $range = $this->getHeader("HTTP_RANGE");
-        if ($range != null && strlen($range) > 0) {
-            $limits = explode("-", $range);
-            if (count($limits) > 2 || count($limits) == 0) {
-                throw new RequestedRangeException();
-            } else {
-                $this->limit = (int) $limits[0];
-                $this->offset = (int) $limits[1];
-            }
-        }
-        $array_authority = explode(":", $this->authority);
-        if (sizeof($array_authority) == 2) {
-            $this->user_name = $array_authority[0];
-            $this->user_token = $array_authority[1];
-        }
-        if (isset($_SERVER["REQUEST_URI"])) {
-            $path = explode("/", trim(Uri::getCurrentUrl()->getPath(), "/"));
-            $this->version = (int) str_replace("v", "", array_shift($path));
-            $this->path = trim(filter_var(implode("/", $path), FILTER_SANITIZE_STRING), "/");
-        }
-        $post = filter_input_array(INPUT_POST);
-        if ($post !== null && is_array($post)) {
-            foreach ($post as $key => $value) {
-                $this->post_datas[$key] = $value;
-            }
-        }
-        $_GET = array_diff_key($_GET, array("api_path" => "", "api_version" => ""));
-        $get = filter_input_array(INPUT_GET);
-        if ($get !== null && is_array($get)) {
-            foreach ($get as $key => $value) {
-                if ($key != "api_path" && $key != "api_version") {
-                    $this->get_datas[$key] = $value;
-                }
-            }
-        }
+        $this->body = $body ? $body : new Body(fopen('php://input', 'r+'));
+        $this->setHeaders($headers);
+        $this->uri = $uri;
     }
 
     public function getRequestTarget(): string {

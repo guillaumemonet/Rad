@@ -49,8 +49,7 @@ trait ResponseTrait {
     }
 
     public function send() {
-        $this->doResponse();
-        $this->addHeader("Application-Nonce", $this->time);
+        //$this->doResponse();
         $datas = Codec::getHandler($this->type)->serialize($this->getBody());
         if ($this->secret != null) {
             $this->addHeader("Signature", Codec::getHandler($this->type)->sign($datas, $this->secret));
@@ -80,7 +79,6 @@ trait ResponseTrait {
         if ($vary !== null) {
             $this->addHeader('Vary', $vary);
         }
-        $this->addHeader('X-Powered-By', 'Rad Framework');
     }
 
     /**

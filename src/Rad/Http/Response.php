@@ -52,6 +52,8 @@ class Response implements ResponseInterface {
 
         $this->body = $body ? $body : new Body(fopen('php://temp', 'r+'));
         $this->setHeaders($headers);
+        $this->addHeader("Application-Nonce", $this->time);
+        $this->addHeader('X-Powered-By', 'Rad Framework');
     }
 
     public function getReasonPhrase(): string {
