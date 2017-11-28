@@ -2,13 +2,10 @@
 
 require(__DIR__ . "/../vendor/autoload.php");
 
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
 use Rad\Api;
 use Rad\Config\Config;
 use Rad\Controller\Controller;
 use Rad\Log\Log;
-use Rad\Route\Route;
 use Rad\Utils\Time;
 
 /*
@@ -59,8 +56,7 @@ class MyController extends Controller {
      * @produce json
      */
     public function jsonHelloWorld() {
-        //$this->response = $this->response->withAddedHeader('Hello', 'Moto');
-        
+        $this->response = $this->response->withAddedHeader('Hello', 'Moto');
         return array("Hello World");
     }
 
@@ -72,7 +68,7 @@ class MyController extends Controller {
      * @produce html
      */
     public function namedHelloWorld() {
-        return '<b>Hello World</b> ' . $route->getArgs()[0] . " to " . $this->getRoute()->getArgs()[1];
+        return '<b>Hello World</b> ' . $this->route->getArgs()[0] . " to " . $this->route->getArgs()[1];
     }
 
     /**
@@ -83,8 +79,8 @@ class MyController extends Controller {
      * @produce html
      * @consume json
      */
-    public function serverRequest(ServerRequestInterface $request, ResponseInterface $response, Route $route) {
-        return print_r($request->getHeader('HTTP_ACCEPT')[0], true);
+    public function serverRequest() {
+        return print_r($this->request->getHeader('HTTP_ACCEPT')[0], true);
     }
 
 }

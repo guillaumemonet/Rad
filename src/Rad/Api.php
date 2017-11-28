@@ -28,7 +28,6 @@ namespace Rad;
 
 use ErrorException;
 use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Rad\Controller\Controller;
 use Rad\Error\Http\NotFoundException;
@@ -90,7 +89,7 @@ class Api {
         } catch (ErrorException $ex) {
             Log::getHandler()->error($ex->getMessage());
             $response = new Response($ex->getCode());
-            $response->setDataType($this->getRequest()->accept_type);
+            $response->setDataType($this->getRequest()->getHeader("Accept-Type"));
             $response->getBody()->write($ex);
             $response->send();
         }
