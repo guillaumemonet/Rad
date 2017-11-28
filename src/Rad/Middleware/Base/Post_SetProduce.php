@@ -26,10 +26,11 @@
 
 namespace Rad\Middleware\Base;
 
-use Rad\Http\Request;
-use Rad\Http\Response;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Rad\Middleware\MiddlewareAfter;
 use Rad\Route\Route;
+use Rad\Utils\Mime;
 
 /**
  * Description of Post_SetProduce
@@ -38,11 +39,11 @@ use Rad\Route\Route;
  */
 class Post_SetProduce extends MiddlewareAfter {
 
-    public function middle(Request $request, Response $response, Route $route) {
+    public function middle(ServerRequestInterface $request, ResponseInterface $response, Route $route): ResponseInterface {
         if ($route->getProcucedMimeType() !== null) {
-            $response->setDataType($route->getProcucedMimeType());
+            $response = $response->withAddedHeader("Content-Type", Mime::getMimeTypesFromShort($route->getProcucedMimeType())[0]);
         }
-        return true;
+        return $response;
     }
 
 }

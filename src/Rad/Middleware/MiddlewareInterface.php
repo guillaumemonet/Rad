@@ -25,7 +25,7 @@ interface MiddlewareInterface {
      * @param Route $route
      * @param Closure $next
      */
-    public function call(ServerRequestInterface &$request, ResponseInterface &$response, Route &$route, Closure $next);
+    public function call(ServerRequestInterface $request, ResponseInterface $response, Route $route, Closure $next): ResponseInterface;
 
     /**
      * 
@@ -33,5 +33,5 @@ interface MiddlewareInterface {
      * @param ResponseInterface $response
      * @param Route $route
      */
-    public function middle(ServerRequestInterface &$request, ResponseInterface &$response, Route &$route);
+    public function middle(ServerRequestInterface $request, ResponseInterface $response, Route $route): ResponseInterface;
 }

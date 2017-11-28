@@ -9,8 +9,6 @@ namespace Rad\Middleware;
 use Closure;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Rad\Http\Request;
-use Rad\Http\Response;
 use Rad\Middleware\MiddlewareInterface;
 use Rad\Route\Route;
 
@@ -23,14 +21,14 @@ abstract class MiddlewareBefore implements MiddlewareInterface {
 
     /**
      * 
-     * @param Request $request
-     * @param Response $response
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
      * @param Route $route
      * @param Closure $next
-     * @return Closure
+     * @return ResponseInterface
      */
-    final public function call(ServerRequestInterface &$request, ResponseInterface &$response, Route &$route, Closure $next) {
-        $this->middle($request, $response, $route);
+    public function call(ServerRequestInterface $request, ResponseInterface $response, Route $route, Closure $next): ResponseInterface {
+        $response = $this->middle($request, $response, $route);
         return $next($request, $response, $route);
     }
 

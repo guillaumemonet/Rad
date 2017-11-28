@@ -26,9 +26,9 @@
 
 namespace Rad\Middleware\Base;
 
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Rad\Error\Http\NotAcceptableException;
-use Rad\Http\Request;
-use Rad\Http\Response;
 use Rad\Middleware\MiddlewareBefore;
 use Rad\Route\Route;
 use Rad\Utils\Mime;
@@ -40,11 +40,11 @@ use Rad\Utils\Mime;
  */
 class Pre_CheckConsume extends MiddlewareBefore {
 
-    public function middle(Request $request, Response $response, Route $route) {
-        if ($route->getConsumedMimeType() == null || $route->getConsumedMimeType() == "" || in_array($request->getHeader("CONTENT_TYPE"), Mime::MIME_TYPES[$route->getConsumedMimeType()])) {
-            return true;
+    public function middle(ServerRequestInterface $request, ResponseInterface $response, Route $route): ResponseInterface {
+        if ($route->getConsumedMimeType() == null || $route->getConsumedMimeType() == "" || in_array($request->getHeader("CONTENT_TYPE"), Mime::getMimeTypesFromShort($route->getConsumedMimeType()))) {
+            return $response;
         } else {
-            throw new NotAcceptableException("Wrong Content Type");
+            throw new NotAcceptableException("Wrong Content Type " . $request->getHeader("CONTENT_TYPE") . " Require " . implode(" ", $route->getConsumedMimeType()));
         }
     }
 
