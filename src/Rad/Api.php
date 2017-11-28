@@ -62,12 +62,6 @@ class Api {
 
     /**
      *
-     * @var ResponseInterface
-     */
-    protected $response = null;
-
-    /**
-     *
      * @var Controller[] 
      */
     private $controllers = [];
@@ -75,10 +69,9 @@ class Api {
     /**
      * 
      */
-    public function __construct($router = Router::class, $request = ServerRequest::class, $response = Response::class) {
+    public function __construct($router = Router::class, $request = ServerRequest::class) {
         $this->router = new $router;
         $this->request = new $request;
-        $this->response = new $response;
     }
 
     /**
@@ -92,8 +85,8 @@ class Api {
                 $this->getRouter()->setRoutes(RouteParser::parseRoutes($this->getControllers()));
                 $this->getRouter()->save();
             }
-            $this->getRouter()->route($this->request, $this->response);
-            $this->getResponse()->send();
+            $response = $this->getRouter()->route($this->request);
+            $response->send();
         } catch (ErrorException $ex) {
             Log::getHandler()->error($ex->getMessage());
             $response = new Response($ex->getCode());
@@ -130,14 +123,6 @@ class Api {
      */
     public function getRequest() {
         return $this->request;
-    }
-
-    /**
-     * 
-     * @return ResponseInterface
-     */
-    public function getResponse() {
-        return $this->response;
     }
 
     /**
