@@ -56,7 +56,7 @@ trait DAOTemplateTraitTrait {
     }
 
     public function printPrimaryIndexGetter($k, $i) {
-        $c = StringUtils::println("public static function get" . ucfirst($this->tableName) . "(" . implode(",", $i->getColumns("php_prefix")) . ",\$use_cache=false){", 1);
+        $c = StringUtils::println("public static function get" . $this->className . "(" . implode(",", $i->getColumns("php_prefix")) . ",\$use_cache=false){", 1);
         $c .= StringUtils::println('$c = new ' . $this->className . '();', 2);
         $c .= StringUtils::println('$c->read(' . implode(",", $i->getColumns("php")) . ',$use_cache);', 2);
         $c .= StringUtils::println('return $c;', 2);
@@ -116,7 +116,7 @@ trait DAOTemplateTraitTrait {
     }
 
     public function printGetAll() {
-        $c = StringUtils::println("public static function getAll" . ucfirst($this->tableName) . "(\$offset = null, \$limit = null,\$use_cache = false){", 1);
+        $c = StringUtils::println("public static function getAll" . $this->className . "(\$offset = null, \$limit = null,\$use_cache = false){", 1);
         $c .= StringUtils::println("\$c_key = \"key_" . $this->className . "_all_" . $this->tableName . "_\".\$limit.\"_\".\$offset;", 2);
         $c .= StringUtils::println("\$ret = null;", 2);
         $c .= StringUtils::println("if(\$use_cache){", 2);
