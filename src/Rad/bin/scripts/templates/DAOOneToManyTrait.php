@@ -1,8 +1,5 @@
 <?php
 
-use Rad\bin\scripts\elements\Column;
-use Rad\Utils\StringUtils;
-
 /*
  * The MIT License
  *
@@ -28,6 +25,9 @@ use Rad\Utils\StringUtils;
  */
 
 namespace Rad\bin\scripts\templates;
+
+use Rad\bin\scripts\elements\Column;
+use Rad\Utils\StringUtils;
 
 /**
  * Description of DAOOneToManyTrait
