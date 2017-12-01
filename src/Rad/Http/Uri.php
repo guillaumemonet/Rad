@@ -102,7 +102,7 @@ class Uri implements UriInterface {
         return $this->port;
     }
 
-    public function getQuery(): string {
+    public function getQuery(): ?string {
         return $this->query;
     }
 
