@@ -70,7 +70,10 @@ class ServerRequest extends Request implements ServerRequestInterface {
     private $uploadedFiles = [];
 
     public function __construct() {
-        parent::__construct($_SERVER['REQUEST_METHOD'], $_SERVER, Uri::getCurrentUrl());
+        $uri = Uri::getCurrentUrl();
+        parent::__construct($_SERVER['REQUEST_METHOD'], $_SERVER, $uri);
+        $this->queryParams = $uri->getQueryArray();
+        $this->cookieParams = $_COOKIE;
     }
 
     /**
