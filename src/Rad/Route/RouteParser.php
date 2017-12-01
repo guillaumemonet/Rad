@@ -62,7 +62,7 @@ abstract class RouteParser {
         array_map(function($class) use(&$routes) {
             Log::getHandler()->debug('Loading Class ' . $class);
             if (is_subclass_of($class, Controller::class)) {
-                $routes += self::generateRoutes($class);
+                $routes = array_merge($routes, self::generateRoutes($class));
             } else {
                 Log::getHandler()->debug('Not a Controller ' . $class);
             }
@@ -79,15 +79,17 @@ abstract class RouteParser {
             $methodComments = self::parseMethodAnnotations($class, $method);
             $paths = self::getPathsFromComment($methodComments);
             array_walk($paths, function($array, $key) use (&$routes, $class, $method, $methodComments) {
-                $route = new Route();
-                $route->setClassName($class)->setMethodName($method)->setMethod($key)->setPath(current($array));
-                $others = self::getOthersFromComment($methodComments);
-                array_walk($others, function($datas, $key) use ($route) {
-                    $method = self::$annotationsArray[$key]['method'];
-                    $type = self::$annotationsArray[$key]['type'];
-                    $route->{$method}($type === 'array' ? $datas : current($datas));
-                });
-                $routes[] = $route;
+                foreach ($array as $path) {
+                    $route = new Route();
+                    $route->setClassName($class)->setMethodName($method)->setMethod($key)->setPath($path);
+                    $others = self::getOthersFromComment($methodComments);
+                    array_walk($others, function($datas, $key) use ($route) {
+                        $method = self::$annotationsArray[$key]['method'];
+                        $type = self::$annotationsArray[$key]['type'];
+                        $route->{$method}($type === 'array' ? $datas : current($datas));
+                    });
+                    $routes[] = $route;
+                }
             });
         }, $methods);
         return $routes;
