@@ -73,7 +73,7 @@ abstract class RouteParser {
                     }
                 }, $methods);
             } else {
-                Log::debug("Not a Controller " . $class);
+                Log::getHandler()->debug("Not a Controller " . $class);
             }
         }, $classes);
         return $routes;
