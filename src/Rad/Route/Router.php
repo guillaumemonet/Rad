@@ -113,7 +113,7 @@ class Router implements RouterInterface {
      */
     public function setRoutes(array $routes): self {
         foreach ($routes as $route) {
-            $method = "add" . ucfirst($route->getVerb()) . "Route";
+            $method = "add" . ucfirst($route->getMethod()) . "Route";
             $this->{$method}($route);
         }
         return $this;
@@ -131,8 +131,8 @@ class Router implements RouterInterface {
         if (!isset($this->treeRoutes[$method])) {
             $this->treeRoutes[$method] = new TreeNodeRoute($method);
         }
-        $this->treeRoutes[$method]->addFromArray(explode("/", trim($route->getRegExp(), '/')), $route);
-        Log::getHandler()->debug($method . ' Adding route ' . $route->getRegExp());
+        $this->treeRoutes[$method]->addFromArray(explode("/", trim($route->getPath(), '/')), $route);
+        Log::getHandler()->debug($method . ' Adding route ' . $route->getPath());
         return $this;
     }
 
@@ -155,7 +155,7 @@ class Router implements RouterInterface {
         $path = $request->getUri()->getPath();
         $route = $this->treeRoutes[strtoupper($method)]->getRoute(explode('/', trim($path, '/')));
         if ($route !== null) {
-            Log::getHandler()->debug($method . " : " . $path . " Matching " . $route->getRegExp());
+            Log::getHandler()->debug($method . " : " . $path . " Matching " . $route->getPath());
             $middleware = new Middleware($route->getMiddlewares());
             $classController = $route->getClassName();
             $methodController = $route->getMethodName();
@@ -164,7 +164,7 @@ class Router implements RouterInterface {
                 $route->applyObservers($controller);
                 $datas = $controller->{$methodController}();
                 $response = $controller->getResponse();
-                $response->getBody()->write(Codec::getHandler($route->getProcucedMimeType())->serialize($datas));
+                $response->getBody()->write(Codec::getHandler(current($route->getProcucedMimeType()))->serialize($datas));
                 return $response;
             });
             return $response;

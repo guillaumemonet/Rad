@@ -19,13 +19,13 @@ class Route {
     use RouteGetterTrait;
 
     protected $version = 1;
-    protected $className;
-    protected $methodName;
-    protected $verb;
-    protected $regex;
+    protected $className = null;
+    protected $methodName = null;
+    protected $method = null;
+    protected $path = null;
     protected $middlewares = [];
-    protected $produce = null;
-    protected $consume = null;
+    protected $produce = [];
+    protected $consume = [];
     protected $observers = [];
     protected $args = [];
 
@@ -37,7 +37,7 @@ class Route {
     }
 
     public function __toString() {
-        return "Route " . strtoupper($this->verb) .  "/" . $this->regex . " call " . $this->className . "->" . $this->methodName;
+        return 'Route ' . $this->getMethod() . '/' . $this->getPath() . ' call ' . $this->getClassName() . '->' . $this->getMethodName() . '()';
     }
 
 }

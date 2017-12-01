@@ -2,6 +2,10 @@
 
 namespace Rad\Route;
 
+use Rad\Middleware\Base\Consume;
+use Rad\Middleware\Base\Produce;
+use Rad\Middleware\Base\XMLHttpRequest;
+
 /**
  * Description of RouteSetterTrait
  *
@@ -24,13 +28,13 @@ trait RouteSetterTrait {
         return $this;
     }
 
-    public function setVerb(string $verb) {
-        $this->verb = strtolower($verb);
+    public function setMethod(string $method) {
+        $this->method = strtoupper($method);
         return $this;
     }
 
-    public function setRegExp(string $regExp) {
-        $this->regex = $regExp;
+    public function setPath(string $path) {
+        $this->path = $path;
         return $this;
     }
 
@@ -44,13 +48,20 @@ trait RouteSetterTrait {
         return $this;
     }
 
-    public function setProduce(string $produce) {
-        $this->produce = strtolower($produce);
+    public function setProduce(array $produce) {
+        $this->produce = $produce;
+        $this->middlewares[] = Produce::class;
         return $this;
     }
 
-    public function setConsume(string $consume) {
-        $this->consume = strtolower($consume);
+    public function setConsume(array $consume) {
+        $this->consume = $consume;
+        $this->middlewares[] = Consume::class;
+        return $this;
+    }
+
+    public function setXhr($xhr) {
+        $this->middlewares[] = XMLHttpRequest::class;
         return $this;
     }
 

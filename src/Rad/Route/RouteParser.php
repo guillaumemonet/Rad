@@ -38,13 +38,14 @@ use ReflectionMethod;
  */
 abstract class RouteParser {
 
-    private static $allowed_methods = array("get", "post", "put", "patch", "delete");
+    private static $allowed_methods = ['GET', "POST", "PUT", "PATCH", "DELETE"];
     private static $annotationsArray = array(
-        "middleware" => "setMiddlewares",
-        "api" => "setVersion",
-        "consume" => "setConsume",
-        "produce" => "setProduce",
-        "observer" => "setObservers"
+        'middleware' => ['method' => 'setMiddlewares', 'type' => 'array'],
+        'api' => ['method' => 'setVersion', 'type' => 'single'],
+        'consume' => ['method' => 'setConsume', 'type' => 'array'],
+        'produce' => ['method' => 'setProduce', 'type' => 'array'],
+        'observer' => ['method' => 'setObservers', 'type' => 'array'],
+        'xhr' => ['method' => 'setXhr', 'type' => 'single']
     );
 
     private function __construct() {
@@ -56,27 +57,83 @@ abstract class RouteParser {
      * @param array $classes
      */
     public static function parseRoutes(array $classes) {
-        Log::getHandler()->debug("Generating Routes");
+        Log::getHandler()->debug('Generating Routes');
         $routes = [];
         array_map(function($class) use(&$routes) {
             Log::getHandler()->debug('Loading Class ' . $class);
             if (is_subclass_of($class, Controller::class)) {
-                $methods = get_class_methods($class);
-                array_map(function($method)use (&$routes, $class) {
-                    Log::getHandler()->debug('Loading Method ' . $method);
-                    $route = new Route();
-                    $route->setClassName($class)->setMethodName($method);
-                    self::parseClassAnnotations($class, $route);
-                    self::parseMethodAnnotations($class, $method, $route);
-                    if (in_array($route->getVerb(), self::$allowed_methods)) {
-                        $routes[] = $route;
-                    }
-                }, $methods);
+                $routes += self::generateRoutes($class);
             } else {
-                Log::getHandler()->debug("Not a Controller " . $class);
+                Log::getHandler()->debug('Not a Controller ' . $class);
             }
         }, $classes);
         return $routes;
+    }
+
+    public static function generateRoutes($class) {
+        $routes = [];
+        $classComments = self::parseClassAnnotations($class);
+        $methods = get_class_methods($class);
+        array_map(function($method) use (&$routes, $class, $classComments) {
+            Log::getHandler()->debug('Loading Method ' . $method);
+            $methodComments = self::parseMethodAnnotations($class, $method);
+            $paths = self::getPathsFromComment($methodComments);
+            array_walk($paths, function($array, $key) use (&$routes, $class, $method, $methodComments) {
+                $route = new Route();
+                $route->setClassName($class)->setMethodName($method)->setMethod($key)->setPath(current($array));
+                $others = self::getOthersFromComment($methodComments);
+                array_walk($others, function($datas, $key) use ($route) {
+                    $method = self::$annotationsArray[$key]['method'];
+                    $type = self::$annotationsArray[$key]['type'];
+                    $route->{$method}($type === 'array' ? $datas : current($datas));
+                });
+                $routes[] = $route;
+            });
+        }, $methods);
+        return $routes;
+    }
+
+    public static function getPathsFromComment($methodComment) {
+        return array_filter($methodComment, function($key) {
+            return in_array(strtoupper($key), self::$allowed_methods);
+        }, ARRAY_FILTER_USE_KEY);
+    }
+
+    public static function getOthersFromComment($methodComment) {
+        return array_filter($methodComment, function($key) {
+            return !in_array(strtoupper($key), self::$allowed_methods) && array_key_exists(strtolower($key), self::$annotationsArray);
+        }, ARRAY_FILTER_USE_KEY);
+    }
+
+    /**
+     * array_walk($classAnnotations, function($annotation, $key) use ($route) {
+      if (in_array($key, self::$annotationsArray)) {
+      $route->{self::$annotationsArray[$key]}($annotation);
+      }
+      });
+     * @param type $class
+     * @param type $route
+     */
+    private static function parseClassAnnotations($class) {
+        return self::getAnnotationsArray($class);
+    }
+
+    /**
+     * if (count(array_intersect(self::$allowed_methods, array_keys($methodAnnotations))) > 0) {
+      array_walk($methodAnnotations, function($annotation, $key) use ($route) {
+      if (in_array(strtolower($key), self::$allowed_methods)) {
+      $route->setVerb($key)->setRegExp($annotation[0]);
+      } else if (array_key_exists(strtolower($key), self::$annotationsArray)) {
+      $route->{self::$annotationsArray[$key]}(count($annotation) == 1 ? $annotation[0] : $annotation);
+      }
+      });
+      }
+     * @param type $class
+     * @param type $method
+     * @param type $route
+     */
+    private static function parseMethodAnnotations($class, $method) {
+        return self::getAnnotationsArray($class, $method);
     }
 
     /**
@@ -88,39 +145,6 @@ abstract class RouteParser {
         $reflexion = $method !== null ? new ReflectionMethod($class, $method) : new ReflectionClass($class);
         $comments = $reflexion->getDocComment();
         return self::getInfos($comments);
-    }
-
-    /**
-     * 
-     * @param type $class
-     * @param type $route
-     */
-    private static function parseClassAnnotations($class, $route) {
-        $classAnnotations = self::getAnnotationsArray($class);
-        array_walk($classAnnotations, function($annotation, $key) use ($route) {
-            if (in_array($key, self::$annotationsArray)) {
-                $route->{self::$annotationsArray[$key]}($annotation);
-            }
-        });
-    }
-
-    /**
-     * 
-     * @param type $class
-     * @param type $method
-     * @param type $route
-     */
-    private static function parseMethodAnnotations($class, $method, $route) {
-        $methodAnnotations = self::getAnnotationsArray($class, $method);
-        if (count(array_intersect(self::$allowed_methods, array_keys($methodAnnotations))) > 0) {
-            array_walk($methodAnnotations, function($annotation, $key) use ($route) {
-                if (in_array(strtolower($key), self::$allowed_methods)) {
-                    $route->setVerb($key)->setRegExp($annotation[0]);
-                } else if (array_key_exists(strtolower($key), self::$annotationsArray)) {
-                    $route->{self::$annotationsArray[$key]}(count($annotation) == 1 ? $annotation[0] : $annotation);
-                }
-            });
-        }
     }
 
     /**

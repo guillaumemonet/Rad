@@ -2,9 +2,6 @@
 
 namespace Rad\Route;
 
-use Rad\Middleware\Base\Post_SetProduce;
-use Rad\Middleware\Base\Pre_CheckConsume;
-
 /**
  * Description of RouteGetterTrait
  *
@@ -24,27 +21,27 @@ trait RouteGetterTrait {
         return $ret;
     }
 
-    public function getVerb() {
-        return $this->verb;
+    public function getMethod(): string {
+        return strtoupper($this->method);
     }
 
-    public function getClassName() {
+    public function getClassName(): string {
         return $this->className;
     }
 
-    public function getMethodName() {
+    public function getMethodName(): string {
         return $this->methodName;
     }
 
-    public function getRegExp() {
-        return $this->regex;
+    public function getPath(): string {
+        return $this->path;
     }
 
-    public function getProcucedMimeType() {
+    public function getProcucedMimeType(): array {
         return $this->produce;
     }
 
-    public function getConsumedMimeType() {
+    public function getConsumedMimeType(): array {
         return $this->consume;
     }
 
@@ -52,7 +49,7 @@ trait RouteGetterTrait {
         return $this->version;
     }
 
-    public function getObservers() {
+    public function getObservers(): array {
         return $this->observers;
     }
 
