@@ -34,11 +34,11 @@ use Rad\Route\Route;
 use Rad\Utils\Mime;
 
 /**
- * Description of Pre_CheckConsume
+ * Description of Consume
  *
  * @author guillaume
  */
-class Pre_CheckConsume extends MiddlewareBefore {
+class Consume extends MiddlewareBefore {
 
     public function middle(ServerRequestInterface $request, ResponseInterface $response, Route $route): ResponseInterface {
         if ($route->getConsumedMimeType() == null || $route->getConsumedMimeType() == "" || in_array($request->getHeader("CONTENT_TYPE"), Mime::getMimeTypesFromShort($route->getConsumedMimeType()))) {
