@@ -107,7 +107,13 @@ class Uri implements UriInterface {
     }
 
     public function getQueryArray() {
-        return null !== $this->query ? parse_str($this->query) : null;
+        if( !== $this->query) {
+            $queryArray = [];
+            parse_str($this->query, $queryArray);
+            return $queryArray;
+        } else {
+            return null;
+        }
     }
 
     public function getScheme(): string {
