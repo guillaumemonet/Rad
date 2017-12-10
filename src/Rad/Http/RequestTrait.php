@@ -68,12 +68,8 @@ trait RequestTrait {
         
     }
 
-    public function getDatas() {
-        return $this->_datas;
-    }
-
     public function isCache() {
-        return $this->cache;
+        return ($this->getHeader('Cache-Control') !== null) ? (!current($this->getHeader('Cache-Control')) == 'no-cache') : true;
     }
 
     public function getMethod() {
