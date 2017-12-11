@@ -39,14 +39,14 @@ use ReflectionMethod;
 abstract class RouteParser {
 
     private static $allowed_methods = ['GET', "POST", "PUT", "PATCH", "DELETE"];
-    private static $annotationsArray = array(
+    private static $annotationsArray = [
         'middleware' => ['method' => 'setMiddlewares', 'type' => 'array'],
         'api' => ['method' => 'setVersion', 'type' => 'single'],
         'consume' => ['method' => 'setConsume', 'type' => 'array'],
         'produce' => ['method' => 'setProduce', 'type' => 'array'],
         'observer' => ['method' => 'setObservers', 'type' => 'array'],
         'xhr' => ['method' => 'setXhr', 'type' => 'single']
-    );
+    ];
 
     private function __construct() {
         
