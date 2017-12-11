@@ -86,15 +86,15 @@ class Uri implements UriInterface {
         return $this->host . ':' . $this->port;
     }
 
-    public function getFragment(): string {
+    public function getFragment(): ?string {
         return $this->fragment;
     }
 
-    public function getHost(): string {
+    public function getHost(): ?string {
         return $this->host;
     }
 
-    public function getPath(): string {
+    public function getPath(): ?string {
         return $this->path;
     }
 
@@ -106,7 +106,7 @@ class Uri implements UriInterface {
         return $this->query;
     }
 
-    public function getQueryArray() {
+    public function getQueryArray(): ?array {
         if ($this->query) {
             $queryArray = [];
             parse_str($this->query, $queryArray);
@@ -116,11 +116,11 @@ class Uri implements UriInterface {
         }
     }
 
-    public function getScheme(): string {
+    public function getScheme(): ?string {
         return $this->scheme;
     }
 
-    public function getUserInfo(): string {
+    public function getUserInfo(): ?string {
         return $this->user . ':' . $this->password;
     }
 
