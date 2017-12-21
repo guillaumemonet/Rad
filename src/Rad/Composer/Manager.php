@@ -26,8 +26,8 @@
 
 namespace Rad\Composer;
 
-use Composer\Installer\PackageEvent;
-use Composer\Script\Event;
+use Rad\Utils\StringUtils;
+use RuntimeException;
 
 /**
  * Description of Manager
@@ -36,33 +36,11 @@ use Composer\Script\Event;
  */
 class Manager {
 
-    public static function postUpdate(Event $event) {
-        $composer = $event->getComposer();
-        // do stuff
-    }
-
-    public static function postAutoloadDump(Event $event) {
-        $vendorDir = $event->getComposer()->getConfig()->get('vendor-dir');
-        require $vendorDir . '/autoload.php';
-    }
-
-    public static function postPackageInstall(PackageEvent $event) {
-        $installedPackage = $event->getOperation()->getPackage();
-        // do stuff
-    }
-
-    public static function warmCache(Event $event) {
-        // make cache toasty
-    }
-
-    public static function createProject(Event $event) {
-        $vendorDir = $event->getComposer()->getConfig()->get('vendor-dir');
-        require $vendorDir . '/autoload.php';
-        $args = $event->getArguments();
-        if (!isset($args[0])) {
-            throw new Exception("Missing Project Name");
+    public static function createProject($name = null) {
+        if (!isset($name)) {
+            throw new RuntimeException("Missing Rad Project name");
         }
-        $projectName = \Rad\Utils\StringUtils::camelCase($args[0]);
+        $projectName = StringUtils::camelCase($name);
         mkdir('bin');
         mkdir('cache');
         mkdir('datas');
