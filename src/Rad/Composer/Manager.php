@@ -46,11 +46,11 @@ class Manager {
         mkdir('datas');
         mkdir('config');
         mkdir('public');
-        mkdir('src/' . $projectName . '/Controllers/Base', null, true);
+        mkdir('src/' . $projectName . '/Controllers/Base', umask(), true);
         mkdir('src/' . $projectName . '/Datas');
         mkdir('src/' . $projectName . '/Middleware');
         mkdir('src/' . $projectName . '/Codec');
-        mkdir('assets/templates', null, true);
+        mkdir('assets/templates', umask(), true);
         mkdir('workers');
         mkdir('logs');
     }
