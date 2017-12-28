@@ -34,24 +34,26 @@ use RuntimeException;
  *
  * @author guillaume
  */
-class Manager {
+abstract class Manager {
 
     public static function createProject($name = null) {
         if (!isset($name)) {
             throw new RuntimeException("Missing Rad Project name");
         }
         $projectName = StringUtils::camelCase($name);
-        mkdir('bin');
         mkdir('cache');
         mkdir('datas');
         mkdir('config');
         mkdir('public');
-        mkdir('src/' . $projectName . '/Controllers/Base', umask(), true);
+        mkdir('src');
+        mkdir('src/' . $projectName);
+        mkdir('src/' . $projectName . '/Controllers');
+        mkdir('src/' . $projectName . '/Controllers/Base');
         mkdir('src/' . $projectName . '/Datas');
-        mkdir('src/' . $projectName . '/Middleware');
-        mkdir('src/' . $projectName . '/Codec');
+        mkdir('src/' . $projectName . '/Middlewares');
+        mkdir('src/' . $projectName . '/Codecs');
         mkdir('assets/templates', umask(), true);
-        mkdir('workers');
+        mkdir('jobs');
         mkdir('logs');
     }
 
