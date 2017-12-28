@@ -61,12 +61,12 @@ class Api {
 
     /**
      *
-     * @var Controller[] 
+     * @var Controller[]
      */
     private $controllers = [];
 
     /**
-     * 
+     *
      */
     public function __construct($router = Router::class, $request = ServerRequest::class) {
         $this->router = new $router;
@@ -74,8 +74,8 @@ class Api {
     }
 
     /**
-     * 
-     * @return type
+     * Run the Api
+     * @return null
      * @throws ErrorException
      */
     public final function run() {
@@ -96,7 +96,7 @@ class Api {
     }
 
     /**
-     * 
+     *
      * @return RouterInterface
      */
     public function getRouter(): RouterInterface {
@@ -108,7 +108,7 @@ class Api {
     }
 
     /**
-     * 
+     *
      * @param RouterInterface $routeur
      */
     public function setRouter(RouterInterface $routeur) {
@@ -117,7 +117,7 @@ class Api {
     }
 
     /**
-     * 
+     *
      * @return ServerRequestInterface
      */
     public function getRequest() {
@@ -125,7 +125,7 @@ class Api {
     }
 
     /**
-     * 
+     *
      * @param array $controllers
      * @return $this
      */
@@ -135,7 +135,7 @@ class Api {
     }
 
     /**
-     * 
+     *
      * @param array $controllers
      * @return $this
      */
@@ -145,7 +145,7 @@ class Api {
     }
 
     /**
-     * 
+     *
      * @param Controller $controller
      * @return $this
      */
@@ -155,7 +155,7 @@ class Api {
     }
 
     /**
-     * 
+     *
      * @return Controller[]
      */
     public function getControllers() {
