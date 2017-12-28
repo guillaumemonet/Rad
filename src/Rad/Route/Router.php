@@ -43,7 +43,6 @@ use Rad\Middleware\Middleware;
 class Router implements RouterInterface {
 
     /**
-     *
      * @var TreeNodeRoute[]
      */
     private $treeRoutes = [];

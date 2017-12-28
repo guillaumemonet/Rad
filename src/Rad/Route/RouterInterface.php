@@ -52,4 +52,8 @@ interface RouterInterface {
     public function setRoutes(array $routes);
 
     public function route(ServerRequestInterface $request);
+
+    public function load(): bool;
+
+    public function save();
 }
