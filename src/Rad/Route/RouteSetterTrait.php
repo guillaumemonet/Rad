@@ -60,8 +60,10 @@ trait RouteSetterTrait {
         return $this;
     }
 
-    public function setXhr($xhr) {
-        $this->middlewares[] = XMLHttpRequest::class;
+    public function setXhr(bool $xhr = false) {
+        if ($xhr) {
+            $this->middlewares[] = XMLHttpRequest::class;
+        }
         return $this;
     }
 
