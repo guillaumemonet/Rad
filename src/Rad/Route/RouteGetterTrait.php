@@ -45,7 +45,7 @@ trait RouteGetterTrait {
         return $this->consume;
     }
 
-    public function getVersion() {
+    public function getVersion(): string {
         return $this->version;
     }
 
