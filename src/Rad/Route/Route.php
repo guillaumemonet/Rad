@@ -29,6 +29,10 @@ class Route {
     protected $observers = [];
     protected $args = [];
 
+    /**
+     * 
+     * @param Observable $observable
+     */
     public function applyObservers(Observable $observable) {
         array_map(function($observer) use ($observable) {
             $obs = new $observer();
@@ -36,7 +40,11 @@ class Route {
         }, $this->observers);
     }
 
-    public function __toString() {
+    /**
+     * 
+     * @return string
+     */
+    public function __toString(): string {
         return 'Route ' . $this->getMethod() . '/' . $this->getPath() . ' call ' . $this->getClassName() . '->' . $this->getMethodName() . '()';
     }
 
