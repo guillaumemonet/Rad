@@ -78,7 +78,7 @@ abstract class RouteParser {
             Log::getHandler()->debug('Loading Method ' . $method);
             $methodComments = self::parseMethodAnnotations($class, $method);
             $paths = self::getPathsFromComment($methodComments);
-            array_walk($paths, function($array, $key) use (&$routes, $class, $method, $methodComments) {
+            array_walk($paths, function($array, $key) use (&$routes, $class, $classComments, $method, $methodComments) {
                 foreach ($array as $path) {
                     $route = new Route();
                     $route->setClassName($class)->setMethodName($method)->setMethod($key)->setPath($path);
@@ -87,6 +87,11 @@ abstract class RouteParser {
                         $method = self::$annotationsArray[$key]['method'];
                         $type = self::$annotationsArray[$key]['type'];
                         $route->{$method}($type === 'array' ? $datas : current($datas));
+                    });
+                    array_walk($classComments, function($annotation, $key) use ($route) {
+                        if (in_array($key, self::$annotationsArray)) {
+                            $route->{self::$annotationsArray[$key]}($annotation);
+                        }
                     });
                     $routes[] = $route;
                 }
@@ -108,11 +113,7 @@ abstract class RouteParser {
     }
 
     /**
-     * array_walk($classAnnotations, function($annotation, $key) use ($route) {
-      if (in_array($key, self::$annotationsArray)) {
-      $route->{self::$annotationsArray[$key]}($annotation);
-      }
-      });
+     *
      * @param type $class
      * @param type $route
      */
@@ -121,15 +122,7 @@ abstract class RouteParser {
     }
 
     /**
-     * if (count(array_intersect(self::$allowed_methods, array_keys($methodAnnotations))) > 0) {
-      array_walk($methodAnnotations, function($annotation, $key) use ($route) {
-      if (in_array(strtolower($key), self::$allowed_methods)) {
-      $route->setVerb($key)->setRegExp($annotation[0]);
-      } else if (array_key_exists(strtolower($key), self::$annotationsArray)) {
-      $route->{self::$annotationsArray[$key]}(count($annotation) == 1 ? $annotation[0] : $annotation);
-      }
-      });
-      }
+     *
      * @param type $class
      * @param type $method
      * @param type $route
