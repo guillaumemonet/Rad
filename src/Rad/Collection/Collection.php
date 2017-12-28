@@ -72,7 +72,7 @@ class Collection implements CollectionInterface {
      * @param array $items
      */
     public function replace(array $items) {
-        array_map(function ($key, $value) use ($this) {
+        array_map(function ($key, $value) {
             $this->set($key, $value);
         }, $items);
     }
@@ -119,41 +119,6 @@ class Collection implements CollectionInterface {
 
     /**
      * 
-     * @param string $key
-     * @return bool
-     */
-    public function offsetExists(string $key): bool {
-        return $this->has($key);
-    }
-
-    /**
-     * 
-     * @param string $key
-     * @return type
-     */
-    public function offsetGet(string $key) {
-        return $this->get($key);
-    }
-
-    /**
-     * 
-     * @param string $key
-     * @param type $value
-     */
-    public function offsetSet(string $key, $value) {
-        $this->set($key, $value);
-    }
-
-    /**
-     * 
-     * @param string $key
-     */
-    public function offsetUnset(string $key) {
-        $this->remove($key);
-    }
-
-    /**
-     * 
      * @return int
      */
     public function count(): int {
@@ -166,6 +131,41 @@ class Collection implements CollectionInterface {
      */
     public function getIterator(): ArrayIterator {
         return new ArrayIterator($this->data);
+    }
+
+    /**
+     * 
+     * @param string $key
+     * @return bool
+     */
+    public function offsetExists($key): bool {
+        return $this->has($key);
+    }
+
+    /**
+     * 
+     * @param string $key
+     * @return type
+     */
+    public function offsetGet($key) {
+        return $this->get($key);
+    }
+
+    /**
+     * 
+     * @param string $key
+     * @param type $value
+     */
+    public function offsetSet($key, $value) {
+        $this->set($key, $value);
+    }
+
+    /**
+     * 
+     * @param string $key
+     */
+    public function offsetUnset($key) {
+        $this->remove($key);
     }
 
 }
