@@ -28,15 +28,8 @@ namespace Rad\Controller;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\SimpleCache\CacheInterface;
-use Rad\Cache\Cache;
-use Rad\Database\Database;
-use Rad\Database\DatabaseAdapter;
-use Rad\Mail\Mail;
 use Rad\Observer\Observable;
 use Rad\Route\Route;
-use Rad\Template\Template;
-use Rad\Template\TemplateInterface;
 use Rad\Worker\Orderer;
 
 /*
@@ -109,42 +102,6 @@ abstract class Controller extends Observable {
      */
     protected function makeOrder($queue, $messageType, $message) {
         Orderer::sendMessage($queue, $messageType, $message);
-    }
-
-    /**
-     * Shortcut for getting Database Handler
-     * @param string $handlerType
-     * @return DatabaseAdapter
-     */
-    protected function getDatabase(string $handlerType = null) {
-        return Database::getHandler($handlerType);
-    }
-
-    /**
-     * Shortcut for getting Cache Handler
-     * @param string $handlerType
-     * @return CacheInterface
-     */
-    protected function getCache(string $handlerType = null) {
-        return Cache::getHandler($handlerType);
-    }
-
-    /**
-     * Shortcut for getting Mail Handler
-     * @param string $handlerType
-     * @return type
-     */
-    protected function getMail(string $handlerType = null) {
-        return Mail::getHandler($handlerType);
-    }
-
-    /**
-     * Shortcut for getting Template Handler
-     * @param string $handlerType
-     * @return TemplateInterface
-     */
-    protected function getTemplate(string $handlerType = null) {
-        return Template::getHandler($handlerType);
     }
 
 }
