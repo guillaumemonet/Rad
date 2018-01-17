@@ -29,21 +29,22 @@ namespace Rad\Template;
 use Rad\Config\Config;
 use Smarty;
 
-final class Smarty_TemplateHandler extends Smarty implements TemplateInterface {
+class SmartyTemplateHandler extends Smarty implements TemplateInterface {
 
     public function __construct() {
         parent::__construct();
-        $this->compile_check = (int) Config::get('template', 'compile_check');
-        $this->force_compile = (int) Config::get('template', 'force_compile');
-        $this->debugging = (int) Config::get('template', 'debugging');
-        $this->error_reporting = (int) Config::get('template', 'error_reporting');
-        $this->caching = (int) Config::get('template', 'caching');
+        $config = Config::getServiceConfig('template', 'smarty')->config;
+        $this->compile_check = (int) $config->compile_check;
+        $this->force_compile = (int) $config->force_compile;
+        $this->debugging = (int) $config->debugging;
+        $this->error_reporting = (int) $config->error_reporting;
+        $this->caching = (int) $config->caching;
         $this->cache_locking = 1;
-        $this->cache_lifetime = (int) Config::get('template', 'cache_lifetime');
-        $this->template_dir = Config::get('install', 'path') . Config::get('template', 'template_dir');
-        $this->compile_dir = Config::get('install', 'path') . Config::get('template', 'compile_dir');
-        $this->config_dir = Config::get('install', 'path') . Config::get('template', 'config_dir');
-        $this->cache_dir = Config::get('install', 'path') . Config::get('template', 'cache_dir');
+        $this->cache_lifetime = (int) $config->cache_lifetime;
+        $this->template_dir = Config::getConfig()->api->path . $config->template_dir;
+        $this->compile_dir = Config::getConfig()->api->path . $config->compile_dir;
+        $this->config_dir = Config::getConfig()->api->path . $config->config_dir;
+        $this->cache_dir = Config::getConfig()->api->path . $config->cache_dir;
     }
 
 }

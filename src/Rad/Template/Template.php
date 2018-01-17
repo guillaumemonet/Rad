@@ -26,44 +26,20 @@
 
 namespace Rad\Template;
 
-use ErrorException;
-use Rad\Config\Config;
+use Rad\Service\Service;
 
-final class Template {
+final class Template extends Service {
 
-    private static $templateHandlers = array();
-
-    private function __construct() {
-        
+    public static function addHandler(string $handlerType, $handler) {
+        static::getInstance()->addServiceHandler($handlerType, $handler);
     }
 
-    /**
-     * 
-     * @param string $name
-     * @param TemplateInterface $template
-     */
-    public static function addHandler(string $name, TemplateInterface $template) {
-        self::$templateHandlers[$name] = $template;
-    }
-
-    /**
-     * 
-     * @return TemplateInterface
-     * @throws ErrorException
-     */
     public static function getHandler(string $handlerType = null): TemplateInterface {
-        if ($handlerType === null) {
-            $handlerType = (string) Config::get("template", "type");
-        }
-        if (!isset(self::$templateHandlers[$handlerType])) {
-            try {
-                $className = __NAMESPACE__ . "\\" . ucfirst($handlerType) . "_TemplateHandler";
-                self::$templateHandlers[$handlerType] = new $className();
-            } catch (ErrorException $ex) {
-                throw new ErrorException($handlerType . " Template Handler not found");
-            }
-        }
-        return self::$templateHandlers[$handlerType];
+        return static::getInstance()->getServiceHandler($handlerType);
+    }
+
+    protected function getServiceType(): string {
+        return 'template';
     }
 
 }
