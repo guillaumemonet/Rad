@@ -3,7 +3,7 @@
 /*
  * The MIT License
  *
- * Copyright 2017 guillaume.
+ * Copyright 2018 guillaume.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,25 +26,16 @@
 
 namespace Rad\Session;
 
-use Rad\Service\Service;
-
 /**
- * Description of Session
+ * Description of SessionInterface
  *
  * @author guillaume
  */
-final class Session extends Service {
+interface SessionInterface {
 
-    public static function addHandler(string $handlerType, $handler) {
-        static::getInstance()->addServiceHandler($handlerType, $handler);
-    }
+    public function get(string $index);
 
-    public static function getHandler(string $handlerType = null): SessionInterface {
-        return static::getInstance()->getServiceHandler($handlerType);
-    }
+    public function set(string $index, $value);
 
-    protected function getServiceType(): string {
-        return 'session';
-    }
-
+    public function has(string $index): bool;
 }
