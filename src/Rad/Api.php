@@ -27,8 +27,8 @@
 namespace Rad;
 
 use ErrorException;
-use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Rad\Config\Config;
 use Rad\Controller\Controller;
 use Rad\Error\Http\NotFoundException;
 use Rad\Http\Response;
@@ -55,7 +55,7 @@ class Api {
 
     /**
      *
-     * @var RequestInterface
+     * @var ServerRequestInterface
      */
     protected $request = null;
 
@@ -68,9 +68,16 @@ class Api {
     /**
      *
      */
-    public function __construct($router = Router::class, $request = ServerRequest::class) {
-        $this->router = new $router;
-        $this->request = new $request;
+    public function __construct(string $configFilename = null) {
+        if ($configFilename !== null) {
+            Config::load($configFilename);
+        } else {
+            Config::load(__DIR__ . '/../../config/config.default.json');
+        }
+        $router = Config::getApiConfig('router');
+        $serverRequest = Config::getApiConfig('serverrequest');
+        $this->router = $router !== null ? new $router : new Router();
+        $this->request = $serverRequest !== null ? new $serverRequest : new ServerRequest();
     }
 
     /**
@@ -78,7 +85,7 @@ class Api {
      * @return null
      * @throws ErrorException
      */
-    public final function run() {
+    public final function run(Closure $finalClosure = null) {
         try {
             if (!$this->getRouter()->load()) {
                 $this->getRouter()->setRoutes(RouteParser::parseRoutes($this->getControllers()));
@@ -92,6 +99,10 @@ class Api {
             $response->setDataType($this->getRequest()->getHeader("Accept-Type"));
             $response->getBody()->write($ex);
             $response->send();
+        } finally {
+            if ($finalClosure != null) {
+                call_user_func_array($finalClosure);
+            }
         }
     }
 
