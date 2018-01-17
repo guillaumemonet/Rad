@@ -26,14 +26,20 @@
 
 namespace Rad\Config;
 
-/**
- * 
- */
-abstract class Config {
+use Rad\Error\ConfigurationException;
 
-    private static $config = array();
+/**
+ *
+ */
+final class Config {
+
+    public static $config = [];
 
     private function __construct() {
+        
+    }
+
+    private function __clone() {
         
     }
 
@@ -41,13 +47,26 @@ abstract class Config {
      * Load config file.
      *
      * @param string $filename
+     * @deprecated
      */
-    public static function load($filename) {
+    public static function loadIni($filename) {
         self::$config = array_merge(self::$config, parse_ini_file($filename, true));
     }
 
     /**
-     * Return current config 
+     * 
+     * @param type $jsonFilename
+     * @throws ConfigurationException
+     */
+    public static function load(string $jsonFilename, $append = false) {
+        self::$config = json_decode(file_get_contents($jsonFilename));
+        if (json_last_error() > 0) {
+            throw new ConfigurationException('Configuration can\'t be loaded');
+        }
+    }
+
+    /**
+     * Return current config
      * @param string $section
      * @param string $row
      * @return string
@@ -60,8 +79,33 @@ abstract class Config {
         }
     }
 
+    public static function getConfig() {
+        return self::$config;
+    }
+
     /**
      * 
+     * @param string $serviceType
+     * @param string $serviceName
+     * @return type
+     */
+    public static function getServiceConfig(string $serviceType, string $serviceName = null) {
+        if ($serviceName === null) {
+            return self::$config->services->{$serviceType};
+        } else {
+            return self::$config->services->{$serviceType}->handlers->{$serviceName};
+        }
+    }
+
+    public static function getApiConfig($name = null) {
+        if (!isset(self::$config->api)) {
+            throw new \ErrorException('Not Api Config found');
+        }
+        return $name !== null ? self::$config->api->{$name} : self::$config->api;
+    }
+
+    /**
+     *
      * @param type $section
      * @param type $row
      * @return type
@@ -71,7 +115,7 @@ abstract class Config {
     }
 
     /**
-     * 
+     *
      * @param type $section
      * @param type $row
      * @param type $value
