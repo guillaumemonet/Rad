@@ -48,7 +48,7 @@ class CSV {
      * @return array
      */
     public function read(): array {
-        $all_rows = array();
+        $all_rows = [];
         $header = null;
         $file = fopen($this->filename, 'r+');
         while ($row = fgetcsv($file)) {
