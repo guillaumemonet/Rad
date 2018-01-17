@@ -35,7 +35,7 @@ use Rad\Config\Config;
  *
  * @author Guillaume Monet
  */
-final class Memcache_CacheHandler implements CacheInterface {
+final class MemcacheCacheHandler implements CacheInterface {
 
     private $memcache = null;
 
@@ -52,7 +52,7 @@ final class Memcache_CacheHandler implements CacheInterface {
      */
     public function read(array $keys) {
         $res = $this->memcache->getMulti($keys);
-        $_res = array();
+        $_res = [];
         if (is_array($res) && sizeof($res) > 0) {
             foreach ($res as $k => $v) {
                 $_res[$k] = $v;
@@ -96,11 +96,11 @@ final class Memcache_CacheHandler implements CacheInterface {
     }
 
     public function deleteMultiple($keys): bool {
+        $ret = false;
         foreach ($keys as $k) {
-            $k = sha1($k);
-            $this->memcache->delete($k);
+            $ret &= $this->memcache->delete($k);
         }
-        return true;
+        return $ret;
     }
 
     public function get($key, $default = null) {

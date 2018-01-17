@@ -26,9 +26,8 @@
 
 namespace Rad\Cache;
 
-use ErrorException;
 use Psr\SimpleCache\CacheInterface;
-use Rad\Config\Config;
+use Rad\Service\Service;
 
 /*
  * Description of CacheManager
@@ -36,45 +35,18 @@ use Rad\Config\Config;
  * @author Guillaume Monet
  */
 
-abstract class Cache {
+final class Cache extends Service {
 
-    /**
-     * @var array of CacheInterface
-     */
-    private static $cacheHandlers = array();
-
-    private function __construct() {
-        
+    public static function addHandler(string $handlerType, $handler) {
+        static::getInstance()->addServiceHandler($handlerType, $handler);
     }
 
-    /**
-     * add cache handler to the cache handler pool
-     * @param string $shortName
-     * @param CacheInterface $cache
-     */
-    public static function addHandler(string $shortName, CacheInterface $cache) {
-        self::$cacheHandlers[$shortName] = $cache;
-    }
-
-    /**
-     * return a cache handler from the cache handler pool
-     * @param string $handlerType
-     * @return CacheInterface
-     * @throws ErrorException
-     */
     public static function getHandler(string $handlerType = null): CacheInterface {
-        if ($handlerType === null) {
-            $handlerType = (string) Config::get("cache", "type");
-        }
-        if (!isset(self::$cacheHandlers[$handlerType])) {
-            try {
-                $className = __NAMESPACE__ . "\\" . ucfirst($handlerType) . "_CacheHandler";
-                self::$cacheHandlers[$handlerType] = (file_exists(ucfirst($handlerType) . "_CacheHandler.php") && Config::get("cache", "enabled") == 1) ? new $className() : new No_CacheHandler();
-            } catch (ErrorException $ex) {
-                throw new ErrorException($handlerType . " Cache Handler not found");
-            }
-        }
-        return self::$cacheHandlers[$handlerType];
+        return static::getInstance()->getServiceHandler($handlerType);
+    }
+
+    protected function getServiceType(): string {
+        return 'cache';
     }
 
 }

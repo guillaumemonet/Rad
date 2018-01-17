@@ -32,16 +32,16 @@ use Psr\SimpleCache\CacheInterface;
  * Volatile Cache 
  * To Share Var Between Function
  */
-class Quick_CacheHandler implements CacheInterface {
+class QuickCacheHandler implements CacheInterface {
 
     /**
      *
      * @var array
      */
-    private $datas = array();
+    private $datas = [];
 
     public function clear(): bool {
-        $this->datas = array();
+        $this->datas = [];
     }
 
     public function delete($key): bool {
@@ -63,7 +63,7 @@ class Quick_CacheHandler implements CacheInterface {
     }
 
     public function getMultiple($keys, $default = null): array {
-        $ret = array();
+        $ret = [];
         foreach ($keys as $key) {
             $ret[$key] = $this->get($key, $default);
         }

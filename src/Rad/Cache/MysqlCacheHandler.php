@@ -43,7 +43,7 @@ use Rad\Encryption\Encryption;
  *   INDEX(`modified`)
  * ) ENGINE = InnoDB;</pre>
  */
-final class Mysql_CacheHandler implements CacheInterface {
+final class MysqlCacheHandler implements CacheInterface {
 
     private $read = "SELECT content FROM output_cache WHERE id IN(%s)";
     private $write = "INSERT INTO output_cache (id,modified,content) VALUES (\"%s\",%d,\"%s\") ON DUPLICATE KEY UPDATE content=\"%s\",modified=%d";
@@ -71,7 +71,7 @@ final class Mysql_CacheHandler implements CacheInterface {
     }
 
     public function getMultiple($keys, $default = null) {
-        $ret = array();
+        $ret = [];
         foreach ($keys as $k) {
             $ret[$k] = $this->get($k, $default);
         }

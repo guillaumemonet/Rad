@@ -36,7 +36,7 @@ use Redis;
  *
  * @author Guillaume Monet
  */
-final class Redis_CacheHandler implements CacheInterface {
+final class RedisCacheHandler implements CacheInterface {
 
     /**
      * @var Redis
@@ -70,7 +70,7 @@ final class Redis_CacheHandler implements CacheInterface {
     }
 
     public function getMultiple($keys, $default = null) {
-        $ret = array();
+        $ret = [];
         foreach ($keys as $k) {
             $ret[$k] = $this->get($k, $default);
         }

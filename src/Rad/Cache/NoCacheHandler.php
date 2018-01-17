@@ -33,7 +33,7 @@ use Psr\SimpleCache\CacheInterface;
  *
  * @author guillaume
  */
-class No_CacheHandler implements CacheInterface {
+class NoCacheHandler implements CacheInterface {
 
     public function clear(): bool {
         return true;

@@ -35,10 +35,9 @@ use Rad\Encryption\Encryption;
  *
  * @author Guillaume Monet
  */
-class File_CacheHandler implements CacheInterface {
+class FileCacheHandler implements CacheInterface {
 
     public function __construct() {
-        
     }
 
     public function delete($key): bool {
@@ -64,7 +63,7 @@ class File_CacheHandler implements CacheInterface {
     }
 
     public function getMultiple($keys, $default = null) {
-        $ret = array();
+        $ret = [];
         foreach ($keys as $k) {
             if (file_exists(Config::get('install', 'path') . Config::get("cache_file", "path") . Encryption::hashMd5($k))) {
                 $tmp = file_get_contents(Config::get('install', 'path') . Config::get("cache_file", "path") . Encryption::hashMd5($k));
