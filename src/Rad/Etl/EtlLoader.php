@@ -13,7 +13,7 @@ namespace Rad\Etl;
  *
  * @author guillaume
  */
-class EtlLoader {
+interface EtlLoader {
 
     public function connect();
 

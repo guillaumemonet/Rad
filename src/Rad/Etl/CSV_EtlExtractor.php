@@ -37,7 +37,7 @@ class CSV_EtlExtractor implements EtlExtractor {
     }
 
     public function transform(array $mapper) {
-        $this->transformed_datas = array();
+        $this->transformed_datas = [];
         foreach ($mapper as $key => $values) {
             foreach ($values as $tab_head => $cleaners) {
                 $this->transformed_datas[$key] .= $this->datas[$tab_head];

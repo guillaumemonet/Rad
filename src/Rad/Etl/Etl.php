@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * @project Rad Framework
  * @license http://www.opensource.org/licenses/mit-license.php MIT (see the LICENSE file)
  * @link https://github.com/guillaumemonet/Rad Git Repository

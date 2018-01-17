@@ -17,7 +17,7 @@ interface EtlExtractor {
 
     public function connect(array $params);
 
-    public function transform();
+    public function transform(array $mapper);
 
     public function close();
 

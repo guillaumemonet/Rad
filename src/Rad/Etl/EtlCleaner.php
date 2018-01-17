@@ -21,5 +21,7 @@ abstract class EtlCleaner {
         $this->datas = $datas;
     }
 
-    public function clean();
+    public function clean(){
+        
+    }
 }
