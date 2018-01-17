@@ -26,52 +26,24 @@
 
 namespace Rad\Database;
 
-use ErrorException;
-use Rad\Config\Config;
+use Rad\Service\Service;
 
 /**
  * Description of Database.
  * @author Guillaume Monet
  */
-abstract class Database {
+final class Database extends Service {
 
-    /**
-     * @var DatabaseAdapter
-     */
-    private static $databaseHandlers = array();
-
-    private function __construct() {
-        
+    public static function addHandler(string $handlerType, $handler) {
+        static::getInstance()->addServiceHandler($handlerType, $handler);
     }
 
-    /**
-     * 
-     * @param string $type
-     * @param DatabaseAdapter $databaseInterface
-     */
-    public static function addHandler(string $type, DatabaseAdapter $databaseInterface) {
-        self::$databaseHandlers[$type] = $databaseInterface;
-    }
-
-    /**
-     * 
-     * @param string $handlerType
-     * @return DatabaseAdapter
-     * @throws ErrorException
-     */
     public static function getHandler(string $handlerType = null): DatabaseAdapter {
-        if ($handlerType === null) {
-            $handlerType = (string) Config::get("database", "type");
-        }
-        if (!isset(self::$databaseHandlers[$handlerType])) {
-            try {
-                $className = __NAMESPACE__ . "\\" . ucfirst($handlerType) . "_DatabaseHandler";
-                self::$databaseHandlers[$handlerType] = new $className();
-            } catch (ErrorException $ex) {
-                throw new ErrorException($handlerType . " Cache Handler not found");
-            }
-        }
-        return self::$databaseHandlers[$handlerType];
+        return static::getInstance()->getServiceHandler($handlerType);
+    }
+
+    protected function getServiceType(): string {
+        return 'database';
     }
 
 }

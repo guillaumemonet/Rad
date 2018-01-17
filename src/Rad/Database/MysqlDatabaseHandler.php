@@ -37,11 +37,12 @@ use Rad\Log\Log;
  *
  * @author guillaume
  */
-class Mysql_DatabaseHandler extends DatabaseAdapter {
+class MysqlDatabaseHandler extends DatabaseAdapter {
 
     public function __construct() {
+        $config = Config::getServiceConfig("database", "mysql")->config;
         try {
-            parent::__construct(Config::get('database', 'type') . ":host=" . Config::get('database', 'host') . ";dbname=" . Config::get('database', 'database'), Config::get('database', 'user'), Config::get('database', 'password'));
+            parent::__construct($config->type . ":host=" . $config->host . ";dbname=" . $config->database, $config->user, $config->password);
             $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
             $this->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
         } catch (PDOException $ex) {
@@ -68,7 +69,7 @@ class Mysql_DatabaseHandler extends DatabaseAdapter {
      *
      * @return PDOStatement
      */
-    public function prepare($sql, $options = array()) {
+    public function prepare($sql, $options = []) {
         try {
             Log::getHandler()->debug($sql);
             $stmt = parent::prepare($sql, $options);
