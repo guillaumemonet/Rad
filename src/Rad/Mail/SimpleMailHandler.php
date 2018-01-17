@@ -3,7 +3,7 @@
 /*
  * The MIT License
  *
- * Copyright 2017 guillaume.
+ * Copyright 2018 guillaume.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,34 +26,17 @@
 
 namespace Rad\Mail;
 
+use Rad\Mail\Email\SimpleEMail;
+
 /**
- * Description of EmailInterface
+ * Description of SimpleMailHandler
  *
  * @author guillaume
  */
-interface EmailInterface {
+class SimpleMailHandler implements MailInterface {
 
-    public function addAttachmentFromData($content, $filename, $contentType = "application/x-unknown-content-type");
+    public function createMail(): EmailInterface {
+        return new SimpleEMail();
+    }
 
-    public function addAttachmentFromFile($filename, $forcedFilename = null);
-
-    public function setFrom(string $from, string $alias = null);
-
-    public function addTo(string $to, string $alias = null);
-
-    public function addCC(string $cc, string $alias = null);
-
-    public function addBCC(string $bcc, string $alias = null);
-
-    public function setSubject(string $texte);
-
-    public function setHtml(string $html);
-
-    public function setText(string $text);
-
-    public function setCharset(string $encoding);
-
-    public function setReplyTo(string $replyTo);
-
-    public function send(): bool;
 }

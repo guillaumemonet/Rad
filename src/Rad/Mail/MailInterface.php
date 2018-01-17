@@ -33,5 +33,5 @@ namespace Rad\Mail;
  */
 interface MailInterface {
 
-    public function createMail(string $subject = ""): EmailInterface;
+    public function createMail(): EmailInterface;
 }

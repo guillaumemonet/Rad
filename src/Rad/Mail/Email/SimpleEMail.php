@@ -1,4 +1,5 @@
 <?php
+
 /*
  * The MIT License
  *
@@ -22,14 +23,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-namespace Rad\Mail;
+
+namespace Rad\Mail\Email;
 
 /**
  * Description of EMailObject
  *
  * @author Guillaume Monet
  */
-final class EMailObject {
+class SimpleEMail implements EmailInterface {
 
     public $to_mail = "";
     public $from_mail = "";
@@ -41,38 +43,40 @@ final class EMailObject {
     public $pj = "";
     public $pj_name = "";
     public $pj_type = "";
-    public $array_styles = array();
+    public $array_styles = [];
     public $template = "";
     public $template_name = "";
-    public $bcc = "Bcc: exploit_auto@bebe-au-naturel.com<exploit_auto@bebe-au-naturel.com>\n";
+    public $bcc = "Bcc: \n";
 
-    public function __construct($from_mail, $from_name, $subject = "(sans objet)") {
-        $this->from_mail = $from_mail;
-        $this->from_name = $from_name;
+    public function __construct($fromMail, $fromName, $subject = "(sans objet)") {
+        $this->from_mail = $fromMail;
+        $this->from_name = $fromName;
         $this->subject = $subject;
     }
 
-    public function setText($texte) {
+    public function setText(string $texte) {
         $this->contenu_texte = html_entity_decode($texte);
     }
 
-    public function setHtml($html) {
+    public function setHtml(string $html) {
         $this->contenu_html = $html;
     }
 
-    public function setSubject($texte) {
+    public function setSubject(string $texte) {
         $this->subject = $texte;
     }
 
-    public function setPjByContent($content, $nom_fichier, $content_type = "application/x-unknown-content-type") {
-        $this->pj_name = $nom_fichier;
-        $this->pj_type = $content_type;
+    public function addAttachmentFromData($content, $filename, $contentType = "application/x-unknown-content-type") {
+        $this->pj_name = $filename;
+        $this->pj_type = $contentType;
         $this->pj = $content;
+        return $this;
     }
 
-    public function setPjByFile($file, $nom_fichier) {
-        $this->pj_name = $nom_fichier;
-        $this->pj = file_get_contents($file);
+    public function addAttachmentFromFile($filename, $forcedFilename = null) {
+        $this->pj_name = $forcedFilename;
+        $this->pj = file_get_contents($filename);
+        return $this;
     }
 
     public function loadTemplate($template_name) {
@@ -89,7 +93,7 @@ final class EMailObject {
         $this->template_name = $template_name;
     }
 
-    public function send($to_mail, $reply_to = "") {
+    public function send(): bool {
         $email = "";
         if ($this->template_name != "" && $this->template != "") {
             $this->contenu_html = $this->template->fetch($this->template_name . ".tpl");
@@ -151,6 +155,36 @@ final class EMailObject {
         }
     }
 
-}
+    private function buildAttachements(&$email) {
+        
+    }
 
-?>
+    private function buildContent() {
+        
+    }
+
+    public function addBCC(string $bcc, string $alias = null): \Rad\Mail\EmailInterface {
+        
+    }
+
+    public function addCC(string $cc, string $alias = null): \Rad\Mail\EmailInterface {
+        
+    }
+
+    public function addTo(string $to, string $alias = null): \Rad\Mail\EmailInterface {
+        
+    }
+
+    public function setCharset(string $encoding): \Rad\Mail\EmailInterface {
+        
+    }
+
+    public function setFrom(string $from, string $alias = null): \Rad\Mail\EmailInterface {
+        
+    }
+
+    public function setReplyTo(string $replyTo) {
+        
+    }
+
+}
