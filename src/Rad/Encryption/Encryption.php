@@ -67,7 +67,7 @@ abstract class Encryption {
     }
 
     /**
-     * 
+     * Sign current datas
      * @param string $data
      * @param string $secret
      * @return string
