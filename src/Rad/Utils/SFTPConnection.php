@@ -72,7 +72,7 @@ class SFTPConnection {
      * @throws ErrorException
      */
     public function listDirectory(string $directory): array {
-        $files = array();
+        $files = [];
         $stream = opendir("ssh2.sftp://" . intval($this->sftp) . "/./$directory");
         if (!$stream) {
             throw new ErrorException("Could not open directory: $directory");

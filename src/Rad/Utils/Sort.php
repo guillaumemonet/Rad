@@ -31,7 +31,7 @@ namespace Rad\Utils;
  *
  * @author Guillaume Monet
  */
-final class Sort {
+class Sort {
 
     private $order;
     private $order_by;
@@ -58,7 +58,14 @@ final class Sort {
         return $this->order * (($a->{$field} < $b->{$field}) ? -1 : 1);
     }
 
-    public static function sortBy(array &$array, $order_by, $order = Sort::ASC) {
+    /**
+     * 
+     * @param array $array
+     * @param type $order_by
+     * @param type $order
+     * @return bool
+     */
+    public static function sortBy(array &$array, $order_by, $order = Sort::ASC): bool {
         $sort = new Sort($order_by, $order);
         return uasort($array, array($sort, "sort"));
     }

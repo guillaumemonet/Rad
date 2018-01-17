@@ -36,7 +36,7 @@ use finfo;
 abstract class Image {
 
     private $tabExt = array('jpg', 'gif', 'png', 'jpeg');    // Extensions autorisees
-    private $infosImg = array();
+    private $infosImg = [];
 
     /**
      * 

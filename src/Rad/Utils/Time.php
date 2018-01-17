@@ -26,16 +26,16 @@
 
 namespace Rad\Utils;
 
-use Rad\Cache\QuickCache;
+use Rad\Cache\Cache;
 
 /**
  * Description of Time
  *
  * @author Guillaume
  */
-abstract class Time {
+final class Time {
 
-    private $counter = null;
+    private static $counter = null;
 
     private function __construct() {
         
@@ -57,10 +57,14 @@ abstract class Time {
 
     public static function endCounter() {
         if (self::$counter !== null) {
-            return self::get_microtime() - $counter;
+            return self::get_microtime() - self::$counter;
         } else {
             return null;
         }
+    }
+
+    public static function resetCounter() {
+        self::$counter = null;
     }
 
     /**
@@ -71,7 +75,7 @@ abstract class Time {
     public static function isFrenchHoliday($unixTimeStamp = null) {
         $date = strtotime(date('m/d/Y', $unixTimeStamp == null ? time() : $unixTimeStamp));
         $year = date('Y', $date);
-        $holidays = QuickCache::getDatas($year);
+        $holidays = Cache::getHandler('quick')->get('holiday' . $year);
         if ($holidays == null) {
             $easterDate = easter_date($year) + 3 * 3600;
             $easterDay = date('j', $easterDate);
@@ -95,7 +99,7 @@ abstract class Time {
                 //Lundi pentecote
                 mktime(0, 0, 0, $easterMonth, $easterDay + 50, $easterYear),
             );
-            QuickCache::setDatas($year, $holidays);
+            Cache::getHandler('quick')->set('holiday' . $year, $holidays);
         }
         return in_array($date, $holidays);
     }

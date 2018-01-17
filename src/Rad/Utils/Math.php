@@ -31,7 +31,7 @@ namespace Rad\Utils;
  *
  * @author Guillaume Monet
  */
-abstract class Math {
+final class Math {
 
     private function __construct() {
         

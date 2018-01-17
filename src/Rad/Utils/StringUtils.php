@@ -26,7 +26,7 @@
 
 namespace Rad\Utils;
 
-abstract class StringUtils {
+final class StringUtils {
 
     private function __construct() {
         
@@ -192,7 +192,7 @@ abstract class StringUtils {
      * @param string $comments
      */
     public static function parseComments($comments) {
-        $ret = array();
+        $ret = [];
         //trim(str_replace(array('/', '*', '**'), '', substr($comments, 0, strpos($comments, '@'))));
         $comments = str_replace(array('/*', '*', '**'), '', $comments);
         $array_comments = explode("\n", $comments);
@@ -211,12 +211,10 @@ abstract class StringUtils {
      * @return string
      */
     public static function toXML($mixed, $root = "root") {
-        $array = null;
+        $array = $mixed;
         if (is_object($mixed)) {
             $array = get_object_vars($mixed);
             $root = str_replace("model\\", "", strtolower(get_class($mixed)));
-        } else {
-            $array = $mixed;
         }
         $ret = "<" . $root . ">";
         foreach ($array as $key => $val) {
@@ -260,7 +258,12 @@ abstract class StringUtils {
         return $c . $line . "\n";
     }
 
-    public static function camelCase($name) {
+    /**
+     * 
+     * @param type $name
+     * @return type
+     */
+    public static function camelCase(string $name) {
         return str_replace("_", "", ucwords($name, '_'));
     }
 

@@ -31,7 +31,11 @@ namespace Rad\Utils;
  *
  * @author guillaume
  */
-class Filter {
+final class Filter {
+
+    private function __construct() {
+        
+    }
 
     /**
      * Return mathing objects with get filter
@@ -46,6 +50,11 @@ class Filter {
         }
     }
 
+    /**
+     * 
+     * @param array $datas
+     * @param array $get
+     */
     public static function containsFilter(array &$datas, array $get) {
         if (count($get) > 0) {
             $datas = array_filter($datas, function($obj) use($get) {
