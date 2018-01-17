@@ -54,7 +54,7 @@ abstract class Model extends ModelDAO implements JsonSerializable {
             self::buildObjectContent($object, $model);
             return $model;
         } else if (is_array($object)) {
-            $array = array();
+            $array = [];
             self::buildArrayContent($object, $array);
             return $array;
         } else {
