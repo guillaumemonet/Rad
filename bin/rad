@@ -36,5 +36,24 @@ switch ($actionName) {
         \Rad\Composer\Manager::createProject($argv[2]);
         break;
     case 'build-rad-project':
+        if (!isset($argv[2])) {
+            throw new RuntimeException(
+            'Missing project name '
+            );
+        }
+        \Rad\Composer\Manager::buildProject($argv[2]);
+        break;
+    case 'create-service-project':
+        if (!isset($argv[2])) {
+            throw new RuntimeException(
+            'Missing service type '
+            );
+        }
+        if (!isset($argv[3])) {
+            throw new RuntimeException(
+            'Missing service name '
+            );
+        }
+        \Rad\Composer\Manager::createService($argv[2], $argv[3]);
         break;
 }
