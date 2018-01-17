@@ -26,53 +26,25 @@
 
 namespace Rad\Codec;
 
-use ErrorException;
-use Rad\Codec\CodecInterface;
-use Rad\Config\Config;
+use Rad\Service\Service;
 
 /**
  * Description of Codec
  *
  * @author guillaume
  */
-abstract class Codec {
+final class Codec extends Service {
 
-    private static $codecHandlers = array();
-
-    private function __construct() {
-        
+    public static function addHandler(string $handlerType, $handler) {
+        static::getInstance()->addServiceHandler($handlerType, $handler);
     }
 
-    /**
-     * 
-     * @param string $type
-     * @param CodecInterface $codecInterface
-     */
-    public static function addHandler(CodecInterface $codecInterface) {
-        foreach ($codecInterface->getMimeTypes() as $type) {
-            self::$codecHandlers[$type] = $codecInterface;
-        }
-    }
-
-    /**
-     * 
-     * @param string $handlerType
-     * @return CodecInterface
-     * @throws ErrorException
-     */
     public static function getHandler(string $handlerType = null): CodecInterface {
-        if ($handlerType === null) {
-            $handlerType = (string) Config::get("codec", "default");
-        }
-        if (!isset(self::$codecHandlers[$handlerType])) {
-            try {
-                $className = __NAMESPACE__ . "\\" . ucfirst($handlerType) . "_CodecHandler";
-                self::$codecHandlers[$handlerType] = file_exists(__DIR__ . '/' . ucfirst($handlerType) . "_CodecHandler.php") ? new $className() : new Default_CodecHandler();
-            } catch (ErrorException $ex) {
-                throw new ErrorException($handlerType . " Cache Handler not found");
-            }
-        }
-        return self::$codecHandlers[$handlerType];
+        return static::getInstance()->getServiceHandler($handlerType);
+    }
+
+    protected function getServiceType(): string {
+        return 'codec';
     }
 
 }

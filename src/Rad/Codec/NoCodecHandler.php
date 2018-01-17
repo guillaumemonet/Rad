@@ -31,26 +31,26 @@ namespace Rad\Codec;
  *
  * @author guillaume
  */
-class Object_CodecHandler implements CodecInterface {
+class NoCodecHandler implements CodecInterface {
 
     public function deserialize(string $string) {
-        return unserialize($string);
+        return $string;
     }
 
     public function getMimeTypes(): array {
-        return array("php");
+        return array("html", "txt", "plain");
     }
 
     public function serialize($object): string {
-        return serialize($object);
+        return $object;
     }
 
     public function __toString() {
-        return "Default PHP serialize/deserialize";
+        return "Default Codec Handler";
     }
 
     public function sign($datas, $secret) {
-        
+        return Encryption::sign($datas, $secret);
     }
 
 }

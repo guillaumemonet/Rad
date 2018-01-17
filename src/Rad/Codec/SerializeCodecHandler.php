@@ -26,37 +26,27 @@
 
 namespace Rad\Codec;
 
-use Rad\Error\CodecException;
-
 /**
- * Description of JsonCodec
+ * Description of DefaultCodec
  *
  * @author guillaume
  */
-class Json_CodecHandler implements CodecInterface {
-
-    public function __toString() {
-        return "Json encode/decode";
-    }
+class SerializeCodecHandler implements CodecInterface {
 
     public function deserialize(string $string) {
-        $ret = json_decode($string);
-        if (json_last_error() > 0) {
-            throw new CodecException("Error during json_decode");
-        }
-        return $ret;
-    }
-
-    public function serialize($object): string {
-        $ret = json_encode($object);
-        if (json_last_error() > 0) {
-            throw new CodecException("Error during json_encode");
-        }
-        return $ret;
+        return unserialize($string);
     }
 
     public function getMimeTypes(): array {
-        return array("json");
+        return array("php");
+    }
+
+    public function serialize($object): string {
+        return serialize($object);
+    }
+
+    public function __toString() {
+        return "Default PHP serialize/deserialize";
     }
 
     public function sign($datas, $secret) {

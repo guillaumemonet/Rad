@@ -26,38 +26,37 @@
 
 namespace Rad\Codec;
 
-use ErrorException;
+use Rad\Error\CodecException;
 
 /**
- * Description of Xml_CodecHandler
+ * Description of JsonCodec
  *
  * @author guillaume
  */
-class Xml_CodecHandler implements CodecInterface {
+class JsonCodecHandler implements CodecInterface {
 
     public function __toString() {
-        return "XML encode/decode (to array)";
+        return "Json encode/decode";
     }
 
     public function deserialize(string $string) {
-        throw new ErrorException("Not supported yet!");
-    }
-
-    public function getMimeTypes(): array {
-        return array("xml");
+        $ret = json_decode($string);
+        if (json_last_error() > 0) {
+            throw new CodecException("Error during json_decode");
+        }
+        return $ret;
     }
 
     public function serialize($object): string {
-        $backup = libxml_disable_entity_loader(true);
-        $backup_errors = libxml_use_internal_errors(true);
-        $result = simplexml_load_string($object);
-        libxml_disable_entity_loader($backup);
-        libxml_clear_errors();
-        libxml_use_internal_errors($backup_errors);
-        if ($result === false) {
-            return null;
+        $ret = json_encode((array) $object);
+        if (json_last_error() > 0) {
+            throw new CodecException("Error during json_encode");
         }
-        return $result;
+        return $ret;
+    }
+
+    public function getMimeTypes(): array {
+        return array("json");
     }
 
     public function sign($datas, $secret) {
