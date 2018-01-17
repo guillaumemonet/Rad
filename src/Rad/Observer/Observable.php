@@ -33,7 +33,7 @@ namespace Rad\Observer;
  */
 abstract class Observable {
 
-    private $observers = array();
+    private $observers = [];
 
     public function attach(Observer $observer) {
         $this->observers[] = $observer;
