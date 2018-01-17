@@ -3,7 +3,7 @@
 /*
  * The MIT License
  *
- * Copyright 2017 guillaume.
+ * Copyright 2018 guillaume.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,13 +26,11 @@
 
 namespace Rad\Error;
 
-use Psr\Container\ContainerExceptionInterface;
-
 /**
- * Description of ContainerException
+ * Description of ConfigurationException
  *
  * @author guillaume
  */
-class ContainerException extends RadException implements ContainerExceptionInterface {
-    
+class ConfigurationException extends RadException{
+    //put your code here
 }
