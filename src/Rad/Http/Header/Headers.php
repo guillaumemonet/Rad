@@ -26,12 +26,15 @@
 
 namespace Rad\Http\Header;
 
+use ArrayIterator;
+use Rad\Collection\CollectionInterface;
+
 /**
  * Description of Header
  *
  * @author guillaume
  */
-class Headers implements \Rad\Collection\CollectionInterface {
+class Headers implements CollectionInterface {
 
     /**
      *
@@ -80,7 +83,7 @@ class Headers implements \Rad\Collection\CollectionInterface {
      * @param array $items
      */
     public function replace(array $items) {
-        array_map(function ($key, $value) use ($this) {
+        array_map(function ($key, $value) {
             $this->set($key, $value);
         }, $items);
     }
@@ -130,7 +133,7 @@ class Headers implements \Rad\Collection\CollectionInterface {
      * @param string $key
      * @return bool
      */
-    public function offsetExists(string $key): bool {
+    public function offsetExists($key): bool {
         return $this->has($key);
     }
 
@@ -139,7 +142,7 @@ class Headers implements \Rad\Collection\CollectionInterface {
      * @param string $key
      * @return type
      */
-    public function offsetGet(string $key) {
+    public function offsetGet($key) {
         return $this->get($key);
     }
 
@@ -148,7 +151,7 @@ class Headers implements \Rad\Collection\CollectionInterface {
      * @param string $key
      * @param type $value
      */
-    public function offsetSet(string $key, $value) {
+    public function offsetSet($key, $value) {
         $this->set($key, $value);
     }
 
@@ -156,7 +159,7 @@ class Headers implements \Rad\Collection\CollectionInterface {
      * 
      * @param string $key
      */
-    public function offsetUnset(string $key) {
+    public function offsetUnset($key) {
         $this->remove($key);
     }
 

@@ -31,9 +31,9 @@ namespace Rad\Http\Header;
  *
  * @author guillaume
  */
-class HttpHeaders {
+abstract class HttpHeaders {
 
-    public $headers = [
+    const headers = [
         'A-IM', //	http		[RFC4229]
         'Accept', //	http	standard	[RFC7231, Section 5.3.2]
         'Accept-Additions', //	http		[RFC4229]
@@ -194,5 +194,9 @@ class HttpHeaders {
         'X-Content-Type-Options', //	http	standard	[https://fetch.spec.whatwg.org/#x-content-type-options-header]
         'X-Frame-Options', //	http	informational	[RFC7034]
     ];
+
+    private function __construct() {
+        
+    }
 
 }

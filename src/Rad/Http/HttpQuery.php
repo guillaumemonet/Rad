@@ -9,16 +9,23 @@
 namespace Rad\Http;
 
 /**
- * Description of HttpQuery
+ * Simple Http Query
  *
  * @author guillaume
  */
-abstract class HttpQuery {
+final class HttpQuery {
 
     private function __construct() {
         
     }
 
+    /**
+     * 
+     * @param string $url
+     * @param array $get_array
+     * @param array $post_array
+     * @return type
+     */
     public static function doRequest($url, array $get_array = null, array $post_array = null) {
         $context = null;
         $post_params = null;
@@ -34,13 +41,13 @@ abstract class HttpQuery {
             $post_params = array_filter($post_array, function($value) {
                 return $value !== null;
             });
-            $opts = array('http' =>
-                array(
+            $opts = ['http' =>
+                [
                     'method' => 'POST',
                     'header' => 'Content-type: application/x-www-form-urlencoded',
                     'content' => http_build_query($post_params)
-                )
-            );
+                ]
+            ];
             $context = stream_context_create($opts);
         }
         $url .= "?" . http_build_query($get_params);

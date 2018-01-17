@@ -31,7 +31,7 @@ namespace Rad\Http;
  *
  * @author Guillaume Monet
  */
-abstract class StatusCode {
+final class StatusCode {
 
     // Informational 1xx
     const HTTP_CONTINUE = 100;

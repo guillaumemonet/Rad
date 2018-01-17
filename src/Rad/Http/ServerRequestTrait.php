@@ -32,5 +32,5 @@ namespace Rad\Http;
  * @author guillaume
  */
 trait ServerRequestTrait {
-    
+
 }
