@@ -3,7 +3,6 @@
 require(__DIR__ . "/../vendor/autoload.php");
 
 use Rad\Api;
-use Rad\Config\Config;
 use Rad\Controller\Controller;
 use Rad\Log\Log;
 use Rad\Utils\Time;
@@ -57,7 +56,7 @@ class MyController extends Controller {
         $this->response = $this->response->withAddedHeader('Hello', 'Moto');
         $std = new stdClass();
         $std->toto = "toto/fdsf   sdf://";
-        $std->arr = ["toto ","titi"];
+        $std->arr = ["toto ", "titi"];
         return [$std, $std];
     }
 
@@ -83,12 +82,6 @@ class MyController extends Controller {
 }
 
 $time = Time::get_microtime();
-Config::set("cache", "type", "file");
-Config::set("cache", "enabled", 0);
-Config::set("log", "type", "file");
-Config::set("log", "error", 1);
-Config::set("log", "debug", 1);
-Config::set("log", "enabled", 1);
 $app = new Api();
 $app->addControllers([MyController::class])
         ->run();
