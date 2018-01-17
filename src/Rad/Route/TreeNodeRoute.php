@@ -51,13 +51,13 @@ class TreeNodeRoute {
      *
      * @var TreeNodeRoute[]
      */
-    protected $children = array();
+    protected $children = [];
 
     /**
      * Bubbled args
      * @var array
      */
-    protected $regArgs = array();
+    protected $regArgs = [];
 
     public function __construct($path_ckunk = '') {
         $this->path_chunk = $path_ckunk;
@@ -110,7 +110,7 @@ class TreeNodeRoute {
 
     private function matchRoute($value) {
         return array_filter($this->children, function($node, $key) use($value) {
-            $match = array();
+            $match = [];
             $pmatch = preg_match('/^' . $key . '$/', $value, $match);
             Log::getHandler()->debug('preg_match ' . '/^' . $key . '$/' . ' value :' . $value);
             if ($pmatch) {
