@@ -26,51 +26,26 @@
 
 namespace Rad\Log;
 
-use ErrorException;
 use Psr\Log\AbstractLogger;
-use Rad\Config\Config;
+use Rad\Service\Service;
 
 /**
  * Description of Log
  *
  * @author Guillaume Monet
  */
-abstract class Log {
+final class Log extends Service {
 
-    private static $logHandlers;
-
-    private function __construct() {
-        
+    public static function addHandler(string $handlerType, $handler) {
+        static::getInstance()->addServiceHandler($handlerType, $handler);
     }
 
-    /**
-     * 
-     * @param string $type
-     * @param AbstractLogger $logger
-     */
-    public static function addHandler(string $type, AbstractLogger $logger) {
-        self::$logHandlers[$type] = $logger;
-    }
-
-    /**
-     * 
-     * @param string $handlerType
-     * @return AbstractLogger
-     * @throws ErrorException
-     */
     public static function getHandler(string $handlerType = null): AbstractLogger {
-        if ($handlerType === null) {
-            $handlerType = Config::get("log", "type") !== null ? Config::get("log", "type") : "default";
-        }
-        if (!isset(self::$logHandlers[$handlerType])) {
-            try {
-                $className = __NAMESPACE__ . "\\" . ucfirst($handlerType) . "_LogHandler";
-                self::$logHandlers[$handlerType] = file_exists(ucfirst($handlerType) . "_LogHandler.php") ? new $className() : new Default_LogHandler();
-            } catch (ErrorException $ex) {
-                throw new ErrorException($handlerType . " Log Handler not found");
-            }
-        }
-        return self::$logHandlers[$handlerType];
+        return static::getInstance()->getServiceHandler($handlerType);
+    }
+
+    protected function getServiceType(): string {
+        return 'log';
     }
 
 }

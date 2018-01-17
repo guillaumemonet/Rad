@@ -34,10 +34,11 @@ use Rad\Config\Config;
  *
  * @author guillaume
  */
-class Default_LogHandler extends AbstractLogger {
+class OutputLogHandler extends AbstractLogger {
 
-    public function log($level, $message, array $context = array()) {
-        if (Config::get("log", "enabled") == 1 && Config::get("log", $level) == 1) {
+    public function log($level, $message, array $context = []) {
+        $config = Config::getServiceConfig("log", "output")->config;
+        if ($config->enabled == 1 && $config->{$level} == 1) {
             if (is_array($message)) {
                 $message = print_r($message, true);
             }
