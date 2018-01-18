@@ -1,4 +1,4 @@
-RAD Micro Framework
+RAD Framework
 ==========================
 
 [![Latest Stable Version](https://poser.pugx.org/rad/rad-framework/v/stable)](https://packagist.org/packages/rad/rad-framework)
@@ -9,7 +9,14 @@ RAD Micro Framework
 [![Maintainability](https://api.codeclimate.com/v1/badges/8e095176dd6216eea653/maintainability)](https://codeclimate.com/github/guillaumemonet/Rad/maintainability)
 
 ## What is RAD?
-RAD for Rest API Dedicated Micro-Framework.
+RAD for Rest API Dedicated Framework.
+
+## Why create this?
+I wanted to make a basic framework to learn and keep it as simple as possible.
+
+Feel free to use it.
+
+Any advice is welcome.
 
 ## Installation
 
@@ -21,6 +28,13 @@ To get the latest version of RAD Micro-Framework, simply add the following line 
 "rad/rad-framework": "dev-master"
 ```
 
+## History / RoadMap
+* 2018 Q3 FINAL : Correct bugs and release first stable version
+* 2018 Q2 BETA : Modularize Services
+* 2018 Q1 ALPHA : Correct bugs , finalize PSR implementations
+* 2017 Q4 Stabilizing framework, implements PSR
+
+
 ## Usage
 
 ```php
@@ -31,30 +45,6 @@ use Rad\Config\Config;
 use Rad\Controller\Controller;
 use Rad\Log\Log;
 use Rad\Utils\Time;
-
-/*
- * The MIT License
- *
- * Copyright 2017 guillaume.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
 
 /**
  * Simple example for testing purpose
