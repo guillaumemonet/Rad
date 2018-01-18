@@ -100,12 +100,6 @@ class MyController extends Controller {
 }
 
 $time = Time::get_microtime();
-Config::set("cache", "type", "file");
-Config::set("cache", "enabled", 0);
-Config::set("log", "type", "file");
-Config::set("log", "error", 1);
-Config::set("log", "debug", 1);
-Config::set("log", "enabled", 1);
 $app = new Api();
 $app->addControllers([MyController::class])
         ->run();
