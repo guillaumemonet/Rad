@@ -1,0 +1,152 @@
+{
+    "api": {
+        "url": "http://localhost:8000/",
+        "install_path": "/YOUR/PATH",
+        "router": "Rad\\Route\\Router",
+        "response": "Rad\\Http\\Response",
+        "request": "Rad\\Http\\Request",
+        "serverrequest": "Rad\\Http\\ServerRequest"
+    },
+    "services": {
+        "template": {
+            "default": "smarty",
+            "classname": "Rad\\Template\\TemplateInterface",
+            "handlers": {
+                "smarty": {
+                    "classname": "Rad\\Template\\SmartyTemplateHandler",
+                    "config": {
+                        "compile_check": true,
+                        "force_compile": false,
+                        "debugging": false,
+                        "error_reporting": true,
+                        "caching": false,
+                        "cache_locking": true,
+                        "cache_lifetime": 3600,
+                        "template_dir": "templates/",
+                        "compile_dir": "cache/",
+                        "config_dir": "config/",
+                        "cache_dir": "cache/"
+                    }
+                }
+            }
+        },
+        "cache": {
+            "default": "nocache",
+            "classname": "Psr\\SimpleCache\\CacheInterface",
+            "handlers": {
+                "nocache": {
+                    "classname": "Rad\\Cache\\NoCacheHandler",
+                    "config": {
+
+                    }
+                },
+                "file": {
+                    "classname": "Rad\\Cache\\FileCacheHandler",
+                    "config": {
+                        "path": "cache/"
+                    }
+                },
+                "mysql": {
+                    "classname": "Rad\\Cache\\MysqlCacheHandler",
+                    "config": {
+                    }
+                },
+                "redis": {
+                    "classname": "Rad\\Cache\\RedisCacheHandler",
+                    "config": {
+                        "host": "127.0.0.1",
+                        "port": 2000
+                    }
+                },
+                "memcache": {
+                    "classname": "Rad\\Cache\\MemcacheCacheHandler",
+                    "config": {
+                        "host": "127.0.0.1",
+                        "port": 11211
+                    }
+                },
+                "quick": {
+                    "classname": "Rad\\Cache\\QuickCacheHandler",
+                    "config": {
+                    }
+                }
+            }
+        },
+        "log": {
+            "default": "output",
+            "classname": "Psr\\Log\\AbstractLogger",
+            "handlers": {
+                "output": {
+                    "classname": "Rad\\Log\\OutputLogHandler",
+                    "config": {
+                        "enabled": true,
+                        "debug": true,
+                        "warning": true,
+                        "error": true
+                    }
+                },
+                "file": {
+                    "classname": "Rad\\Log\\FileLogHandler",
+                    "config": {
+                        "path": "logs/api.log",
+                        "enabled": true,
+                        "debug": true,
+                        "warning": true,
+                        "error": true
+                    }
+                }
+            }
+        },
+        "database": {
+            "default": "mysql",
+            "handlers": {
+                "mysql": {
+                    "classname": "Rad\\Database\\MysqlDatabaseHandler",
+                    "config": {
+                        "host": "your-database-host",
+                        "port": 3306,
+                        "user": "your-username",
+                        "password": "your-password",
+                        "database": "your-database-name",
+                        "encoding": "utf-8"
+                    }
+                }
+            }
+        },
+        "mail": {
+            "default": "simplemail",
+            "handlers": {
+                "simplemail": {
+                    "classname": "Rad\\Mail\\SimpleMailHandler"
+                }
+            }
+        },
+        "codec": {
+            "default": "no",
+            "classname": "Rad\\Codec\\CodecInterface",
+            "handlers": {
+                "no": {
+                    "classname": "Rad\\Codec\\NoCodecHandler"
+                },
+                "html": {
+                    "classname": "Rad\\Codec\\NoCodecHandler"
+                },
+                "json": {
+                    "classname": "Rad\\Codec\\JsonCodecHandler"
+                },
+                "xml": {
+                    "classname": "Rad\\Codec\\XmlCodecHandler"
+                },
+                "php": {
+                    "classname": "Rad\\Codec\\SerializeCodecHandler"
+                },
+                "serialize": {
+                    "classname": "Rad\\Codec\\SerializeCodecHandler"
+                }
+            }
+        }
+    },
+    "encrypt": {
+        "key": ""
+    }
+}
