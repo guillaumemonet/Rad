@@ -44,25 +44,17 @@ final class Config {
     }
 
     /**
-     * Load config file.
-     *
-     * @param string $filename
-     * @deprecated
-     */
-    public static function loadIni($filename) {
-        self::$config = array_merge(self::$config, parse_ini_file($filename, true));
-    }
-
-    /**
      * 
-     * @param type $jsonFilename
+     * @param string $jsonFilename
+     * @param bool $append
      * @throws ConfigurationException
      */
-    public static function load(string $jsonFilename, $append = false) {
-        self::$config = json_decode(file_get_contents($jsonFilename));
+    public static function load(string $jsonFilename, bool $append = false) {
+        $config = json_decode(file_get_contents($jsonFilename));
         if (json_last_error() > 0) {
             throw new ConfigurationException('Configuration can\'t be loaded');
         }
+        self::$config = $append ? array_merge_recursive(self::$config, $config) : $config;
     }
 
     /**
