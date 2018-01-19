@@ -2,3 +2,5 @@ language: php
 php:
   - '7.1'
 script: phpunit test/
+install:
+    composer install
