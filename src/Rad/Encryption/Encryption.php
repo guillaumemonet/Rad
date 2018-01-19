@@ -48,7 +48,7 @@ abstract class Encryption {
      * @return string
      */
     public static function crypt(string $data) {
-        $keyHash = md5(Config::get("encrypt", "key"));
+        $keyHash = md5(Config::getConfig()->encrypt->key);
         $key = substr($keyHash, 0, mcrypt_get_key_size(self::$cipher, self::$mode));
         $iv = substr($keyHash, 0, mcrypt_get_block_size(self::$cipher, self::$mode));
         return base64_encode(mcrypt_encrypt(self::$cipher, $key, $data, self::$mode, $iv));
@@ -60,7 +60,7 @@ abstract class Encryption {
      * @return string
      */
     public static function decrypt(string $data) {
-        $keyHash = md5(Config::get("encrypt", "key"));
+        $keyHash = md5(Config::getConfig()->encrypt->key);
         $key = substr($keyHash, 0, mcrypt_get_key_size(self::$cipher, self::$mode));
         $iv = substr($keyHash, 0, mcrypt_get_block_size(self::$cipher, self::$mode));
         return mcrypt_decrypt(self::$cipher, $key, base64_decode($data), self::$mode, $iv);
