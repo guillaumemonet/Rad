@@ -48,5 +48,8 @@
         "phpunit/php-timer": "^1.0.",
         "phpunit/phpunit": "^6.5"
     },
+    "suggest": {
+        "rad/rad-framework-reco-easyrec": "dev-master"
+    },
     "bin": ["bin/rad"]
 }
