@@ -37,7 +37,13 @@ use Rad\Encryption\Encryption;
  */
 class FileCacheHandler implements CacheInterface {
 
+    private $path = null;
+    private $defaultTTL = null;
+
     public function __construct() {
+        $config = Config::getServiceConfig('cache', 'file');
+        $this->path = $config->path;
+        $this->defaultTTL = $config->lifetime;
     }
 
     public function delete($key): bool {
@@ -53,8 +59,8 @@ class FileCacheHandler implements CacheInterface {
     }
 
     public function get($key, $default = null) {
-        if (file_exists(Config::get('install', 'path') . Config::get("cache_file", "path") . Encryption::hashMd5($key))) {
-            $tmp = file_get_contents(Config::get('install', 'path') . Config::get("cache_file", "path") . Encryption::hashMd5($key));
+        if (file_exists($this->path . Encryption::hashMd5($key))) {
+            $tmp = file_get_contents($this->path . Encryption::hashMd5($key));
             if ($tmp !== false) {
                 return $tmp;
             }
@@ -65,8 +71,8 @@ class FileCacheHandler implements CacheInterface {
     public function getMultiple($keys, $default = null) {
         $ret = [];
         foreach ($keys as $k) {
-            if (file_exists(Config::get('install', 'path') . Config::get("cache_file", "path") . Encryption::hashMd5($k))) {
-                $tmp = file_get_contents(Config::get('install', 'path') . Config::get("cache_file", "path") . Encryption::hashMd5($k));
+            if (file_exists($this->path . Encryption::hashMd5($k))) {
+                $tmp = file_get_contents($this->path . Encryption::hashMd5($k));
                 $ret[$k] = $tmp !== false ? $tmp : $default;
             }
         }
@@ -74,27 +80,27 @@ class FileCacheHandler implements CacheInterface {
     }
 
     public function has($key): bool {
-        return file_exists(Config::get('install', 'path') . Config::get("cache_file", "path") . Encryption::hashMd5($key));
+        return file_exists($this->path . Encryption::hashMd5($key));
     }
 
     public function set($key, $value, $ttl = null): bool {
-        return file_put_contents(Config::get('install', 'path') . Config::get("cache_file", "path") . Encryption::hashMd5($key), $value, LOCK_EX);
+        return file_put_contents($this->path . Encryption::hashMd5($key), $value, LOCK_EX);
     }
 
     public function setMultiple($values, $ttl = null): bool {
         $ret = false;
         foreach ($values as $k => $v) {
-            $ret &= file_put_contents(Config::get('install', 'path') . Config::get("cache_file", "path") . Encryption::hashMd5($k), $v, LOCK_EX);
+            $ret &= file_put_contents($this->path . Encryption::hashMd5($k), $v, LOCK_EX);
         }
         return $ret;
     }
 
     public function clear(): bool {
         $t = time();
-        $handle = opendir(Config::get('install', 'path') . Config::get("cache_file", "path"));
+        $handle = opendir($this->path);
         while ($handle !== false && false !== ($file = readdir($handle))) {
-            if ($file != ".." && $file != "." && @filectime(Config::get('install', 'path') . Config::get("cache_file", "path") . $file) < ($t - (int) Config::get("cache_file", "lifetime"))) {
-                @unlink(Config::get('install', 'path') . Config::get("cache_file", "path") . $file);
+            if ($file != ".." && $file != "." && @filectime($this->path . $file) < ($t - (int) $this->defaultTTL)) {
+                @unlink($this->path . $file);
             }
         }
     }

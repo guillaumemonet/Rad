@@ -38,10 +38,13 @@ use Rad\Config\Config;
 final class MemcacheCacheHandler implements CacheInterface {
 
     private $memcache = null;
+    private $defaultTTL = null;
 
     public function __construct() {
+        $config = Config::getServiceConfig('cache', 'memcache');
         $this->memcache = new Memcached();
-        $this->memcache->addServer(Config::get('cache_memcache', 'url'), (int) Config::get('cache_memcache', 'port'), 100);
+        $this->memcache->addServer($config->url, (int) $config->port, 100);
+        $this->defaultTTL = $config->lifetime;
     }
 
     /**
@@ -117,14 +120,14 @@ final class MemcacheCacheHandler implements CacheInterface {
 
     public function set($key, $value, $ttl = null): bool {
         if ($ttl == null) {
-            $ttl = (int) Config::get("cache", "lifetime");
+            $ttl = (int) $this->defaultTTL;
         }
         return $this->memcache->set($key, $value, $ttl);
     }
 
     public function setMultiple($values, $ttl = null): bool {
         if ($ttl == null) {
-            $ttl = (int) Config::get("cache", "lifetime");
+            $ttl = (int) $this->defaultTTL;
         }
         return $this->memcache->setMulti($values, $ttl);
     }
