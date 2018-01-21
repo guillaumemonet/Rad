@@ -41,7 +41,7 @@ class FileCacheHandler implements CacheInterface {
     private $defaultTTL = null;
 
     public function __construct() {
-        $config = Config::getServiceConfig('cache', 'file');
+        $config = Config::getServiceConfig('cache', 'file')->config;
         $this->path = $config->path;
         $this->defaultTTL = $config->lifetime;
     }

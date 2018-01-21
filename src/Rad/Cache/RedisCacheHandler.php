@@ -44,7 +44,7 @@ final class RedisCacheHandler implements CacheInterface {
     private $redis = null;
 
     public function __construct() {
-        $config = Config::getServiceConfig('cache', 'redis');
+        $config = Config::getServiceConfig('cache', 'redis')->config;
         $this->redis = new Redis();
         $this->connect($config->host, $config->port);
     }

@@ -41,7 +41,7 @@ final class MemcacheCacheHandler implements CacheInterface {
     private $defaultTTL = null;
 
     public function __construct() {
-        $config = Config::getServiceConfig('cache', 'memcache');
+        $config = Config::getServiceConfig('cache', 'memcache')->config;
         $this->memcache = new Memcached();
         $this->memcache->addServer($config->url, (int) $config->port, 100);
         $this->defaultTTL = $config->lifetime;
