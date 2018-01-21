@@ -42,7 +42,7 @@ class MysqlDatabaseHandler extends DatabaseAdapter {
     public function __construct() {
         $config = Config::getServiceConfig("database", "mysql")->config;
         try {
-            parent::__construct($config->type . ":host=" . $config->host . ";dbname=" . $config->database, $config->user, $config->password);
+            parent::__construct("mysql:host=" . $config->host . ";dbname=" . $config->database, $config->user, $config->password);
             $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
             $this->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
         } catch (PDOException $ex) {
