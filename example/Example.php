@@ -81,9 +81,9 @@ class MyController extends Controller {
 
 }
 
-$time = Time::get_microtime();
+$time = Time::startCounter();
 $app = new Api();
 $app->addControllers([MyController::class])
         ->run();
-$ltime = Time::get_microtime();
-Log::getHandler()->debug("API REQUEST [" . round($ltime - $time, 10) * 1000 . "] ms");
+$ltime = Time::endCounter();
+Log::getHandler()->debug("API REQUEST [" . round($ltime, 10) * 1000 . "] ms");
