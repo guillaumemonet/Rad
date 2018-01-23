@@ -4,6 +4,7 @@ namespace Rad\Service;
 
 use ErrorException;
 use Rad\Config\Config;
+use Rad\Error\ConfigurationException;
 
 /*
  * The MIT License
@@ -37,15 +38,18 @@ use Rad\Config\Config;
 abstract class Service implements ServiceInterface {
 
     protected static $instances = [];
-    protected $handlerType = null;
+    protected $serviceType = null;
     protected $providedClassName = null;
     protected $default = null;
     protected $services = [];
     protected $handlers = [];
 
     protected function __construct() {
-        $this->handlerType = $this->getServiceType();
-        $this->loadConfig($this->handlerType);
+        $this->serviceType = $this->getServiceType();
+        if ($this->serviceType === null) {
+            throw new ConfigurationException('No Handler Type returned');
+        }
+        $this->loadConfig();
     }
 
     /**
@@ -94,15 +98,20 @@ abstract class Service implements ServiceInterface {
         return isset($this->services[$serviceName]);
     }
 
-    private function loadConfig(string $handlerType) {
-        $this->handlerType = $handlerType;
-        $config = Config::getServiceConfig($this->handlerType);
+    private function loadConfig() {
+        $config = Config::getServiceConfig($this->serviceType);
         $this->default = $config->default;
-        $this->providedClassName = $config->classname;
-        $handlers = $config->handlers;
-        foreach ($handlers as $shortName => $handler) {
-            $this->services[$shortName] = $handler->classname;
+        if ($this->default === null) {
+            throw new ConfigurationException('No default handler  defined');
         }
+        $this->providedClassName = $config->classname;
+        if ($this->providedClassName === null) {
+            throw new ConfigurationException('No Provided Class defined');
+        }
+        $handlers = $config->handlers;
+        $this->services = array_combine(array_keys((array) $handlers), array_map(function($handler) {
+                    return $handler->classname;
+                }, (array) $handlers));
     }
 
     protected abstract function getServiceType(): string;
