@@ -208,32 +208,6 @@ final class StringUtils {
     }
 
     /**
-     * @return string
-     */
-    public static function toXML($mixed, $root = "root") {
-        $array = $mixed;
-        if (is_object($mixed)) {
-            $array = get_object_vars($mixed);
-            $root = str_replace("model\\", "", strtolower(get_class($mixed)));
-        }
-        $ret = "<" . $root . ">";
-        foreach ($array as $key => $val) {
-            if (is_array($val)) {
-                $ret .= self::toXML($val, $key);
-            } else if (is_object($val)) {
-                $class = str_replace("model\\", "", strtolower(get_class($val)));
-                $ret .= self::toXML($val, $class);
-            } else {
-                $ret .= '<' . $key . '>';
-                $ret .= $val;
-                $ret .= '</' . $key . '>';
-            }
-        }
-        $ret .= "</" . $root . ">";
-        return $ret;
-    }
-
-    /**
      * 
      * @param string $pattern
      * @param array $input
