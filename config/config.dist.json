@@ -109,11 +109,12 @@
             }
         },
         "database": {
-            "default": "mysql",
+            "default": "pdo",
             "handlers": {
-                "mysql": {
-                    "classname": "Rad\\Database\\MysqlDatabaseHandler",
+                "pdo": {
+                    "classname": "Rad\\Database\\PDODatabaseHandler",
                     "config": {
+                        "type": "mysql",
                         "host": "your-database-host",
                         "port": 3306,
                         "user": "your-username",
