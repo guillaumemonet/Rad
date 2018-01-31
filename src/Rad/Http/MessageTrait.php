@@ -122,4 +122,10 @@ trait MessageTrait {
         });
     }
 
+    protected function addHeaders(array $headers) {
+        array_walk($headers, function($value, $key) {
+            $this->addHeader($key, $value);
+        });
+    }
+
 }

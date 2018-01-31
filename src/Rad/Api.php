@@ -26,6 +26,7 @@
 
 namespace Rad;
 
+use Closure;
 use ErrorException;
 use Psr\Http\Message\ServerRequestInterface;
 use Rad\Config\Config;
@@ -81,12 +82,22 @@ class Api {
     }
 
     /**
-     * Run the Api
-     * @return null
-     * @throws ErrorException
+     * 
+     * @param Closure $finalClosure
      */
     public final function run(Closure $finalClosure = null) {
         try {
+            if (Config::getApiConfig('response_to_options') &&
+                    ($this->request->getHeader('REQUEST_METHOD') == 'OPTIONS') && (
+                    $this->request->getHeader('HTTP_ACCESS_CONTROL_REQUEST_METHOD') &&
+                    in_array($this->request->getHeader('HTTP_ACCESS_CONTROL_REQUEST_METHOD'), ['POST', 'DELETE', 'PUT', 'GET'])
+                    )
+            ) {
+                $response = new Response(200, 'OK', Config::getApiConfig('default_response_options'));
+                $response->send();
+                return;
+            }
+
             if (!$this->getRouter()->load()) {
                 $this->getRouter()->setRoutes(RouteParser::parseRoutes($this->getControllers()));
                 $this->getRouter()->save();

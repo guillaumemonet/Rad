@@ -28,6 +28,7 @@ namespace Rad\Http;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
+use Rad\Config\Config;
 
 /**
  * 
@@ -54,6 +55,8 @@ class Response implements ResponseInterface {
         $this->setHeaders($headers);
         $this->addHeader("Application-Nonce", $this->time);
         $this->addHeader('X-Powered-By', 'Rad Framework');
+        $defaultHeaders = Config::getApiConfig('default_response_headers');
+        $this->addHeaders($defaultHeaders);
     }
 
     public function getReasonPhrase(): string {
