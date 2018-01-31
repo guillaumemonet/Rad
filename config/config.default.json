@@ -5,7 +5,18 @@
         "router": "Rad\\Route\\Router",
         "response": "Rad\\Http\\Response",
         "request": "Rad\\Http\\Request",
-        "serverrequest": "Rad\\Http\\ServerRequest"
+        "serverrequest": "Rad\\Http\\ServerRequest",
+        "default_response_headers": {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Expose-Headers": "Content-Range"
+        },
+        "response_to_options": true,
+        "default_response_options": {
+            "Access-Control-Allow-Credentials": "true",
+            "Access-Control-Allow-Headers": "X-Requested-With",
+            "Access-Control-Allow-Headers": "Content-Type",
+            "Access-Control-Allow-Methods": "POST, GET, OPTIONS, DELETE, PUT, PATCH"
+        }
     },
     "services": {
         "template": {
