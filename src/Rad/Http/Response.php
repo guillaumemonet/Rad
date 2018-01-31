@@ -56,7 +56,7 @@ class Response implements ResponseInterface {
         $this->addHeader("Application-Nonce", $this->time);
         $this->addHeader('X-Powered-By', 'Rad Framework');
         $defaultHeaders = Config::getApiConfig('default_response_headers');
-        $this->addHeaders($defaultHeaders);
+        $this->addHeaders((array) $defaultHeaders);
     }
 
     public function getReasonPhrase(): string {

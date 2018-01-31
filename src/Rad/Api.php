@@ -93,7 +93,7 @@ class Api {
                     in_array($this->request->getHeader('HTTP_ACCESS_CONTROL_REQUEST_METHOD'), ['POST', 'DELETE', 'PUT', 'GET'])
                     )
             ) {
-                $response = new Response(200, 'OK', Config::getApiConfig('default_response_options'));
+                $response = new Response(200, 'OK', (array) Config::getApiConfig('default_response_options'));
                 $response->send();
                 return;
             }
