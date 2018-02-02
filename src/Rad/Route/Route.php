@@ -2,6 +2,8 @@
 
 /**
  * @license http://www.opensource.org/licenses/mit-license.php MIT (see the LICENSE file)
+ * @author Guillaume Monet
+ * @package rad-framework
  */
 
 namespace Rad\Route;
@@ -11,7 +13,6 @@ use Rad\Observer\Observable;
 /**
  * Description of Route
  *
- * @author guillaume
  */
 class Route {
 
