@@ -72,6 +72,7 @@ abstract class Manager {
         }
         $serviceType = StringUtils::camelCase($serviceType);
         $serviceName = StringUtils::camelCase($serviceName);
+        mkdir('config');
         mkdir('src');
         mkdir('src/Rad');
         mkdir('src/Rad/' . $serviceType);
