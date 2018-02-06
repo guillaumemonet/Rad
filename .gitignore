@@ -11,3 +11,4 @@ composer.phar
 # composer.lock
 /composer.lock
 /config/config.json
+/config/build_config.json

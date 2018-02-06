@@ -49,7 +49,9 @@
     },
     "suggest": {
         "rad/rad-framework-template-smarty": "dev-master",
-        "rad/rad-framework-reco-easyrec": "dev-master"
+        "rad/rad-framework-reco-easyrec": "dev-master",
+        "rad/rad-framework-mail-simplemail": "dev-master",
+        "rad/rad-framework-builder": "dev-master"
     },
     "bin": ["bin/rad"]
 }
