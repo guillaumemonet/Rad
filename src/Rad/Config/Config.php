@@ -50,11 +50,33 @@ final class Config {
      * @throws ConfigurationException
      */
     public static function load(string $jsonFilename, bool $append = false) {
-        $config = json_decode(file_get_contents($jsonFilename));
+        $configDir = dirname($jsonFilename);
+        if (!file_exists($configDir . '/buid_config.json') || true) {
+            $rawConfig = self::buildConfig(file_get_contents($jsonFilename), $configDir);
+            file_put_contents($configDir . '/build_config.json', json_encode(json_decode($rawConfig), JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+        } else {
+            $rawConfig = file_get_contents($configDir . '/build_config.json');
+        }
+        $config = json_decode($rawConfig);
         if (json_last_error() > 0) {
-            throw new ConfigurationException('Configuration can\'t be loaded');
+            throw new ConfigurationException('Configuration build_config.json can\'t be loaded');
         }
         self::$config = $append ? array_merge_recursive(self::$config, $config) : $config;
+    }
+
+    private static function buildConfig(string $rawConfig, string $configDir) {
+        return preg_replace_callback('(\%([a-zA-Z0-9_\-\/]*\.json)\%)', function($matches) use ($configDir) {
+            $rawContent = self::buildConfig(file_get_contents($configDir . '/' . $matches[1]), $configDir);
+            $jsonContent = json_decode($rawContent);
+            if (json_last_error() > 0) {
+                throw new ConfigurationException('Configuration ' . $configDir . '/' . $matches[1] . ' can\'t be loaded');
+            }
+            $ret = '';
+            foreach ($jsonContent as $key => $content) {
+                $ret .= '"' . $key . '":' . json_encode($content, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+            }
+            return $ret;
+        }, $rawConfig);
     }
 
     /**
