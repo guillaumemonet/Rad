@@ -3,7 +3,7 @@
 /*
  * The MIT License
  *
- * Copyright 2017 Guillaume Monet.
+ * Copyright 2018 guillaume.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,49 +27,15 @@
 namespace Rad\Encryption;
 
 /**
- * Description of Encryption
+ * Description of EncryptionInterface
  *
- * @author Guillaume Monet
+ * @author guillaume
  */
-final class Encryption {
+interface EncryptionInterface {
 
-    public static function addHandler(string $handlerType, $handler) {
-        static::getInstance()->addServiceHandler($handlerType, $handler);
-    }
+    public function crypt(string $data);
 
-    public static function getHandler(string $handlerType = null): Encryption {
-        return static::getInstance()->getServiceHandler($handlerType);
-    }
+    public function decrypt(string $data);
 
-    protected function getServiceType(): string {
-        return 'encrypt';
-    }
-
-    /**
-     * 
-     * @param string $data
-     * @return string
-     */
-    public static function hashMd5(string $data): string {
-        return hash("md5", $data);
-    }
-
-    /**
-     * Generate secure token.
-     *
-     * @return string
-     */
-    public static function generateToken($size = 8): string {
-        return bin2hex(openssl_random_pseudo_bytes($size));
-    }
-
-    /**
-     * Convert to mysql password format
-     * @param string $input
-     * @return string
-     */
-    public static function password($input): string {
-        return "*" . strtoupper(sha1(sha1($input, true)));
-    }
-
+    public function sign(string $data, string $secret);
 }

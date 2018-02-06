@@ -3,7 +3,7 @@
 /*
  * The MIT License
  *
- * Copyright 2017 Guillaume Monet.
+ * Copyright 2018 guillaume.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,50 +26,50 @@
 
 namespace Rad\Encryption;
 
+use Rad\Config\Config;
+
 /**
- * Description of Encryption
+ * Description of MCryptEncryption
  *
- * @author Guillaume Monet
+ * @author guillaume
  */
-final class Encryption {
+class MCryptEncryption implements EncryptionInterface {
 
-    public static function addHandler(string $handlerType, $handler) {
-        static::getInstance()->addServiceHandler($handlerType, $handler);
-    }
-
-    public static function getHandler(string $handlerType = null): Encryption {
-        return static::getInstance()->getServiceHandler($handlerType);
-    }
-
-    protected function getServiceType(): string {
-        return 'encrypt';
-    }
+    private static $cipher = MCRYPT_RIJNDAEL_128;
+    private static $mode = 'cbc';
 
     /**
-     * 
+     * Encrypt Datas
      * @param string $data
      * @return string
      */
-    public static function hashMd5(string $data): string {
-        return hash("md5", $data);
+    public function crypt(string $data) {
+        $keyHash = md5(Config::getConfig()->encrypt->key);
+        $key = substr($keyHash, 0, mcrypt_get_key_size(self::$cipher, self::$mode));
+        $iv = substr($keyHash, 0, mcrypt_get_block_size(self::$cipher, self::$mode));
+        return base64_encode(mcrypt_encrypt(self::$cipher, $key, $data, self::$mode, $iv));
     }
 
     /**
-     * Generate secure token.
-     *
+     * Decrypt Datas
+     * @param string $data
      * @return string
      */
-    public static function generateToken($size = 8): string {
-        return bin2hex(openssl_random_pseudo_bytes($size));
+    public function decrypt(string $data) {
+        $keyHash = md5(Config::getConfig()->encrypt->key);
+        $key = substr($keyHash, 0, mcrypt_get_key_size(self::$cipher, self::$mode));
+        $iv = substr($keyHash, 0, mcrypt_get_block_size(self::$cipher, self::$mode));
+        return mcrypt_decrypt(self::$cipher, $key, base64_decode($data), self::$mode, $iv);
     }
 
     /**
-     * Convert to mysql password format
-     * @param string $input
+     * Sign current datas
+     * @param string $data
+     * @param string $secret
      * @return string
      */
-    public static function password($input): string {
-        return "*" . strtoupper(sha1(sha1($input, true)));
+    public function sign(string $data, string $secret): string {
+        return base64_encode(hash_hmac('md5', $data, $secret, true));
     }
 
 }
