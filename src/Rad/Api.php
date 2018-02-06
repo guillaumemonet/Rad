@@ -72,13 +72,11 @@ class Api {
     public function __construct(string $configFilename = null) {
         if ($configFilename !== null) {
             Config::load($configFilename);
-        } else {
-            Config::load(__DIR__ . '/../../config/config.default.json');
         }
-        $router = Config::getApiConfig('router');
-        $serverRequest = Config::getApiConfig('serverrequest');
-        $this->router = $router !== null ? new $router : new Router();
-        $this->request = $serverRequest !== null ? new $serverRequest : new ServerRequest();
+        $routerClass = Config::getApiConfig('router');
+        $serverRequestClass = Config::getApiConfig('serverrequest');
+        $this->router = $routerClass !== null ? new $routerClass : new Router();
+        $this->request = $serverRequestClass !== null ? new $serverRequestClass : new ServerRequest();
     }
 
     /**
@@ -114,7 +112,7 @@ class Api {
                 in_array($this->request->getHeader('HTTP_ACCESS_CONTROL_REQUEST_METHOD'), ['POST', 'DELETE', 'PUT', 'GET'])
                 )
         ) {
-            $response = new Response(200, 'OK', (array) Config::getApiConfig('default_response_options'));
+            $response = new Response(200, 'OK');
             $response->send();
             exit;
         }
