@@ -19,26 +19,25 @@
         }
     },
     "services": {
+        "build": {
+            "default": "databasebuilder",
+            "classname": "Rad\\Build\\BuildInterface",
+            "handlers": {
+
+            }
+        },
         "template": {
             "default": "smarty",
             "classname": "Rad\\Template\\TemplateInterface",
             "handlers": {
-                "smarty": {
-                    "classname": "Rad\\Template\\SmartyTemplateHandler",
-                    "config": {
-                        "compile_check": true,
-                        "force_compile": false,
-                        "debugging": false,
-                        "error_reporting": true,
-                        "caching": false,
-                        "cache_locking": true,
-                        "cache_lifetime": 3600,
-                        "template_dir": "templates/",
-                        "compile_dir": "cache/",
-                        "config_dir": "config/",
-                        "cache_dir": "cache/"
-                    }
-                }
+
+            }
+        },
+        "reco": {
+            "default": "",
+            "classname": "Rad\\Reco\\RecoInterface",
+            "handlers": {
+
             }
         },
         "cache": {
@@ -126,11 +125,8 @@
             }
         },
         "mail": {
-            "default": "simplemail",
+            "default": "",
             "handlers": {
-                "simplemail": {
-                    "classname": "Rad\\Mail\\SimpleMailHandler"
-                }
             }
         },
         "codec": {
@@ -156,9 +152,18 @@
                     "classname": "Rad\\Codec\\SerializeCodecHandler"
                 }
             }
+        },
+        "encrypt": {
+            "default": "mcrypt",
+            "classname": "Rad\\Encryption\\EncryptionInterface",
+            "handlers": {
+                "mcrypt": {
+                    "classname": "Rad\\Encryption\\MCryptEncryption",
+                    "config": {
+                        "key": ""
+                    }
+                }
+            }
         }
-    },
-    "encrypt": {
-        "key": ""
     }
 }
