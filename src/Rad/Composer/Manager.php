@@ -26,7 +26,7 @@
 
 namespace Rad\Composer;
 
-use Composer\Script\Event;
+use Composer\Installer\PackageEvent;
 use Rad\Utils\StringUtils;
 use RuntimeException;
 
@@ -89,13 +89,16 @@ abstract class Manager {
         copy(__DIR__ . '/../../../config/config.dist.json', 'config/config.json');
     }
 
-    public static function installConfig(Event $event) {
-        $packageName = StringUtils::slugify($event->getComposer()->getPackage()->getName());
-        $packageDir = $event->getComposer()->getPackage()->getInstallationSource();
-        if (!file_exists('config/' . $packageName . '.json')) {
-            copy($packageDir . '/config/config.json', 'config/' . $packageName . '.json');
-        } else {
-            error_log('Config file already exists, won\'t overwrite');
+    public static function installConfig(PackageEvent $event) {
+        $packages = $event->getComposer()->getRepositoryManager()
+                        ->getLocalRepository()->getPackages();
+        $installationManager = $event->getComposer()->getInstallationManager();
+        foreach ($packages as $package) {
+            $installPath = $installationManager->getInstallPath($package);
+            $packageName = StringUtils::slugify($package->getName());
+            if (file_exists($installPath . '/config/config.json') && !file_exists('config/' . $packageName . '.json')) {
+                copy($installPath . '/config/config.json', 'config/' . $packageName . '.json');
+            }
         }
     }
 
