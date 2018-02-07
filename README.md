@@ -28,6 +28,21 @@ To get the latest version of RAD Micro-Framework, simply add the following line 
 "rad/rad-framework": "dev-master"
 ```
 
+## Automatic config installation for all `Rad` package
+
+You can add this script to your `composer.json` when you want to automatic install package config file in your config directory
+
+```json
+"scripts": {
+        "post-package-install": [
+            "Rad\\Composer\\Manager::installConfig"
+        ],
+        "post-package-update": [
+            "Rad\\Composer\\Manager::installConfig"
+        ]
+}
+```
+
 ## History / RoadMap
 * 2018 Q3 FINAL : Correct bugs and release first stable version
 * 2018 Q2 BETA : Modularize Services
