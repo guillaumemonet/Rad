@@ -9,7 +9,7 @@ RAD Framework
 [![Maintainability](https://api.codeclimate.com/v1/badges/8e095176dd6216eea653/maintainability)](https://codeclimate.com/github/guillaumemonet/Rad/maintainability)
 
 ## What is RAD?
-RAD for Rest API Dedicated Framework.
+RAD Framework is for Rapid Application Development Framework.
 
 ## Why create this?
 I wanted to make a basic framework to learn and keep it as simple as possible.
@@ -22,7 +22,7 @@ Any advice is welcome.
 
 [PHP](https://php.net) 7.1+ and [Composer](https://getcomposer.org) are required.
 
-To get the latest version of RAD Micro-Framework, simply add the following line to the require block of your `composer.json` file:
+To get the latest version of RAD Framework, simply add the following line to the require block of your `composer.json` file:
 
 ```
 "rad/rad-framework": "dev-master"
