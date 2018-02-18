@@ -27,6 +27,7 @@
 namespace Rad\Codec;
 
 use ErrorException;
+use Rad\Utils\Mime;
 
 /**
  * Description of Xml_CodecHandler
@@ -44,7 +45,7 @@ class XmlCodecHandler implements CodecInterface {
     }
 
     public function getMimeTypes(): array {
-        return array("xml");
+        return ['xml'];
     }
 
     public function serialize($object): string {

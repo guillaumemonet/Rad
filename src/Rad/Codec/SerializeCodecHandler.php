@@ -38,7 +38,7 @@ class SerializeCodecHandler implements CodecInterface {
     }
 
     public function getMimeTypes(): array {
-        return array("php");
+        return ['php'];
     }
 
     public function serialize($object): string {

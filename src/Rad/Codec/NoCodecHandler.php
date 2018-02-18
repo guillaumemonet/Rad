@@ -38,7 +38,7 @@ class NoCodecHandler implements CodecInterface {
     }
 
     public function getMimeTypes(): array {
-        return array("html", "txt", "plain");
+        return ["html", "txt", "plain"];
     }
 
     public function serialize($object): string {

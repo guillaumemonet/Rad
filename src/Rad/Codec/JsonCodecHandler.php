@@ -56,7 +56,7 @@ class JsonCodecHandler implements CodecInterface {
     }
 
     public function getMimeTypes(): array {
-        return array("json");
+        return ['json'];
     }
 
     public function sign($datas, $secret) {
