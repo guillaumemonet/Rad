@@ -58,7 +58,7 @@ class PDODatabaseHandler extends DatabaseAdapter {
             $this->connect();
         }
         try {
-            $this->exec("USE " . $dbname);
+            $this->exec('USE ' . $dbname);
         } catch (PDOException $ex) {
             Log::getHandler()->error($ex->getMessage());
         }
@@ -69,7 +69,7 @@ class PDODatabaseHandler extends DatabaseAdapter {
      *
      * @return PDOStatement
      */
-    public function prepare($sql, $options = []) {
+    public function prepare(string $sql, $options = []) {
         try {
             Log::getHandler()->debug($sql);
             $stmt = parent::prepare($sql, $options);
@@ -94,60 +94,14 @@ class PDODatabaseHandler extends DatabaseAdapter {
         return false;
     }
 
-    /**
-     * 
-     * @param PDOStatement $stmt
-     * @param type $mode
-     * @return mixed
-     */
-    public function fetch(PDOStatement $stmt, $mode = PDO::FETCH_ASSOC) {
-        return $stmt->fetch($mode);
-    }
-
-    /**
-     * 
-     * @param PDOStatement $stmt
-     * @return PDOStatement
-     */
-    public function fetchAssoc(PDOStatement $stmt) {
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
-
-    /**
-     * 
-     * @param PDOStatement $stmt
-     * @return PDOStatement
-     */
-    public function fetchArray(PDOStatement $stmt) {
-        return $stmt->fetch(PDO::FETCH_NUM);
-    }
-
-    /**
-     * 
-     * @param PDOStatement $stmt
-     * @param int $mode
-     * @return PDOStatement
-     */
-    public function fetchAll(PDOStatement $stmt, $mode = PDO::FETCH_ASSOC) {
-        return $stmt->fetchAll($mode);
-    }
-
-    /**
-     * 
-     * @param PDOStatement $stmt
-     * @param array $input_parameters
-     * @return PDOStatement
-     */
-    public function execute(PDOStatement $stmt, $input_parameters = null) {
+    public function exec($sql) {
         try {
-            if ($input_parameters === null) {
-                return $stmt->execute();
-            } else {
-                return $stmt->execute($input_parameters);
-            }
+            Log::getHandler()->debug($sql);
+            return parent::exec($sql);
         } catch (PDOException $ex) {
             Log::getHandler()->error($ex->getMessage());
         }
+        return false;
     }
 
     /**
@@ -169,6 +123,17 @@ class PDODatabaseHandler extends DatabaseAdapter {
 
     public function schema($table) {
         return $this->query("SHOW COLUMUNS FROM `$table`");
+    }
+
+    /**
+     * 
+     * @param string $table_name
+     * @return type
+     */
+    public function describeTable(string $table_name) {
+        $statment = $this->prepare(sprintf('DESCRIBE %s', $table_name));
+        $statment->execute();
+        return $statment->fetchAll(\PDO::FETCH_ASSOC);
     }
 
 }
