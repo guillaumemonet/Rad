@@ -82,7 +82,7 @@ class MyController extends Controller {
 }
 
 $time = Time::startCounter();
-$app = new Api();
+$app = new Api(__DIR__.'/../config/config.dist.json');
 $app->addControllers([MyController::class])
         ->run();
 $ltime = Time::endCounter();
