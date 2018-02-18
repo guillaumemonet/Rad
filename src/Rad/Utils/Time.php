@@ -41,6 +41,10 @@ final class Time {
         
     }
 
+    private function __clone() {
+        
+    }
+
     /**
      * Return current microtime.
      *
