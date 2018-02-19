@@ -134,7 +134,7 @@ class Api {
      *
      * @param RouterInterface $routeur
      */
-    public function setRouter(RouterInterface $routeur) {
+    public function setRouter(RouterInterface $routeur): self {
         $this->routeur = $routeur;
         return $this;
     }
@@ -143,7 +143,7 @@ class Api {
      *
      * @return ServerRequestInterface
      */
-    public function getRequest() {
+    public function getRequest(): ServerRequestInterface {
         return $this->request;
     }
 
@@ -152,7 +152,7 @@ class Api {
      * @param array $controllers
      * @return $this
      */
-    public function addControllers(array $controllers) {
+    public function addControllers(array $controllers): self {
         $this->controllers += $controllers;
         return $this;
     }
@@ -172,7 +172,7 @@ class Api {
      * @param Controller $controller
      * @return $this
      */
-    public function addController($controller) {
+    public function addController(Controller $controller): self {
         $this->controllers[] = $controller;
         return $this;
     }
@@ -181,7 +181,7 @@ class Api {
      *
      * @return Controller[]
      */
-    public function getControllers() {
+    public function getControllers(): array {
         return $this->controllers;
     }
 
