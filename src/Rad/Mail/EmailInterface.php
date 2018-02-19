@@ -33,27 +33,27 @@ namespace Rad\Mail;
  */
 interface EmailInterface {
 
-    public function addAttachmentFromData($content, $filename, $contentType = "application/x-unknown-content-type");
+    public function addAttachmentFromData($content, $filename, $contentType = "application/x-unknown-content-type"): self;
 
-    public function addAttachmentFromFile($filename, $forcedFilename = null);
+    public function addAttachmentFromFile($filename, $forcedFilename = null): self;
 
-    public function setFrom(string $from, string $alias = null);
+    public function setFrom(string $from, string $alias = null): self;
 
-    public function addTo(string $to, string $alias = null);
+    public function addTo(string $to, string $alias = null): self;
 
-    public function addCC(string $cc, string $alias = null);
+    public function addCC(string $cc, string $alias = null): self;
 
-    public function addBCC(string $bcc, string $alias = null);
+    public function addBCC(string $bcc, string $alias = null): self;
 
-    public function setSubject(string $texte);
+    public function setReplyTo(string $replyTo, string $alias): self;
 
-    public function setHtml(string $html);
+    public function setSubject(string $texte): self;
 
-    public function setText(string $text);
+    public function setHtml(string $html): self;
 
-    public function setCharset(string $encoding);
+    public function setText(string $text): self;
 
-    public function setReplyTo(string $replyTo);
+    public function setCharset(string $encoding): self;
 
     public function send(): bool;
 }
