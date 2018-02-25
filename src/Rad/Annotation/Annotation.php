@@ -26,6 +26,10 @@
 
 namespace Rad\Annotation;
 
+use ReflectionClass;
+use ReflectionMethod;
+use ReflectionProperty;
+
 /**
  * Description of Annotation
  *
@@ -46,6 +50,28 @@ class Annotation {
             $annotations[$match['name']][] = $match['args'];
         }, $matches);
         return $annotations;
+    }
+
+    public static function getAnnotationsProperties(string $class) {
+        $reflexion = new ReflectionClass($class);
+        $properties = $reflexion->getProperties(ReflectionProperty::IS_PUBLIC | ReflectionProperty::IS_PROTECTED);
+        $annotations = [];
+        array_map(function($property) use(&$annotations) {
+            $annotations[$property->name][] = self::getAnnotations($property->getDocComment());
+        }, $properties);
+        return $annotations;
+    }
+
+    public static function getAnnotationsClass(string $class) {
+        $reflexion = new ReflectionClass($class);
+        $comments = $reflexion->getDocComment();
+        return self::getAnnotations($comments);
+    }
+
+    public static function getAnnotationsMethods(string $class, string $method) {
+        $reflexion = new ReflectionMethod($class, $method);
+        $comments = $reflexion->getDocComment();
+        return self::getAnnotations($comments);
     }
 
 }
