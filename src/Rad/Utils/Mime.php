@@ -40,11 +40,11 @@ abstract class Mime {
         
     }
 
-    public static function getMimeTypesFromShort($mimetype): array {
+    public static function getMimeTypesFromShort($mimetype): ?array {
         return isset(self::MIME_TYPES[$mimetype]) ? self::MIME_TYPES[$mimetype] : null;
     }
 
-    public static function getMimeTypesFromLong($mimetype): array {
+    public static function getMimeTypesFromLong($mimetype): ?array {
         return isset(self::MIME_TYPES_INV[$mimetype]) ? self::MIME_TYPES_INV[$mimetype] : null;
     }
 
