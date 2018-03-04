@@ -158,7 +158,7 @@ class Router implements RouterInterface {
             $middleware = new Middleware($route->getMiddlewares());
             $classController = $route->getClassName();
             $methodController = $route->getMethodName();
-            $response = $middleware->call($request, new Response(200, ''), $route, function($request, $response, $route) use($classController, $methodController) {
+            $response = $middleware->call($request, new Response(200), $route, function($request, $response, $route) use($classController, $methodController) {
                 $controller = new $classController($request, $response, $route);
                 $route->applyObservers($controller);
                 $datas = $controller->{$methodController}();
