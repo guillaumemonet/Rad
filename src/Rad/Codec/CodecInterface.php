@@ -35,7 +35,7 @@ interface CodecInterface {
 
     public function getMimeTypes(): array;
 
-    public function serialize($object): string;
+    public function serialize($object): ?string;
 
     public function deserialize(string $string);
 
