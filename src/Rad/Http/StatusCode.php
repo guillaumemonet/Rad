@@ -80,7 +80,7 @@ final class StatusCode {
     const HTTP_GATEWAY_TIMEOUT = 504;
     const HTTP_VERSION_NOT_SUPPORTED = 505;
 
-    private static $messages = array(
+    private static $messages = [
         // Informational 1xx
         100 => '100 Continue',
         101 => '101 Switching Protocols',
@@ -127,9 +127,13 @@ final class StatusCode {
         503 => '503 Service Unavailable',
         504 => '504 Gateway Timeout',
         505 => '505 HTTP Version Not Supported'
-    );
+    ];
 
     private function __construct() {
+        
+    }
+
+    private function __clone() {
         
     }
 
@@ -138,7 +142,7 @@ final class StatusCode {
      * @param int $code
      * @return string
      */
-    public static function httpHeaderFor(int $code): string {
+    public static function httpHeaderFor(int $code): ?string {
         return isset(self::$messages[$code]) ? 'HTTP/1.1 ' . self::$messages[$code] : null;
     }
 
@@ -147,7 +151,7 @@ final class StatusCode {
      * @param int $code
      * @return string
      */
-    public static function getMessageForCode(int $code): string {
+    public static function getMessageForCode(int $code): ?string {
         return isset(self::$messages[$code]) ? self::$messages[$code] : null;
     }
 
