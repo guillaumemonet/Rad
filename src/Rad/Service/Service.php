@@ -3,6 +3,7 @@
 namespace Rad\Service;
 
 use ErrorException;
+use Psr\Container\ContainerInterface;
 use Rad\Config\Config;
 use Rad\Error\ConfigurationException;
 
@@ -102,7 +103,7 @@ abstract class Service implements ServiceInterface {
         $config = Config::getServiceConfig($this->serviceType);
         $this->default = $config->default;
         if ($this->default === null) {
-            throw new ConfigurationException('No default handler  defined');
+            throw new ConfigurationException('No default handler defined');
         }
         $this->providedClassName = $config->classname;
         if ($this->providedClassName === null) {
