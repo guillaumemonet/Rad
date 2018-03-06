@@ -43,7 +43,7 @@ use Rad\Encryption\Encryption;
  *   INDEX(`modified`)
  * ) ENGINE = InnoDB;</pre>
  */
-final class MysqlCacheHandler implements CacheInterface {
+class MysqlCacheHandler implements CacheInterface {
 
     private $read = "SELECT content FROM output_cache WHERE id IN(%s)";
     private $write = "INSERT INTO output_cache (id,modified,content) VALUES (\"%s\",%d,\"%s\") ON DUPLICATE KEY UPDATE content=\"%s\",modified=%d";
