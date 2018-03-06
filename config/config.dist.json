@@ -41,7 +41,7 @@
             }
         },
         "cache": {
-            "default": "nocache",
+            "default": "file",
             "classname": "Psr\\SimpleCache\\CacheInterface",
             "handlers": {
                 "nocache": {
@@ -53,7 +53,8 @@
                 "file": {
                     "classname": "Rad\\Cache\\FileCacheHandler",
                     "config": {
-                        "path": "cache/"
+                        "path": "cache/",
+                        "lifetime": 300
                     }
                 },
                 "mysql": {
