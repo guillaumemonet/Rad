@@ -43,8 +43,8 @@ class Response extends GResponse {
             "Application-Nonce" => [time()],
             'X-Powered-By' => ['Rad Framework']
         ];
-        array_merge($headers, $baseHeaders, (array) Config::getApiConfig('default_response_headers'));
-        parent::__construct($statusCode, $headers, $body);
+        $mergedHeader = array_merge($headers, $baseHeaders, (array) Config::getApiConfig('default_response_headers'));
+        parent::__construct($statusCode, $mergedHeader, $body);
     }
 
     private $type = null;
