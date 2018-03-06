@@ -35,7 +35,15 @@ use ReflectionProperty;
  *
  * @author guillaume
  */
-class Annotation {
+final class Annotation {
+
+    private function __construct() {
+        
+    }
+
+    private function __clone() {
+        
+    }
 
     /**
      * 
@@ -52,6 +60,11 @@ class Annotation {
         return $annotations;
     }
 
+    /**
+     * 
+     * @param string $class
+     * @return array
+     */
     public static function getAnnotationsProperties(string $class) {
         $reflexion = new ReflectionClass($class);
         $properties = $reflexion->getProperties(ReflectionProperty::IS_PUBLIC | ReflectionProperty::IS_PROTECTED);
@@ -62,12 +75,23 @@ class Annotation {
         return $annotations;
     }
 
+    /**
+     * 
+     * @param string $class
+     * @return array
+     */
     public static function getAnnotationsClass(string $class) {
         $reflexion = new ReflectionClass($class);
         $comments = $reflexion->getDocComment();
         return self::getAnnotations($comments);
     }
 
+    /**
+     * 
+     * @param string $class
+     * @param string $method
+     * @return array
+     */
     public static function getAnnotationsMethods(string $class, string $method) {
         $reflexion = new ReflectionMethod($class, $method);
         $comments = $reflexion->getDocComment();
