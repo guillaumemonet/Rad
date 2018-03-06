@@ -72,14 +72,6 @@ trait RequestTrait {
         return ($this->getHeader('Cache-Control') !== null) ? (!current($this->getHeader('Cache-Control')) == 'no-cache') : true;
     }
 
-    public function getMethod() {
-        return $this->method;
-    }
-
-    public function getPath() {
-        return $this->path;
-    }
-
     /**
      * Check if current connection is secure.
      *
