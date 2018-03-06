@@ -26,12 +26,14 @@
 
 namespace Rad\Encryption;
 
+use Rad\Service\Service;
+
 /**
  * Description of Encryption
  *
  * @author Guillaume Monet
  */
-final class Encryption {
+final class Encryption extends Service {
 
     public static function addHandler(string $handlerType, $handler) {
         static::getInstance()->addServiceHandler($handlerType, $handler);
