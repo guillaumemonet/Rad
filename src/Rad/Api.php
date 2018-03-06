@@ -29,6 +29,7 @@ namespace Rad;
 use Closure;
 use ErrorException;
 use Psr\Http\Message\ServerRequestInterface;
+use Rad\Codec\Codec;
 use Rad\Config\Config;
 use Rad\Controller\Controller;
 use Rad\Error\Http\NotFoundException;
@@ -76,7 +77,7 @@ class Api {
         $routerClass = Config::getApiConfig('router');
         $serverRequestClass = Config::getApiConfig('serverrequest');
         $this->router = $routerClass !== null ? new $routerClass : new Router();
-        $this->request = $serverRequestClass !== null ? new $serverRequestClass : new ServerRequest();
+        $this->request = $serverRequestClass !== null ? $serverRequestClass::fromGlobals() : ServerRequest::fromGlobals();
     }
 
     /**
@@ -95,8 +96,8 @@ class Api {
         } catch (ErrorException $ex) {
             Log::getHandler()->error($ex->getMessage());
             $response = new Response($ex->getCode());
-            $response->setDataType($this->getRequest()->getHeader("Accept-Type"));
-            $response->getBody()->write($ex);
+            $body = Codec::getHandler(Codec::matchCodec($this->getRequest()->getHeader('Accept')))->serialize($ex);
+            $response->getBody()->write($body);
             $response->send();
         } finally {
             if ($finalClosure != null) {
