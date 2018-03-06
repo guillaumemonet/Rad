@@ -26,163 +26,19 @@
 
 namespace Rad\Http;
 
-use Psr\Http\Message\ServerRequestInterface;
+use GuzzleHttp\Psr7\ServerRequest as GServerRequest;
 
 /**
  * Description of ServerRequest
  *
  * @author guillaume
  */
-class ServerRequest extends Request implements ServerRequestInterface {
+class ServerRequest extends GServerRequest {
 
-    use MessageTrait;
     use RequestTrait;
-    use ServerRequestTrait;
 
-    /**
-     * @var array
-     */
-    private $attributes = [];
-
-    /**
-     * @var array
-     */
-    private $cookieParams = [];
-
-    /**
-     * @var null|array|object
-     */
-    private $parsedBody;
-
-    /**
-     * @var array
-     */
-    private $queryParams = [];
-
-    /**
-     * @var array
-     */
-    private $serverParams;
-
-    /**
-     * @var array
-     */
-    private $uploadedFiles = [];
-
-    public function __construct() {
-        $uri = Uri::getCurrentUrl();
-        parent::__construct($_SERVER['REQUEST_METHOD'], $_SERVER, $uri);
-        $this->queryParams = $uri->getQueryArray();
-        $this->cookieParams = $_COOKIE;
-    }
-
-    /**
-     * 
-     */
-    public function getServerParams() {
-        return $this->serverParams;
-    }
-
-    /**
-     * 
-     */
-    public function getUploadedFiles() {
-        return $this->uploadedFiles;
-    }
-
-    /**
-     * 
-     */
-    public function withUploadedFiles(array $uploadedFiles) {
-        $new = clone $this;
-        $new->uploadedFiles = $uploadedFiles;
-        return $new;
-    }
-
-    /**
-     * 
-     */
-    public function getCookieParams() {
-        return $this->cookieParams;
-    }
-
-    /**
-     * 
-     */
-    public function withCookieParams(array $cookies) {
-        $new = clone $this;
-        $new->cookieParams = $cookies;
-        return $new;
-    }
-
-    /**
-     * 
-     */
-    public function getQueryParams() {
-        return $this->queryParams;
-    }
-
-    /**
-     * 
-     */
-    public function withQueryParams(array $query) {
-        $new = clone $this;
-        $new->queryParams = $query;
-        return $new;
-    }
-
-    /**
-     * 
-     */
-    public function getParsedBody() {
-        return $this->parsedBody;
-    }
-
-    /**
-     * 
-     */
-    public function withParsedBody($data) {
-        $new = clone $this;
-        $new->parsedBody = $data;
-        return $new;
-    }
-
-    /**
-     * 
-     */
-    public function getAttributes() {
-        return $this->attributes;
-    }
-
-    /**
-     * 
-     */
-    public function getAttribute($attribute, $default = null) {
-        if (false === array_key_exists($attribute, $this->attributes)) {
-            return $default;
-        }
-        return $this->attributes[$attribute];
-    }
-
-    /**
-     * 
-     */
-    public function withAttribute($attribute, $value) {
-        $new = clone $this;
-        $new->attributes[$attribute] = $value;
-        return $new;
-    }
-
-    /**
-     * 
-     */
-    public function withoutAttribute($attribute) {
-        if (false === array_key_exists($attribute, $this->attributes)) {
-            return $this;
-        }
-        $new = clone $this;
-        unset($new->attributes[$attribute]);
-        return $new;
+    public static function fromGlobals() {
+        return parent::fromGlobals();
     }
 
 }

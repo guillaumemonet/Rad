@@ -26,56 +26,82 @@
 
 namespace Rad\Http;
 
-use Psr\Http\Message\ResponseInterface;
+use GuzzleHttp\Psr7\Response as GResponse;
 use Psr\Http\Message\StreamInterface;
+use Rad\Codec\Codec;
 use Rad\Config\Config;
+use Rad\Utils\Mime;
+use Rad\Utils\StringUtils;
 
 /**
  * 
  */
-class Response implements ResponseInterface {
+class Response extends GResponse {
 
-    use MessageTrait;
-    use ResponseTrait;
+    public function __construct(int $statusCode = 200, array $headers = [], StreamInterface $body = null) {
+        $baseHeaders = [
+            "Application-Nonce" => [time()],
+            'X-Powered-By' => ['Rad Framework']
+        ];
+        array_merge($headers, $baseHeaders, (array) Config::getApiConfig('default_response_headers'));
+        parent::__construct($statusCode, $headers, $body);
+    }
 
-    protected $statusCode = 200;
-    protected $reasonPhrase = '';
-    protected $time = null;
+    private $type = null;
+    private $secret = null;
 
-    public function __construct($statusCode = 200, string $reasonPhrase = '', $headers = [], StreamInterface $body = null) {
-        $this->time = time();
-        $this->statusCode = $statusCode;
-        if ($reasonPhrase === '' && null !== StatusCode::getMessageForCode($this->statusCode)) {
-            $this->reasonPhrase = StatusCode::getMessageForCode($this->statusCode);
-        } else {
-            $this->reasonPhrase = (string) $reasonPhrase;
+    public function setDataType($type) {
+        $this->type = $type;
+    }
+
+    public function setSecret($secret) {
+        $this->secret = $secret;
+    }
+
+    public function send() {
+        $datas = Codec::getHandler($this->type)->serialize($this->getBody());
+        if ($this->secret != null) {
+            header('Signature', Codec::getHandler($this->type)->sign($datas, $this->secret));
         }
-
-        $this->body = $body ? $body : new Body(fopen('php://temp', 'r+'));
-        $this->setHeaders($headers);
-        $this->addHeader("Application-Nonce", $this->time);
-        $this->addHeader('X-Powered-By', 'Rad Framework');
-        $defaultHeaders = Config::getApiConfig('default_response_headers');
-        $this->addHeaders((array) $defaultHeaders);
-    }
-
-    public function getReasonPhrase(): string {
-        return $this->reasonPhrase;
-    }
-
-    public function getStatusCode(): int {
-        return $this->statusCode;
-    }
-
-    public function withStatus($code, $reasonPhrase = ''): self {
-        $ret = clone $this;
-        $ret->code = $code;
-        if ($reasonPhrase == '' && null !== StatusCode::getMessageForCode($code)) {
-            $ret->reasonPhrase = StatusCode::getMessageForCode($code);
-        } else {
-            $ret->reasonPhrase = (string) $reasonPhrase;
+        foreach ($this->getHeaders() as $key => $value) {
+            header($key . ': ' . $this->getHeaderLine($key));
         }
-        return $ret;
+        echo $datas;
+    }
+
+    /**
+     * 
+     * @param string $type
+     * @param string $allow_origin
+     * @param string $vary
+     */
+    public function doResponse($type = "json", $allow_origin = "*", $vary = "User-Agent", $encoding = "utf-8") {
+        if ($allow_origin !== null) {
+            $this->addHeader('Access-Control-Allow-Origin', $allow_origin);
+        }
+        $this->addHeader("Access-Control-Expose-Headers", "Content-Range");
+        if (isset(Mime::MIME_TYPES[$type]) && Mime::MIME_TYPES[$type][0] !== null) {
+            $this->addHeader('Content-Type', Mime::MIME_TYPES[$type][0] . '; charset=' . $encoding);
+        } else {
+            $this->addHeader('Content-Type', Mime::MIME_TYPES["json"][0] . '; charset=' . $encoding);
+        }
+        if ($vary !== null) {
+            $this->addHeader('Vary', $vary);
+        }
+    }
+
+    /**
+     * @param int  $statusCode
+     * @param type $redirect_url
+     */
+    public static function headerStatus($statusCode, $redirect_url = null) {
+        if (StatusCode::httpHeaderFor($statusCode) !== null) {
+            header(StatusCode::httpHeaderFor($statusCode));
+            if ($redirect_url !== null && StringUtils::isURL($redirect_url)) {
+                header('Location: ' . $redirect_url);
+                exit;
+            }
+        }
     }
 
 }
