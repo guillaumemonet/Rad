@@ -26,7 +26,9 @@
 
 namespace Rad\Codec;
 
+use Rad\Http\Header\AcceptHeader;
 use Rad\Service\Service;
+use Rad\Utils\Mime;
 
 /**
  * Description of Codec
@@ -47,4 +49,19 @@ final class Codec extends Service {
         return 'codec';
     }
 
+    public static function matchCodec($acceptHeader) {
+        $mimeArray = AcceptHeader::parse(implode(',', $acceptHeader));
+        $availableCodec = array_keys(Codec::getInstance()->services);
+        foreach ($mimeArray as $mime => $weight) {
+            $shortMime = current(Mime::getMimeTypesFromLong($mime));
+            if (in_array($shortMime, $availableCodec)) {
+                return $shortMime;
+            }
+        }
+        return Codec::getInstance()->default;
+    }
+
 }
+
+//Config::load('config/config.json');
+//error_log(print_r(Codec::matchCodec("application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"), true));

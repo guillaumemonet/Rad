@@ -37,7 +37,7 @@ use Rad\Utils\Mime;
 class XmlCodecHandler implements CodecInterface {
 
     public function __toString() {
-        return "XML encode/decode (to array)";
+        return "XML encode/decode";
     }
 
     public function deserialize(string $string) {
@@ -49,16 +49,13 @@ class XmlCodecHandler implements CodecInterface {
     }
 
     public function serialize($object): string {
-        $backup = libxml_disable_entity_loader(true);
-        $backup_errors = libxml_use_internal_errors(true);
-        $result = simplexml_load_string($object);
-        libxml_disable_entity_loader($backup);
-        libxml_clear_errors();
-        libxml_use_internal_errors($backup_errors);
-        if ($result === false) {
-            return null;
+        $array = get_object_vars($object);
+        $xml = simplexml_load_string("<?xml version='1.0' encoding='utf-8'?><data />");
+        foreach ($array as $k => $v) {
+            error_log($k.' '.$v);
+            $xml->addChild($k, $v);
         }
-        return $result;
+        return $xml->asXML();
     }
 
     public function sign($datas, $secret) {
