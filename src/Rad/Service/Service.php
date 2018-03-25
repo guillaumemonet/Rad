@@ -3,7 +3,6 @@
 namespace Rad\Service;
 
 use ErrorException;
-use Psr\Container\ContainerInterface;
 use Rad\Config\Config;
 use Rad\Error\ConfigurationException;
 
