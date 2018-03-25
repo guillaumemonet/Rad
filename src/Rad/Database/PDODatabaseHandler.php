@@ -69,7 +69,7 @@ class PDODatabaseHandler extends DatabaseAdapter {
      *
      * @return PDOStatement
      */
-    public function prepare(string $sql, $options = null) {
+    public function prepare($sql, $options = null) {
         try {
             Log::getHandler()->debug($sql);
             $stmt = parent::prepare($sql, $options);
