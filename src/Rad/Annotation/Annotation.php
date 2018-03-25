@@ -55,7 +55,7 @@ final class Annotation {
         preg_match_all('/@(?<name>[A-Za-z_-]+)[\s\t]*((?<args>.*))[\r\n]/m', $docblock, $matches, PREG_SET_ORDER);
         $annotations = [];
         array_map(function($match) use (&$annotations) {
-            $annotations[$match['name']][] = $match['args'];
+            $annotations[$match['name']][] = trim($match['args']);
         }, $matches);
         return $annotations;
     }
