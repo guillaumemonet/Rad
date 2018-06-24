@@ -29,6 +29,7 @@ class Route {
     protected $consume = [];
     protected $observers = [];
     protected $args = [];
+    protected $sessionEnabled = false;
 
     /**
      * 

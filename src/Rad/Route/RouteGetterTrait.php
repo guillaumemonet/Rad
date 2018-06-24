@@ -53,6 +53,10 @@ trait RouteGetterTrait {
         return $this->observers;
     }
 
+    public function isSessionEnabled() {
+        return $this->sessionEnabled;
+    }
+
     /**
      * 
      * @return array

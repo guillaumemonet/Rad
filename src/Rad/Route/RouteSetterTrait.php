@@ -3,6 +3,7 @@
 namespace Rad\Route;
 
 use Rad\Middleware\Base\Consume;
+use Rad\Middleware\Base\Cors;
 use Rad\Middleware\Base\Produce;
 use Rad\Middleware\Base\XMLHttpRequest;
 
@@ -65,6 +66,14 @@ trait RouteSetterTrait {
             $this->middlewares[] = XMLHttpRequest::class;
         }
         return $this;
+    }
+
+    public function enableCors() {
+        array_unshift($this->middlewares, Cors::class);
+    }
+
+    public function enableSession() {
+        $this->sessionEnabled = true;
     }
 
     /**
