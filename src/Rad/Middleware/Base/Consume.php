@@ -41,10 +41,10 @@ use Rad\Utils\Mime;
 class Consume extends MiddlewareBefore {
 
     public function middle(ServerRequestInterface $request, ResponseInterface $response, Route $route): ResponseInterface {
-        if ($route->getConsumedMimeType() == null || $route->getConsumedMimeType() == "" || in_array($request->getHeader("CONTENT_TYPE"), Mime::getMimeTypesFromShort($route->getConsumedMimeType()))) {
+        if ($route->getConsumedMimeType() == null || $route->getConsumedMimeType() == "" || in_array($request->getHeader("Content-Type"), Mime::getMimeTypesFromShort($route->getConsumedMimeType()))) {
             return $response;
         } else {
-            throw new NotAcceptableException("Wrong Content Type " . $request->getHeader("CONTENT_TYPE") . " Require " . implode(" ", $route->getConsumedMimeType()));
+            throw new NotAcceptableException("Wrong Content Type " . $request->getHeader("Content-Type") . " Require " . implode(" ", $route->getConsumedMimeType()));
         }
     }
 
