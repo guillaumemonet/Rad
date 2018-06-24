@@ -142,7 +142,7 @@ final class StatusCode {
      * @param int $code
      * @return string
      */
-    public static function httpHeaderFor(int $code): ?string {
+    public static function httpHeaderFor(int $code) {
         return isset(self::$messages[$code]) ? 'HTTP/1.1 ' . self::$messages[$code] : null;
     }
 
@@ -151,7 +151,7 @@ final class StatusCode {
      * @param int $code
      * @return string
      */
-    public static function getMessageForCode(int $code): ?string {
+    public static function getMessageForCode(int $code) {
         return isset(self::$messages[$code]) ? self::$messages[$code] : null;
     }
 
