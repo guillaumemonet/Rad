@@ -26,34 +26,44 @@ if (!isset($argv[1])) {
     );
 }
 $actionName = $argv[1];
+$actionType = $argv[2];
+
 switch ($actionName) {
-    case 'create-rad-project':
-        if (!isset($argv[2])) {
-            throw new RuntimeException(
-            'Missing project name '
-            );
-        }
-        \Rad\Composer\Manager::createProject($argv[2]);
+    case 'create':
+        fireCreate($actionType, $argv);
         break;
-    case 'build-rad-project':
-        if (!isset($argv[2])) {
-            throw new RuntimeException(
-            'Missing project name '
-            );
-        }
-        \Rad\Composer\Manager::buildProject($argv[2]);
+    case 'build':
+        fireBuild($actionType, $argv);
         break;
-    case 'create-service-project':
-        if (!isset($argv[2])) {
-            throw new RuntimeException(
-            'Missing service type '
-            );
-        }
-        if (!isset($argv[3])) {
-            throw new RuntimeException(
-            'Missing service name '
-            );
-        }
-        \Rad\Composer\Manager::createService($argv[2], $argv[3]);
-        break;
+}
+
+function fireBuild(string $actionType, $argv) {
+    switch ($actionType) {
+        case "project":
+            checkArg($argv[3], 'Missing project name ');
+            \Rad\Composer\Manager::buildProject($argv[3]);
+            break;
+    }
+}
+
+function fireCreate(string $actionType, $argv) {
+    switch ($actionType) {
+        case "project":
+            checkArg($argv[3], 'Missing project name ');
+            \Rad\Composer\Manager::createProject($argv[3]);
+            break;
+        case "service":
+            checkArg($argv[3], 'Missing service type ');
+            checkArg($argv[4], 'Missing service name ');
+            \Rad\Composer\Manager::createService($argv[3], $argv[4]);
+            break;
+    }
+}
+
+function checkArg($arg, $message) {
+    if (!isset($arg)) {
+        throw new RuntimeException(
+        $message
+        );
+    }
 }
