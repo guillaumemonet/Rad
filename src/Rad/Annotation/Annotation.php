@@ -31,9 +31,9 @@ use ReflectionMethod;
 use ReflectionProperty;
 
 /**
- * Description of Annotation
+ * Read Annotations from PHP classes
  *
- * @author guillaume
+ * @author Guillaume Monet
  */
 final class Annotation {
 
