@@ -35,6 +35,7 @@ use Rad\Utils\Time;
  * Simple example for testing purpose
  *
  * @author guillaume
+ * @RestController
  */
 class MyController extends Controller {
 
@@ -72,17 +73,17 @@ class MyController extends Controller {
     /**
      * @api 1
      * @get /server/
-     * @xhr true
+     * @cors
      * @produce json
      */
     public function serverRequest() {
-        return print_r($this->request->getHeader('HTTP_ACCEPT')[0], true);
+        return print_r($this->getRequest()->getHeaders(), true);
     }
 
 }
 
 $time = Time::startCounter();
-$app = new Api(__DIR__.'/../config/config.dist.json');
+$app = new Api(__DIR__ . '/../config/config.dist.json');
 $app->addControllers([MyController::class])
         ->run();
 $ltime = Time::endCounter();
