@@ -77,7 +77,7 @@ abstract class Service implements ServiceInterface {
     }
 
     protected function getServiceHandler(string $handlerType = null) {
-        if ($handlerType === null) {
+        if ($handlerType === null || $handlerType === '' || !isset($handlerType)) {
             $handlerType = $this->default;
         }
         if (!static::hasHandler($handlerType)) {

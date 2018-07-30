@@ -38,6 +38,9 @@ use Rad\Utils\StringUtils;
  */
 class Response extends GResponse {
 
+    private $type = null;
+    private $secret = null;
+
     public function __construct(int $statusCode = 200, array $headers = [], StreamInterface $body = null) {
         $baseHeaders = [
             "Application-Nonce" => [time()],
@@ -46,9 +49,6 @@ class Response extends GResponse {
         $mergedHeader = array_merge($headers, $baseHeaders, (array) Config::getApiConfig('default_response_headers'));
         parent::__construct($statusCode, $mergedHeader, $body);
     }
-
-    private $type = null;
-    private $secret = null;
 
     public function setDataType($type) {
         $this->type = $type;

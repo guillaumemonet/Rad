@@ -38,17 +38,18 @@ use Rad\Route\Route;
  */
 class Cors extends MiddlewareBefore {
 
-    //put your code here
     public function middle(ServerRequestInterface $request, ResponseInterface $response, Route $route): ResponseInterface {
-        if ($this->request->getHeader('REQUEST_METHOD') == 'OPTIONS' && (
-                $this->request->getHeader('HTTP_ACCESS_CONTROL_REQUEST_METHOD') &&
-                in_array($this->request->getHeader('HTTP_ACCESS_CONTROL_REQUEST_METHOD'), ['POST', 'DELETE', 'PUT', 'GET'])
+        if ($request->getHeader('REQUEST_METHOD') == 'OPTIONS' && (
+                $request->getHeader('HTTP_ACCESS_CONTROL_REQUEST_METHOD') &&
+                in_array($request->getHeader('HTTP_ACCESS_CONTROL_REQUEST_METHOD'), ['POST', 'DELETE', 'PUT', 'GET'])
                 )
         ) {
             $response = new Response(200, 'OK');
+            $response->setDataType('html');
             $response->send();
             exit;
         }
+        return $response;
     }
 
 }
