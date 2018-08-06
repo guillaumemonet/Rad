@@ -38,4 +38,9 @@ interface SessionInterface {
     public function set(string $index, $value);
 
     public function has(string $index): bool;
+    
+    public function start();
+    
+    public function end();
+    
 }

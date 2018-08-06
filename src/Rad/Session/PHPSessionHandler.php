@@ -45,4 +45,12 @@ class PHPSessionHandler implements SessionInterface {
         return isset($_SESSION[$index]);
     }
 
+    public function start() {
+        session_start();
+    }
+
+    public function end() {
+        session_write_close();
+    }
+
 }
