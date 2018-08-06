@@ -27,12 +27,14 @@
 namespace Rad\Database;
 
 use PDO;
+use PDOStatement;
 
 /**
  * Description of DatabaseAdapter
  *
  * @author guillaume
  */
-class DatabaseAdapter extends PDO {
-    
+abstract class DatabaseAdapter extends PDO {
+
+    public abstract function fetch_assoc(PDOStatement $rid);
 }
