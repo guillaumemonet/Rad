@@ -48,7 +48,8 @@ abstract class RouteParser {
         'observer' => ['method' => 'setObservers', 'type' => 'array'],
         'xhr' => ['method' => 'setXhr', 'type' => 'single'],
         'session' => ['method' => 'enableSession', 'type' => 'single'],
-        'cors' => ['method' => 'enableCors', 'type' => 'single']
+        'cors' => ['method' => 'enableCors', 'type' => 'single'],
+        'cachable' => ['method' => 'enableCache', 'type' => 'single']
     ];
 
     private function __construct() {

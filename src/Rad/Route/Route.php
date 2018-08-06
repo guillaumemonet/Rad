@@ -30,6 +30,8 @@ class Route {
     protected $observers = [];
     protected $args = [];
     protected $sessionEnabled = false;
+    protected $cacheEnabled = false;
+    protected $fullPath = null;
 
     /**
      * 

@@ -76,6 +76,14 @@ trait RouteSetterTrait {
         $this->sessionEnabled = true;
     }
 
+    public function enableCache() {
+        $this->cacheEnabled = true;
+    }
+
+    public function setFullPath($fullPath) {
+        $this->fullPath = $fullPath;
+    }
+
     /**
      * 
      * @param array $args

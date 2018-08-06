@@ -154,6 +154,7 @@ class Router implements RouterInterface {
         $path = $request->getUri()->getPath();
         $route = $this->treeRoutes[strtoupper($method)]->getRoute(explode('/', trim($path, '/')));
         if ($route !== null) {
+            $route->setFullPath($path);
             Log::getHandler()->debug($method . " : " . $path . " Matching " . $route->getPath());
             $middleware = new Middleware($route->getMiddlewares());
             $classController = $route->getClassName();

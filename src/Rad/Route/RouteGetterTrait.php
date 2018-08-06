@@ -57,6 +57,14 @@ trait RouteGetterTrait {
         return $this->sessionEnabled;
     }
 
+    public function isCacheEnabled() {
+        return $this->cacheEnabled;
+    }
+
+    public function getFullPath() {
+        return $this->fullPath;
+    }
+
     /**
      * 
      * @return array
