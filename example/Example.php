@@ -63,11 +63,11 @@ class MyController extends Controller {
 
     /**
      * @api 1
-     * @get /helloworld/([aA-zZ]*)/display/(.*)/
+     * @get /helloworld/(?<name>[aA-zZ]*)/display/(?<welcome>.*)/
      * @produce html
      */
     public function namedHelloWorld() {
-        return '<b>Hello World</b> ' . $this->route->getArgs()[0] . " to " . $this->route->getArgs()[1];
+        return '<b>Hello World</b> ' . $this->route->getArgs()['name'] . " to " . $this->route->getArgs()['welcome'];
     }
 
     /**

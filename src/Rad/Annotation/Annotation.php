@@ -35,7 +35,7 @@ use ReflectionProperty;
  *
  * @author Guillaume Monet
  */
-final class Annotation {
+abstract class Annotation {
 
     private function __construct() {
         

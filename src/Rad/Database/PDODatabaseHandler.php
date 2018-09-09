@@ -136,6 +136,11 @@ class PDODatabaseHandler extends DatabaseAdapter {
         return $statment->fetchAll(\PDO::FETCH_ASSOC);
     }
 
+    /**
+     * 
+     * @param PDOStatement $rid
+     * @return type
+     */
     public function fetch_assoc(PDOStatement $rid) {
         return $rid->fetch(\PDO::FETCH_ASSOC);
     }

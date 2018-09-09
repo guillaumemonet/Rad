@@ -31,7 +31,7 @@ use Rad\Error\ConfigurationException;
 /**
  *
  */
-final class Config {
+abstract class Config {
 
     public static $config = [];
 

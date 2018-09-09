@@ -34,6 +34,7 @@ use Rad\Error\Http\NotFoundException;
 use Rad\Http\Response;
 use Rad\Log\Log;
 use Rad\Middleware\Middleware;
+use Rad\Session\Session;
 
 /**
  * Description of Route
@@ -162,9 +163,11 @@ class Router implements RouterInterface {
             $response = $middleware->call($request, new Response(200), $route, function($request, $response, $route) use($classController, $methodController) {
                 $controller = new $classController($request, $response, $route);
                 $route->applyObservers($controller);
+                $route->isSessionEnabled() ? Session::getHandler()->start() : '';
                 $datas = $controller->{$methodController}();
                 $response = $controller->getResponse();
                 $response->getBody()->write(Codec::getHandler(current($route->getProcucedMimeType()))->serialize($datas));
+                $route->isSessionEnabled() ? Session::getHandler()->end() : '';
                 return $response;
             });
             return $response;

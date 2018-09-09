@@ -80,11 +80,7 @@ class MysqlCacheHandler implements CacheInterface {
 
     public function has($key): bool {
         $res = Database::getHandler()->query(sprintf($this->read, Encryption::hashMd5($key)));
-        if ($row = $res->fetch()) {
-            return true;
-        } else {
-            return false;
-        }
+        return $row = $res->fetch();
     }
 
     public function set($key, $value, $ttl = null): bool {
