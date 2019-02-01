@@ -3,7 +3,7 @@
 /*
  * The MIT License
  *
- * Copyright 2017 guillaume.
+ * Copyright 2019 guillaume.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,13 +24,30 @@
  * THE SOFTWARE.
  */
 
-namespace Rad\Http;
+namespace Rad\Middleware\Base;
+
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Rad\Error\Http\ForbiddenException;
+use Rad\Middleware\MiddlewareBefore;
+use Rad\Route\Route;
 
 /**
- * Description of HttpFactory
+ * Description of Security
  *
  * @author guillaume
  */
-class HttpFactory {
-    //put your code here
+class Security extends MiddlewareBefore {
+
+    /**
+     * By default forbidden all
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
+     * @param Route $route
+     * @throws ForbiddenException
+     */
+    public function middle(ServerRequestInterface $request, ResponseInterface $response, Route $route): ResponseInterface {
+        throw new ForbiddenException("Pas d'accès");
+    }
+
 }

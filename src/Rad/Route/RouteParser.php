@@ -39,17 +39,18 @@ use ReflectionMethod;
  */
 abstract class RouteParser {
 
-    private static $allowed_methods = ['GET', "POST", "PUT", "PATCH", "DELETE"];
+    private static $allowed_methods  = ['GET', "POST", "PUT", "PATCH", "DELETE"];
     private static $annotationsArray = [
         'middleware' => ['method' => 'setMiddlewares', 'type' => 'array'],
-        'api' => ['method' => 'setVersion', 'type' => 'single'],
-        'consume' => ['method' => 'setConsume', 'type' => 'array'],
-        'produce' => ['method' => 'setProduce', 'type' => 'array'],
-        'observer' => ['method' => 'setObservers', 'type' => 'array'],
-        'xhr' => ['method' => 'setXhr', 'type' => 'single'],
-        'session' => ['method' => 'enableSession', 'type' => 'single'],
-        'cors' => ['method' => 'enableCors', 'type' => 'single'],
-        'cachable' => ['method' => 'enableCache', 'type' => 'single']
+        'api'        => ['method' => 'setVersion', 'type' => 'single'],
+        'consume'    => ['method' => 'setConsume', 'type' => 'array'],
+        'produce'    => ['method' => 'setProduce', 'type' => 'array'],
+        'observer'   => ['method' => 'setObservers', 'type' => 'array'],
+        'xhr'        => ['method' => 'setXhr', 'type' => 'single'],
+        'session'    => ['method' => 'enableSession', 'type' => 'single'],
+        'cors'       => ['method' => 'enableCors', 'type' => 'single'],
+        'cachable'   => ['method' => 'enableCache', 'type' => 'single'],
+        'security'   => ['method' => 'enableSecurity', 'type' => 'array']
     ];
 
     private function __construct() {
@@ -79,21 +80,21 @@ abstract class RouteParser {
     }
 
     public static function generateRoutes($class) {
-        $routes = [];
+        $routes        = [];
         $classComments = self::parseClassAnnotations($class);
-        $methods = get_class_methods($class);
+        $methods       = get_class_methods($class);
         array_map(function($method) use (&$routes, $class, $classComments) {
             Log::getHandler()->debug('Loading Method ' . $method);
             $methodComments = self::parseMethodAnnotations($class, $method);
-            $paths = self::getPathsFromComment($methodComments);
+            $paths          = self::getPathsFromComment($methodComments);
             array_walk($paths, function($array, $key) use (&$routes, $class, $classComments, $method, $methodComments) {
                 foreach ($array as $path) {
-                    $route = new Route();
+                    $route  = new Route();
                     $route->setClassName($class)->setMethodName($method)->setMethod($key)->setPath($path);
                     $others = self::getOthersFromComment($methodComments);
                     array_walk($others, function($datas, $key) use ($route) {
                         $method = self::$annotationsArray[$key]['method'];
-                        $type = self::$annotationsArray[$key]['type'];
+                        $type   = self::$annotationsArray[$key]['type'];
                         $route->{$method}($type === 'array' ? $datas : current($datas));
                     });
                     array_walk($classComments, function($annotation, $key) use ($route) {
@@ -146,7 +147,7 @@ abstract class RouteParser {
      */
     private static function getAnnotationsArray($class, $method = null) {
         $reflexion = $method !== null ? new ReflectionMethod($class, $method) : new ReflectionClass($class);
-        $comments = $reflexion->getDocComment();
+        $comments  = $reflexion->getDocComment();
         return Annotation::getAnnotations($comments);
     }
 

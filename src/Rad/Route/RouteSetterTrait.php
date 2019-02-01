@@ -50,13 +50,13 @@ trait RouteSetterTrait {
     }
 
     public function setProduce(array $produce) {
-        $this->produce = $produce;
+        $this->produce       = $produce;
         $this->middlewares[] = Produce::class;
         return $this;
     }
 
     public function setConsume(array $consume) {
-        $this->consume = $consume;
+        $this->consume       = $consume;
         $this->middlewares[] = Consume::class;
         return $this;
     }
@@ -92,6 +92,10 @@ trait RouteSetterTrait {
     public function setArgs(array $args) {
         $this->args = $args;
         return $this;
+    }
+
+    public function enableSecurity(array $securities) {
+        return $this->setMiddlewares($securities);
     }
 
 }
