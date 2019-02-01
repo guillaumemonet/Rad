@@ -86,7 +86,6 @@ class Api {
      */
     public final function run(Closure $finalClosure = null) {
         try {
-            $this->checkOptionsCors();
             if (!$this->getRouter()->load()) {
                 $this->getRouter()->setRoutes(RouteParser::parseRoutes($this->getControllers()));
                 $this->getRouter()->save();
@@ -103,19 +102,6 @@ class Api {
             if ($finalClosure != null) {
                 call_user_func_array($finalClosure);
             }
-        }
-    }
-
-    private function checkOptionsCors() {
-        if (Config::getApiConfig('response_to_options') &&
-                ($this->request->getHeader('REQUEST_METHOD') == 'OPTIONS') && (
-                $this->request->getHeader('HTTP_ACCESS_CONTROL_REQUEST_METHOD') &&
-                in_array($this->request->getHeader('HTTP_ACCESS_CONTROL_REQUEST_METHOD'), ['POST', 'DELETE', 'PUT', 'GET'])
-                )
-        ) {
-            $response = new Response(200, 'OK');
-            $response->send();
-            exit;
         }
     }
 
