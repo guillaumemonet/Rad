@@ -98,4 +98,9 @@ trait RouteSetterTrait {
         return $this->setMiddlewares($securities);
     }
 
+    public function enableOptions() {
+        $this->middlewares[] = Options::class;
+        return $this;
+    }
+
 }
