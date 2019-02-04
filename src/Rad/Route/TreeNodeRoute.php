@@ -80,7 +80,7 @@ class TreeNodeRoute {
         if (count($array) > 0) {
             $current_value = array_shift($array);
             if (!isset($this->children[$current_value])) {
-                $newNode = new TreeNodeRoute($current_value);
+                $newNode             = new TreeNodeRoute($current_value);
                 $newNode->path_chunk = $current_value;
                 $newNode->addFromArray($array, $route);
                 $this->addChild($newNode);
@@ -103,14 +103,18 @@ class TreeNodeRoute {
             }
             return null;
         } else {
-            $this->route->setArgs($this->regArgs);
-            return $this->route;
+            if ($this->route !== null) {
+                $this->route->setArgs($this->regArgs);
+                return $this->route;
+            } else {
+                return null;
+            }
         }
     }
 
     private function matchRoute($value) {
         return array_filter($this->children, function($node, $key) use($value) {
-            $match = [];
+            $match  = [];
             $pmatch = preg_match('/^' . $key . '$/', $value, $match);
             Log::getHandler()->debug('preg_match ' . '/^' . $key . '$/' . ' value :' . $value);
             if ($pmatch) {
