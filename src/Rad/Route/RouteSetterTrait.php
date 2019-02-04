@@ -4,6 +4,7 @@ namespace Rad\Route;
 
 use Rad\Middleware\Base\Consume;
 use Rad\Middleware\Base\Cors;
+use Rad\Middleware\Base\Options;
 use Rad\Middleware\Base\Produce;
 use Rad\Middleware\Base\XMLHttpRequest;
 
@@ -39,8 +40,8 @@ trait RouteSetterTrait {
         return $this;
     }
 
-    public function setMiddlewares(array $middlewares) {
-        $this->middlewares = $middlewares;
+    public function addMiddlewares(array $middlewares) {
+        $this->middlewares = array_merge($this->middlewares, $middlewares);
         return $this;
     }
 
@@ -70,18 +71,22 @@ trait RouteSetterTrait {
 
     public function enableCors() {
         array_unshift($this->middlewares, Cors::class);
+        return $this;
     }
 
     public function enableSession() {
         $this->sessionEnabled = true;
+        return $this;
     }
 
     public function enableCache() {
         $this->cacheEnabled = true;
+        return $this;
     }
 
     public function setFullPath($fullPath) {
         $this->fullPath = $fullPath;
+        return $this;
     }
 
     /**
@@ -95,11 +100,11 @@ trait RouteSetterTrait {
     }
 
     public function enableSecurity(array $securities) {
-        return $this->setMiddlewares($securities);
+        return $this->addMiddlewares($securities);
     }
 
     public function enableOptions() {
-        $this->middlewares[] = Options::class;
+        array_unshift($this->middlewares, Options::class);
         return $this;
     }
 
