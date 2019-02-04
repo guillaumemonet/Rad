@@ -46,7 +46,7 @@ class Cors extends MiddlewareBefore {
      * @return ResponseInterface
      */
     public function middle(ServerRequestInterface $request, ResponseInterface $response, Route $route): ResponseInterface {
-        return $response->withAddedHeader("Access-Control-Allow-Origin", "*");
+        return $response->withAddedHeader("Access-Control-Allow-Origin", $route->getCorsDomain())->withAddedHeader("Access-Control-Allow-Credentials", "true");
     }
 
 }

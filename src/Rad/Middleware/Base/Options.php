@@ -53,6 +53,7 @@ class Options extends MiddlewareAfter {
             $response->withStatus(200)->withBody(null)->send();
             exit;
         }
+        return $response;
     }
 
 }
