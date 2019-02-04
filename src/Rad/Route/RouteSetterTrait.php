@@ -2,6 +2,7 @@
 
 namespace Rad\Route;
 
+use Rad\Middleware\Base\AllowHeaders;
 use Rad\Middleware\Base\Consume;
 use Rad\Middleware\Base\Cors;
 use Rad\Middleware\Base\Options;
@@ -69,7 +70,8 @@ trait RouteSetterTrait {
         return $this;
     }
 
-    public function enableCors() {
+    public function enableCors($corsDomain = '*') {
+        $this->corsDomain = $corsDomain;
         array_unshift($this->middlewares, Cors::class);
         return $this;
     }
@@ -86,6 +88,12 @@ trait RouteSetterTrait {
 
     public function setFullPath($fullPath) {
         $this->fullPath = $fullPath;
+        return $this;
+    }
+
+    public function allowHeaders(array $headers) {
+        array_unshift($this->middlewares, AllowHeaders::class);
+        $this->allowedHeaders = $headers;
         return $this;
     }
 

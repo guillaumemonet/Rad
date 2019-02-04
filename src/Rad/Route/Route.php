@@ -19,19 +19,21 @@ class Route {
     use RouteSetterTrait;
     use RouteGetterTrait;
 
-    protected $version = 1;
-    protected $className = null;
-    protected $methodName = null;
-    protected $method = null;
-    protected $path = null;
-    protected $middlewares = [];
-    protected $produce = [];
-    protected $consume = [];
-    protected $observers = [];
-    protected $args = [];
+    protected $version        = 1;
+    protected $className      = null;
+    protected $methodName     = null;
+    protected $method         = null;
+    protected $path           = null;
+    protected $middlewares    = [];
+    protected $produce        = [];
+    protected $consume        = [];
+    protected $observers      = [];
+    protected $args           = [];
     protected $sessionEnabled = false;
-    protected $cacheEnabled = false;
-    protected $fullPath = null;
+    protected $cacheEnabled   = false;
+    protected $fullPath       = null;
+    protected $allowedHeaders = [];
+    protected $corsDomain     = '*';
 
     /**
      * 

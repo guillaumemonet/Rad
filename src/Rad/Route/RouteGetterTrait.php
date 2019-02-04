@@ -65,6 +65,14 @@ trait RouteGetterTrait {
         return $this->fullPath;
     }
 
+    public function getAllowedHeaders() {
+        return $this->allowedHeaders;
+    }
+
+    public function getCorsDomain() {
+        return $this->corsDomain;
+    }
+
     /**
      * 
      * @return array

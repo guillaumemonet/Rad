@@ -51,7 +51,8 @@ abstract class RouteParser {
         'cors'       => ['method' => 'enableCors', 'type' => 'single'],
         'options'    => ['method' => 'enableOptions', 'type' => 'single'],
         'cachable'   => ['method' => 'enableCache', 'type' => 'single'],
-        'security'   => ['method' => 'enableSecurity', 'type' => 'array']
+        'security'   => ['method' => 'enableSecurity', 'type' => 'array'],
+        'header'     => ['method' => 'allowHeaders', 'type' => 'array']
     ];
 
     private function __construct() {
