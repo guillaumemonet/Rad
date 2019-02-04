@@ -37,13 +37,13 @@ use Rad\Utils\StringUtils;
  */
 class Response extends GResponse {
 
-    private $type = null;
+    private $type   = null;
     private $secret = null;
 
     public function __construct(int $statusCode = 200, array $headers = [], StreamInterface $body = null) {
-        $baseHeaders = [
+        $baseHeaders  = [
             "Application-Nonce" => [time()],
-            'X-Powered-By' => ['Rad Framework']
+            'X-Powered-By'      => ['Rad Framework']
         ];
         $mergedHeader = array_merge($headers, $baseHeaders);
         parent::__construct($statusCode, $mergedHeader, $body);
@@ -57,7 +57,11 @@ class Response extends GResponse {
         $this->secret = $secret;
     }
 
+    /**
+     * 
+     */
     public function send() {
+        http_response_code($this->getStatusCode());
         $datas = Codec::getHandler($this->type)->serialize($this->getBody());
         if ($this->secret != null) {
             header('Signature', Codec::getHandler($this->type)->sign($datas, $this->secret));
