@@ -40,14 +40,14 @@ use Rad\Route\Route;
 class Security extends MiddlewareBefore {
 
     /**
-     * By default forbidden all
+     * By default forbidden all must be overridden
      * @param ServerRequestInterface $request
      * @param ResponseInterface $response
      * @param Route $route
      * @throws ForbiddenException
      */
     public function middle(ServerRequestInterface $request, ResponseInterface $response, Route $route): ResponseInterface {
-        throw new ForbiddenException("Pas d'accès");
+        throw new ForbiddenException();
     }
 
 }
