@@ -51,12 +51,13 @@ abstract class Annotation {
      * @return array
      */
     public static function getAnnotations(string $docblock): array {
-        $matches = [];
-        preg_match_all('/@(?<name>[A-Za-z_-]+)[\s\t]*((?<args>.*))[\r\n]/m', $docblock, $matches, PREG_SET_ORDER);
+        $matches     = [];
+        preg_match_all('/@(?<name>[A-Za-z_-]+)((?<args>.*))[\r\n]/m', $docblock, $matches, PREG_SET_ORDER);
         $annotations = [];
         array_map(function($match) use (&$annotations) {
             $annotations[$match['name']][] = trim($match['args']);
         }, $matches);
+        //echo "<pre>" . print_r($annotations, true) . "</pre>";
         return $annotations;
     }
 
@@ -66,8 +67,8 @@ abstract class Annotation {
      * @return array
      */
     public static function getAnnotationsProperties(string $class) {
-        $reflexion = new ReflectionClass($class);
-        $properties = $reflexion->getProperties(ReflectionProperty::IS_PUBLIC | ReflectionProperty::IS_PROTECTED);
+        $reflexion   = new ReflectionClass($class);
+        $properties  = $reflexion->getProperties(ReflectionProperty::IS_PUBLIC | ReflectionProperty::IS_PROTECTED);
         $annotations = [];
         array_map(function($property) use(&$annotations) {
             $annotations[$property->name][] = self::getAnnotations($property->getDocComment());
@@ -82,7 +83,7 @@ abstract class Annotation {
      */
     public static function getAnnotationsClass(string $class) {
         $reflexion = new ReflectionClass($class);
-        $comments = $reflexion->getDocComment();
+        $comments  = $reflexion->getDocComment();
         return self::getAnnotations($comments);
     }
 
@@ -94,7 +95,7 @@ abstract class Annotation {
      */
     public static function getAnnotationsMethods(string $class, string $method) {
         $reflexion = new ReflectionMethod($class, $method);
-        $comments = $reflexion->getDocComment();
+        $comments  = $reflexion->getDocComment();
         return self::getAnnotations($comments);
     }
 
