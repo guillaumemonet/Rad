@@ -33,30 +33,6 @@ namespace Rad\Http;
  */
 trait RequestTrait {
 
-    public function enabledCors() {
-        if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
-            if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD']) && (
-                    $_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD'] == 'POST' ||
-                    $_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD'] == 'DELETE' ||
-                    $_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD'] == 'PUT' ||
-                    $_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD'] == 'GET' )) {
-                header('Access-Control-Allow-Origin: *');
-                header("Access-Control-Allow-Credentials: true");
-                header('Access-Control-Allow-Headers: X-Requested-With');
-                header('Access-Control-Allow-Headers: Content-Type');
-                header('Access-Control-Allow-Headers: Accept-Type');
-                header('Access-Control-Allow-Headers: Range');
-                header('Access-Control-Allow-Headers: Content-Range');
-                header('Access-Control-Allow-Headers: Appname');
-                header('Access-Control-Allow-Headers: Context');
-                header('Access-Control-Allow-Headers: Signature');
-                header('Access-Control-Allow-Methods: POST, GET, OPTIONS, DELETE, PUT'); // http://stackoverflow.com/a/7605119/578667
-                header('Access-Control-Max-Age: 86400');
-            }
-            exit;
-        }
-    }
-
     public function getRequestURI() {
         return $_SERVER["REQUEST_URI"];
     }

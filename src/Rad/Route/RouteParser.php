@@ -49,7 +49,7 @@ abstract class RouteParser {
         'xhr'        => ['method' => 'setXhr', 'type' => 'single'],
         'session'    => ['method' => 'enableSession', 'type' => 'single'],
         'cors'       => ['method' => 'enableCors', 'type' => 'single'],
-        'options'     => ['method' => 'enableOptions', 'type' => 'single'],
+        'options'    => ['method' => 'enableOptions', 'type' => 'single'],
         'cachable'   => ['method' => 'enableCache', 'type' => 'single'],
         'security'   => ['method' => 'enableSecurity', 'type' => 'array']
     ];

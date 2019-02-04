@@ -29,7 +29,6 @@ namespace Rad\Http;
 use GuzzleHttp\Psr7\Response as GResponse;
 use Psr\Http\Message\StreamInterface;
 use Rad\Codec\Codec;
-use Rad\Config\Config;
 use Rad\Utils\Mime;
 use Rad\Utils\StringUtils;
 
@@ -46,7 +45,7 @@ class Response extends GResponse {
             "Application-Nonce" => [time()],
             'X-Powered-By' => ['Rad Framework']
         ];
-        $mergedHeader = array_merge($headers, $baseHeaders, (array) Config::getApiConfig('default_response_headers'));
+        $mergedHeader = array_merge($headers, $baseHeaders);
         parent::__construct($statusCode, $mergedHeader, $body);
     }
 
