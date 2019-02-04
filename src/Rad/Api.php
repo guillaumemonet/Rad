@@ -74,10 +74,10 @@ class Api {
         if ($configFilename !== null) {
             Config::load($configFilename);
         }
-        $routerClass = Config::getApiConfig('router');
+        $routerClass        = Config::getApiConfig('router');
         $serverRequestClass = Config::getApiConfig('serverrequest');
-        $this->router = $routerClass !== null ? new $routerClass : new Router();
-        $this->request = $serverRequestClass !== null ? $serverRequestClass::fromGlobals() : ServerRequest::fromGlobals();
+        $this->router       = $routerClass !== null ? new $routerClass : new Router();
+        $this->request      = $serverRequestClass !== null ? $serverRequestClass::fromGlobals() : ServerRequest::fromGlobals();
     }
 
     /**
@@ -95,8 +95,7 @@ class Api {
         } catch (ErrorException $ex) {
             Log::getHandler()->error($ex->getMessage());
             $response = new Response($ex->getCode());
-            $body = Codec::getHandler(Codec::matchCodec($this->getRequest()->getHeader('Accept')))->serialize($ex);
-            $response->getBody()->write($body);
+            $response->getBody()->write($ex->getCode() . ' ' . $ex->getMessage());
             $response->send();
         } finally {
             if ($finalClosure != null) {
