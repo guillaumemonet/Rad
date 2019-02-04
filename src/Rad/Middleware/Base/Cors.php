@@ -38,6 +38,13 @@ use Rad\Route\Route;
  */
 class Cors extends MiddlewareBefore {
 
+    /**
+     * 
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
+     * @param Route $route
+     * @return ResponseInterface
+     */
     public function middle(ServerRequestInterface $request, ResponseInterface $response, Route $route): ResponseInterface {
         return $response->withAddedHeader("Access-Control-Allow-Origin", "*");
     }

@@ -40,6 +40,14 @@ use Rad\Utils\Mime;
  */
 class Consume extends MiddlewareBefore {
 
+    /**
+     * 
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
+     * @param Route $route
+     * @return ResponseInterface
+     * @throws NotAcceptableException
+     */
     public function middle(ServerRequestInterface $request, ResponseInterface $response, Route $route): ResponseInterface {
         if ($route->getConsumedMimeType() == null || $route->getConsumedMimeType() == "" || in_array($request->getHeader("Content-Type"), Mime::getMimeTypesFromShort($route->getConsumedMimeType()))) {
             return $response;

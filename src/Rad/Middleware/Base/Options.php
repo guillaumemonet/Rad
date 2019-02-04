@@ -26,6 +26,11 @@
 
 namespace Rad\Middleware\Base;
 
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Rad\Middleware\MiddlewareAfter;
+use Rad\Route\Route;
+
 /**
  * Description of Options
  *
@@ -33,14 +38,19 @@ namespace Rad\Middleware\Base;
  */
 class Options extends MiddlewareAfter {
 
+    /**
+     * 
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
+     * @param Route $route
+     */
     public function middle(ServerRequestInterface $request, ResponseInterface $response, Route $route): ResponseInterface {
         if (($request->getHeader('REQUEST_METHOD') == 'OPTIONS') && (
                 $request->getHeader('HTTP_ACCESS_CONTROL_REQUEST_METHOD') &&
                 in_array($request->getHeader('HTTP_ACCESS_CONTROL_REQUEST_METHOD'), ['POST', 'DELETE', 'PUT', 'GET', 'PATCH'])
                 )
         ) {
-            $response = new Response(200, 'OK');
-            $response->send();
+            $response->withStatus(200)->withBody(null)->send();
             exit;
         }
     }

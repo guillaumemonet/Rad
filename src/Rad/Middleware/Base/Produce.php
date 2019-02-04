@@ -39,6 +39,13 @@ use Rad\Utils\Mime;
  */
 class Produce extends MiddlewareAfter {
 
+    /**
+     * 
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
+     * @param Route $route
+     * @return ResponseInterface
+     */
     public function middle(ServerRequestInterface $request, ResponseInterface $response, Route $route): ResponseInterface {
         if ($route->getProcucedMimeType() !== null) {
             $response = $response->withAddedHeader("Content-Type", Mime::getMimeTypesFromShort(current($route->getProcucedMimeType()))[0]);

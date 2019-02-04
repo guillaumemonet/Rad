@@ -39,6 +39,14 @@ use Rad\Route\Route;
  */
 class XMLHttpRequest extends MiddlewareBefore {
 
+    /**
+     * 
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
+     * @param Route $route
+     * @return ResponseInterface
+     * @throws PreconditionFailedException
+     */
     public function middle(ServerRequestInterface $request, ResponseInterface $response, Route $route): ResponseInterface {
         if ($request->isXhr()) {
             return $response;
