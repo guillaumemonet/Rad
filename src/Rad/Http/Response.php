@@ -100,7 +100,7 @@ class Response extends GResponse {
     public static function headerStatus($statusCode, $redirect_url = null) {
         if (StatusCode::httpHeaderFor($statusCode) !== null) {
             header(StatusCode::httpHeaderFor($statusCode));
-            if ($redirect_url !== null && StringUtils::isURL($redirect_url)) {
+            if ($redirect_url !== null && Uri::isURL($redirect_url)) {
                 header('Location: ' . $redirect_url);
                 exit;
             }
