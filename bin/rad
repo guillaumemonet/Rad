@@ -20,50 +20,25 @@ if (!$autoloader) {
 
 require_once $autoloader;
 
-if (!isset($argv[1])) {
-    throw new RuntimeException(
-    'Missing action parameter '
-    );
-}
-$actionName = $argv[1];
-$actionType = $argv[2];
+use PhpSchool\CliMenu\CliMenu;
+use PhpSchool\CliMenu\Builder\CliMenuBuilder;
 
-switch ($actionName) {
-    case 'create':
-        fireCreate($actionType, $argv);
-        break;
-    case 'build':
-        fireBuild($actionType, $argv);
-        break;
-}
+$itemCallable = function (CliMenu $menu) {
+    echo $menu->getSelectedItem()->getText();
+    $menu->close();
+};
 
-function fireBuild(string $actionType, $argv) {
-    switch ($actionType) {
-        case "project":
-            checkArg($argv[3], 'Missing project name ');
-            \Rad\Composer\Manager::buildProject($argv[3]);
-            break;
-    }
-}
+$menu = (new CliMenuBuilder)
+        ->setTitle('RAD Setup')
+        ->addItem('Web Application (PHP/JS)', $itemCallable)
+        ->addItem('API (PHP)', $itemCallable)
+        ->addItem('Admin (JS)', $itemCallable)
+        ->addLineBreak('-')
+        ->addItem('Tools', $itemCallable)
+        ->addLineBreak('-')
+        ->setBorder(1, 2, 'yellow')
+        ->setPadding(2, 4)
+        ->setMarginAuto()
+        ->build();
 
-function fireCreate(string $actionType, $argv) {
-    switch ($actionType) {
-        case "project":
-            checkArg($argv[3], 'Missing project name ');
-            \Rad\Composer\Manager::createProject($argv[3]);
-            break;
-        case "service":
-            checkArg($argv[3], 'Missing service type ');
-            checkArg($argv[4], 'Missing service name ');
-            \Rad\Composer\Manager::createService($argv[3], $argv[4]);
-            break;
-    }
-}
-
-function checkArg($arg, $message) {
-    if (!isset($arg)) {
-        throw new RuntimeException(
-        $message
-        );
-    }
-}
+$menu->open();
