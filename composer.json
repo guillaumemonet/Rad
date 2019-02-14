@@ -46,7 +46,8 @@
         "psr/http-server-handler": "^1",
         "psr/http-factory": "^1",
         "guzzlehttp/psr7": "1.4.2",
-        "guzzlehttp/promises": "v1.3.1"
+        "guzzlehttp/promises": "v1.3.1",
+        "php-school/cli-menu": "3.0.0"
     },
     "require-dev": {
         "phpunit/php-timer": "^1.0.",
