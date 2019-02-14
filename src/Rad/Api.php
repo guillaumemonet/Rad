@@ -29,7 +29,6 @@ namespace Rad;
 use Closure;
 use ErrorException;
 use Psr\Http\Message\ServerRequestInterface;
-use Rad\Codec\Codec;
 use Rad\Config\Config;
 use Rad\Controller\Controller;
 use Rad\Error\Http\NotFoundException;
