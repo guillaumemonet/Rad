@@ -93,16 +93,11 @@ abstract class RouteParser {
                 foreach ($array as $path) {
                     $route  = new Route();
                     $route->setClassName($class)->setMethodName($method)->setMethod($key)->setPath($path);
-                    $others = self::getOthersFromComment($methodComments);
+                    $others = array_merge(self::getOthersFromComment($methodComments),self::getOthersFromComment($classComments));
                     array_walk($others, function($datas, $key) use ($route) {
                         $method = self::$annotationsArray[$key]['method'];
                         $type   = self::$annotationsArray[$key]['type'];
                         $route->{$method}($type === 'array' ? $datas : current($datas));
-                    });
-                    array_walk($classComments, function($annotation, $key) use ($route) {
-                        if (in_array($key, self::$annotationsArray)) {
-                            $route->{self::$annotationsArray[$key]}($annotation);
-                        }
                     });
                     $routes[] = $route;
                 }
