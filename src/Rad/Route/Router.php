@@ -160,16 +160,16 @@ class Router implements RouterInterface {
             $middleware = new Middleware($route->getMiddlewares());
             $classController = $route->getClassName();
             $methodController = $route->getMethodName();
+            $route->isSessionEnabled() ? Session::getHandler()->start() : '';
             $response = $middleware->call($request, new Response(200), $route, function($request, $response, $route) use($classController, $methodController) {
                 $controller = new $classController($request, $response, $route);
-                $route->applyObservers($controller);
-                $route->isSessionEnabled() ? Session::getHandler()->start() : '';
+                $route->applyObservers($controller);               
                 $datas = $controller->{$methodController}();
                 $response = $controller->getResponse();
                 $response->getBody()->write(Codec::getHandler(current($route->getProcucedMimeType()))->serialize($datas));
-                $route->isSessionEnabled() ? Session::getHandler()->end() : '';
                 return $response;
             });
+            $route->isSessionEnabled() ? Session::getHandler()->end() : '';
             return $response;
         } else {
             throw new NotFoundException("No Method " . $method . " found for " . $path);
