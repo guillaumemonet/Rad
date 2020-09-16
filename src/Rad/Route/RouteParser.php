@@ -95,12 +95,18 @@ abstract class RouteParser {
                     $route->setClassName($class)->setMethodName($method)->setMethod($key)->setPath($path);
                     $others = array_merge(self::getOthersFromComment($methodComments), self::getOthersFromComment($classComments));
                     array_walk($others, function($datas, $key) use ($route) {
-                        if (isset(self::$annotationsArray[$key])) {
+                        if (isset(self::$annotationsArray[$key]) && $key !== "options") {
                             $method = self::$annotationsArray[$key]['method'];
                             $type   = self::$annotationsArray[$key]['type'];
                             $route->{$method}($type === 'array' ? $datas : current($datas));
                         }
                     });
+                    if (key_exists("options", $others)) {
+                        $oroute   = new Route();
+                        $oroute->setClassName($class)->setMethodName($method)->setMethod("OPTIONS")->setPath($path);
+                        $oroute->enableOptions();
+                        $routes[] = $oroute;
+                    }
                     $routes[] = $route;
                 }
             });

@@ -28,7 +28,8 @@ namespace Rad\Middleware\Base;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Rad\Middleware\MiddlewareAfter;
+use Rad\Config\Config;
+use Rad\Middleware\MiddlewareBefore;
 use Rad\Route\Route;
 
 /**
@@ -36,7 +37,7 @@ use Rad\Route\Route;
  *
  * @author guillaume
  */
-class Options extends MiddlewareAfter {
+class Options extends MiddlewareBefore {
 
     /**
      * 
@@ -45,12 +46,15 @@ class Options extends MiddlewareAfter {
      * @param Route $route
      */
     public function middle(ServerRequestInterface $request, ResponseInterface $response, Route $route): ResponseInterface {
-        if (($request->getHeader('REQUEST_METHOD') == 'OPTIONS') && (
-                $request->getHeader('HTTP_ACCESS_CONTROL_REQUEST_METHOD') &&
-                in_array($request->getHeader('HTTP_ACCESS_CONTROL_REQUEST_METHOD'), ['POST', 'DELETE', 'PUT', 'GET', 'PATCH'])
-                )
-        ) {
-            $response->withStatus(200)->withBody(null)->send();
+        if (strtoupper($request->getMethod()) == 'OPTIONS') {
+            $defaultHeaders        = (array) Config::getApiConfig("default_response_headers");
+            $defaultOptionsHeaders = (array) Config::getApiConfig("default_response_options");
+            $headers               = array_merge($defaultHeaders, $defaultOptionsHeaders);
+            error_log(print_r($headers, true));
+            foreach ($headers as $header => $value) {
+                $response = $response->withAddedHeader($header, $value);
+            }
+            $response->withStatus(200)->send();
             exit;
         }
         return $response;

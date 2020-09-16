@@ -42,7 +42,7 @@ class NoCodecHandler implements CodecInterface {
     }
 
     public function serialize($object): string {
-        return $object;
+        return "".$object;
     }
 
     public function __toString() {
