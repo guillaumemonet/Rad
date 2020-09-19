@@ -57,7 +57,6 @@ abstract class Annotation {
         array_map(function($match) use (&$annotations) {
             $annotations[$match['name']][] = trim($match['args']);
         }, $matches);
-        //echo "<pre>" . print_r($annotations, true) . "</pre>";
         return $annotations;
     }
 
