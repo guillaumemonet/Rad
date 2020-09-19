@@ -43,13 +43,6 @@ You can add this script to your `composer.json` when you want to automatic insta
 }
 ```
 
-## History / RoadMap
-* 2018 Q3 FINAL : Correct bugs and release first stable version
-* 2018 Q2 BETA : Modularize Services
-* 2018 Q1 ALPHA : Correct bugs , finalize PSR implementations
-* 2017 Q4 Stabilizing framework, implements PSR
-
-
 ## Usage
 
 ```php
@@ -64,7 +57,7 @@ use Rad\Utils\Time;
 /**
  * Simple example for testing purpose
  *
- * @author guillaume
+ * @author Guillaume Monet
  */
 class MyController extends Controller {
 
@@ -129,10 +122,10 @@ Log::getHandler()->debug("API REQUEST [" . round($ltime - $time, 10) * 1000 . "]
 
 * [psr-3](http://www.php-fig.org/psr/psr-3/) Logger Interface
 * [psr-4](http://www.php-fig.org/psr/psr-4/) Autoloader
-* [psr-7](http://www.php-fig.org/psr/psr-7/) Http Message (Beta support)
-* [psr-11](http://www.php-fig.org/psr/psr-11/) Container (WIP)
+* [psr-7](http://www.php-fig.org/psr/psr-7/) Http Message (Thanks to Guzzle Http)
+* [psr-11](http://www.php-fig.org/psr/psr-11/) Container
 * [psr-16](http://www.php-fig.org/psr/psr-16/) Caching
-* [psr-17 Draft](https://github.com/php-fig/fig-standards/tree/master/proposed/http-factory) Http Factory (WIP)
+* [psr-17](http://www.php-fig.org/psr/psr-17/) Http Factory (Thanks to Guzzle Http)
 
 
 
