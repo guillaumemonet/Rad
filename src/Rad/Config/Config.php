@@ -57,7 +57,7 @@ abstract class Config {
      * @throws ConfigurationException
      */
     public static function load(string $configDir = null) {
-        if (!file_exists($configDir . '/build_config.json')) {
+        if (!file_exists($configDir . 'build_config.json')) {
             self::loadDefaultConfig();
             if ($configDir !== null) {
                 foreach (glob($configDir . "/*.json") as $filename) {
@@ -70,7 +70,7 @@ abstract class Config {
                     }
                 }
             }
-            file_put_contents($configDir . '/build_config.json', json_encode(self::$config, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_FORCE_OBJECT));
+            file_put_contents($configDir . 'build_config.json', json_encode(self::$config, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_FORCE_OBJECT));
         }
         self::$config = json_decode(file_get_contents($configDir . '/build_config.json'));
         if (json_last_error() > 0) {
