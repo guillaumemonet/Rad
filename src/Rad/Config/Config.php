@@ -44,7 +44,7 @@ abstract class Config {
     }
 
     public static function loadDefaultConfig() {
-        $datas = file_get_contents(__DIR__ . "/../../../config/default_config.json");
+        $datas        = file_get_contents(__DIR__ . "/../../../config/default_config.json");
         self::$config = json_decode($datas, true);
         if (json_last_error() > 0) {
             throw new ConfigurationException('Configuration default_config.json can\'t be loaded');
@@ -56,7 +56,7 @@ abstract class Config {
      * @param string $configDir
      * @throws ConfigurationException
      */
-    public static function load(string $configDir) {
+    public static function load(string $configDir = null) {
         if (!file_exists($configDir . '/build_config.json')) {
             self::loadDefaultConfig();
             if ($configDir !== null) {
