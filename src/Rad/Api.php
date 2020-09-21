@@ -70,9 +70,7 @@ class Api {
      *
      */
     public function __construct(string $configFilename = null) {
-        if ($configFilename !== null) {
-            Config::load($configFilename);
-        }
+        Config::load($configFilename);
         $routerClass        = Config::getApiConfig('router');
         $serverRequestClass = Config::getApiConfig('serverrequest');
         $this->router       = $routerClass !== null ? new $routerClass : new Router();

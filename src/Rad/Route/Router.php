@@ -163,7 +163,7 @@ class Router implements RouterInterface {
             $route->isSessionEnabled() ? Session::getHandler()->start() : '';
             $response = $middleware->call($request, new Response(200), $route, function($request, $response, $route) use($classController, $methodController) {
                 $controller = new $classController($request, $response, $route);
-                $route->applyObservers($controller);               
+                $route->applyObservers($controller);
                 $datas = $controller->{$methodController}();
                 $response = $controller->getResponse();
                 $response->getBody()->write(Codec::getHandler(current($route->getProcucedMimeType()))->serialize($datas));
@@ -180,7 +180,8 @@ class Router implements RouterInterface {
      * 
      */
     public function save() {
-        Cache::getHandler()->set("RadRoute", serialize($this->treeRoutes));
+        $cacheName = "RadRoute";
+        Cache::getHandler()->set($cacheName, serialize($this->treeRoutes));
     }
 
     /**
@@ -188,7 +189,8 @@ class Router implements RouterInterface {
      * @return bool
      */
     public function load(): bool {
-        $routes = unserialize(Cache::getHandler()->get("RadRoute"));
+        $cacheName = "RadRoute";
+        $routes = unserialize(Cache::getHandler()->get($cacheName));
         if (isset($routes) && $routes != null && sizeof($routes) > 0) {
             $this->treeRoutes = $routes;
             return true;

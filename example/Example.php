@@ -41,7 +41,7 @@ class MyController extends Controller {
 
     /**
      * @api 1
-     * @get /helloworld/html/show/
+     * @get /
      * @produce html
      */
     public function helloWorld() {
@@ -50,14 +50,14 @@ class MyController extends Controller {
 
     /**
      * @api 1
-     * @get /helloworld/json/show/
+     * @get /json/
      * @produce json
      */
     public function jsonHelloWorld() {
         $this->response = $this->response->withAddedHeader('Hello', 'Moto');
-        $std = new stdClass();
-        $std->toto = "toto/fdsf   sdf://";
-        $std->arr = ["toto ", "titi"];
+        $std            = new stdClass();
+        $std->toto      = "toto/fdsf   sdf://";
+        $std->arr       = ["toto ", "titi"];
         return [$std, $std];
     }
 
@@ -82,8 +82,8 @@ class MyController extends Controller {
 
 }
 
-$time = Time::startCounter();
-$app = new Api(__DIR__ . '/../config/config.dist.json');
+$time  = Time::startCounter();
+$app   = new Api();
 $app->addControllers([MyController::class])
         ->run();
 $ltime = Time::endCounter();
