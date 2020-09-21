@@ -40,7 +40,7 @@
             }
         },
         "cache": {
-            "default": "file",
+            "default": "nocache",
             "classname": "Psr\\SimpleCache\\CacheInterface",
             "handlers": {
                 "nocache": {
