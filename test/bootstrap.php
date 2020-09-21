@@ -1,4 +1,4 @@
 <?php
 
 require __DIR__ . '/../vendor/autoload.php';
-Rad\Config\Config::load(__DIR__ . '/../config/config.dist.json');
+require __DIR__ . '/example/Example.php';
