@@ -151,21 +151,25 @@ class Router implements RouterInterface {
      * @throws NotFoundException
      */
     public function route(ServerRequestInterface $request): ResponseInterface {
-        $method = $request->getMethod();
-        $path = $request->getUri()->getPath();
-        $route = $this->treeRoutes[strtoupper($method)]->getRoute(explode('/', trim($path, '/')));
+        $method    = $request->getMethod();
+        $path      = $request->getUri()->getPath();
+        $route     = null;
+        $nodeRoute = $this->treeRoutes[strtoupper($method)];
+        if ($nodeRoute != null) {
+            $route = $nodeRoute->getRoute(explode('/', trim($path, '/')));
+        }
         if ($route !== null) {
             $route->setFullPath($path);
             Log::getHandler()->debug($method . " : " . $path . " Matching " . $route->getPath());
-            $middleware = new Middleware($route->getMiddlewares());
-            $classController = $route->getClassName();
+            $middleware       = new Middleware($route->getMiddlewares());
+            $classController  = $route->getClassName();
             $methodController = $route->getMethodName();
             $route->isSessionEnabled() ? Session::getHandler()->start() : '';
-            $response = $middleware->call($request, new Response(200), $route, function($request, $response, $route) use($classController, $methodController) {
+            $response         = $middleware->call($request, new Response(200), $route, function ($request, $response, $route) use ($classController, $methodController) {
                 $controller = new $classController($request, $response, $route);
                 $route->applyObservers($controller);
-                $datas = $controller->{$methodController}($request, $response, $route->getArgs());
-                $response = $controller->getResponse();
+                $datas      = $controller->{$methodController}($request, $response, $route->getArgs());
+                $response   = $controller->getResponse();
                 $response->getBody()->write(Codec::getHandler(current($route->getProcucedMimeType()))->serialize($datas));
                 return $response;
             });
@@ -190,7 +194,7 @@ class Router implements RouterInterface {
      */
     public function load(): bool {
         $cacheName = "RadRoute";
-        $routes = unserialize(Cache::getHandler()->get($cacheName));
+        $routes    = unserialize(Cache::getHandler()->get($cacheName));
         if (isset($routes) && $routes != null && sizeof($routes) > 0) {
             $this->treeRoutes = $routes;
             return true;
