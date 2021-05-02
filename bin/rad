@@ -1,6 +1,7 @@
 #!/usr/bin/env php
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
 $rootDir = realpath(__DIR__ . '/../');
 
 // Autoloader for standalone install (installed via `composer create-project` or cloned locally)
@@ -13,32 +14,9 @@ if (!$autoloader) {
 
 if (!$autoloader) {
     throw new RuntimeException(
-    'RAD Framework was unable to find its autoloader. ' .
-    'Did you forget to run "composer update"?'
+                    'RAD Framework was unable to its autoloader. ' .
+                    'Did you forget to run "composer update"?'
     );
 }
 
 require_once $autoloader;
-
-use PhpSchool\CliMenu\CliMenu;
-use PhpSchool\CliMenu\Builder\CliMenuBuilder;
-
-$itemCallable = function (CliMenu $menu) {
-    echo $menu->getSelectedItem()->getText();
-    $menu->close();
-};
-
-$menu = (new CliMenuBuilder)
-        ->setTitle('RAD Setup')
-        ->addItem('Web Application (PHP/JS)', $itemCallable)
-        ->addItem('API (PHP)', $itemCallable)
-        ->addItem('Admin (JS)', $itemCallable)
-        ->addLineBreak('-')
-        ->addItem('Tools', $itemCallable)
-        ->addLineBreak('-')
-        ->setBorder(1, 2, 'yellow')
-        ->setPadding(2, 4)
-        ->setMarginAuto()
-        ->build();
-
-$menu->open();
