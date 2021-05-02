@@ -164,7 +164,7 @@ class Router implements RouterInterface {
             $response = $middleware->call($request, new Response(200), $route, function($request, $response, $route) use($classController, $methodController) {
                 $controller = new $classController($request, $response, $route);
                 $route->applyObservers($controller);
-                $datas = $controller->{$methodController}();
+                $datas = $controller->{$methodController}($request, $response, $route->getArgs());
                 $response = $controller->getResponse();
                 $response->getBody()->write(Codec::getHandler(current($route->getProcucedMimeType()))->serialize($datas));
                 return $response;
