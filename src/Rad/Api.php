@@ -96,7 +96,7 @@ class Api {
             $response->send();
         } finally {
             if ($finalClosure != null) {
-                call_user_func_array($finalClosure);
+                call_user_func_array($finalClosure, []);
             }
         }
     }
