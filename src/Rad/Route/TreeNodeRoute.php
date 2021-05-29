@@ -95,25 +95,17 @@ class TreeNodeRoute {
     public function getRoute($array) {
         if (count($array) > 0) {
             $matching_nodes = $this->matchRoute(array_shift($array));
-            foreach ($matching_nodes as &$node) {
-                $ret = $node->getRoute($array);
-                if ($ret !== null) {
-                    return $ret;
-                }
-            }
-            return null;
+            $routes         = array_map(function ($node) use ($array) {
+                return $node->getRoute($array);
+            }, $matching_nodes);
+            return current($routes);
         } else {
-            if ($this->route !== null) {
-                $this->route->setArgs($this->regArgs);
-                return $this->route;
-            } else {
-                return null;
-            }
+            return ($this->route !== null) ? $this->route->setArgs($this->regArgs) : null;
         }
     }
 
     private function matchRoute($value) {
-        return array_filter($this->children, function($node, $key) use($value) {
+        return array_filter($this->children, function ($node, $key) use ($value) {
             $match  = [];
             $pmatch = preg_match('/^' . $key . '$/', $value, $match);
             Log::getHandler()->debug('preg_match ' . '/^' . $key . '$/' . ' value :' . $value);
