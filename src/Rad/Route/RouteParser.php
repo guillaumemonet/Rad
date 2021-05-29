@@ -92,29 +92,33 @@ abstract class RouteParser {
                 $methodComments = self::parseMethodAnnotations($class, $method);
                 $paths          = self::getPathsFromComment($methodComments);
                 array_walk($paths, function ($array, $key) use (&$routes, $class, $classComments, $method, $methodComments) {
-                    foreach ($array as $path) {
-                        $route  = new Route();
-                        $route->setClassName($class)->setMethodName($method)->setMethod($key)->setPath($path);
-                        $others = array_merge(self::getOthersFromComment($methodComments), self::getOthersFromComment($classComments));
-                        array_walk($others, function ($datas, $key) use ($route) {
-                            if (isset(self::$annotationsArray[$key]) && $key !== "options") {
-                                $method = self::$annotationsArray[$key]['method'];
-                                $type   = self::$annotationsArray[$key]['type'];
-                                $route->{$method}($type === 'array' ? $datas : current($datas));
-                            }
-                        });
-                        if (key_exists("options", $others)) {
-                            $oroute   = new Route();
-                            $oroute->setClassName($class)->setMethodName($method)->setMethod("OPTIONS")->setPath($path);
-                            $oroute->enableOptions();
-                            $routes[] = $oroute;
-                        }
-                        $routes[] = $route;
-                    }
+                    self::createRoute($routes, $array, $key, $class, $classComments, $method, $methodComments);
                 });
             }
         }, $methods);
         return $routes;
+    }
+
+    private static function createRoute(&$routes, $array, $key, $class, $classComments, $method, $methodComments) {
+        foreach ($array as $path) {
+            $route  = new Route();
+            $route->setClassName($class)->setMethodName($method)->setMethod($key)->setPath($path);
+            $others = array_merge(self::getOthersFromComment($methodComments), self::getOthersFromComment($classComments));
+            array_walk($others, function ($datas, $key) use ($route) {
+                if (isset(self::$annotationsArray[$key]) && $key !== "options") {
+                    $method = self::$annotationsArray[$key]['method'];
+                    $type   = self::$annotationsArray[$key]['type'];
+                    $route->{$method}($type === 'array' ? $datas : current($datas));
+                }
+            });
+            if (key_exists("options", $others)) {
+                $oroute   = new Route();
+                $oroute->setClassName($class)->setMethodName($method)->setMethod("OPTIONS")->setPath($path);
+                $oroute->enableOptions();
+                $routes[] = $oroute;
+            }
+            $routes[] = $route;
+        }
     }
 
     public static function getPathsFromComment($methodComment) {
