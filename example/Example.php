@@ -2,6 +2,8 @@
 
 require(__DIR__ . "/../vendor/autoload.php");
 
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Rad\Api;
 use Rad\Controller\Controller;
 use Rad\Log\Log;
@@ -40,25 +42,25 @@ use Rad\Utils\Time;
 class MyController extends Controller {
 
     /**
-     * @api 1
      * @get /
      * @produce html
      */
-    public function helloWorld() {
-        return "<b>Hello World</b>";
+    public function helloWorld(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
+        $response->getBody()->write("<b>Hello World</b>");
+        return $response;
     }
 
     /**
-     * @api 1
      * @get /json/
      * @produce json
      */
-    public function jsonHelloWorld() {
+    public function jsonHelloWorld(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
         $this->response = $this->response->withAddedHeader('Hello', 'Moto');
         $std            = new stdClass();
         $std->toto      = "toto/fdsf   sdf://";
         $std->arr       = ["toto ", "titi"];
-        return [$std, $std];
+        $response->getBody()->write(json_encode([$std, $std]));
+        return $response;
     }
 
     /**
@@ -66,8 +68,9 @@ class MyController extends Controller {
      * @get /helloworld/(?<name>[aA-zZ]*)/display/(?<welcome>.*)/
      * @produce html
      */
-    public function namedHelloWorld() {
-        return '<b>Hello World</b> ' . $this->route->getArgs()['name'] . " to " . $this->route->getArgs()['welcome'];
+    public function namedHelloWorld(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
+        $response->getBody()->write('<b>Hello World</b> ' . $args['name'] . " to " . $args['welcome']);
+        return $response;
     }
 
     /**
@@ -76,15 +79,17 @@ class MyController extends Controller {
      * @cors
      * @produce json
      */
-    public function serverRequest() {
-        return print_r($this->getRequest()->getHeaders(), true);
+    public function serverRequest(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
+        $response->getBody()->write(json_encode($request->getHeaders()));
+        return $response;
     }
 
 }
 
-$time  = Time::startCounter();
-$app   = new Api();
+$time = Time::startCounter();
+$app  = new Api();
 $app->addControllers([MyController::class])
-        ->run();
-$ltime = Time::endCounter();
-Log::getHandler()->debug("API REQUEST [" . round($ltime, 10) * 1000 . "] ms");
+        ->run(function () {
+            $ltime = Time::endCounter();
+            Log::getHandler()->debug("API REQUEST [" . round($ltime, 10) * 1000 . "] ms");
+        });

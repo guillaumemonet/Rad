@@ -29,7 +29,6 @@ namespace Rad\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Rad\Cache\Cache;
-use Rad\Codec\Codec;
 use Rad\Error\Http\NotFoundException;
 use Rad\Http\Response;
 use Rad\Log\Log;
@@ -166,12 +165,9 @@ class Router implements RouterInterface {
             $methodController = $route->getMethodName();
             $route->isSessionEnabled() ? Session::getHandler()->start() : '';
             $response         = $middleware->call($request, new Response(200), $route, function ($request, $response, $route) use ($classController, $methodController) {
-                $controller = new $classController($request, $response, $route);
+                $controller = new $classController($route);
                 $route->applyObservers($controller);
-                $datas      = $controller->{$methodController}($request, $response, $route->getArgs());
-                $response   = $controller->getResponse();
-                $response->getBody()->write(Codec::getHandler(current($route->getProcucedMimeType()))->serialize($datas));
-                return $response;
+                return $controller->{$methodController}($request, $response, $route->getArgs());
             });
             $route->isSessionEnabled() ? Session::getHandler()->end() : '';
             return $response;

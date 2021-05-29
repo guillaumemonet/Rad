@@ -26,8 +26,6 @@
 
 namespace Rad\Controller;
 
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
 use Rad\Observer\Observable;
 use Rad\Route\Route;
 use Rad\Worker\Orderer;
@@ -42,48 +40,16 @@ abstract class Controller extends Observable {
 
     /**
      *
-     * @var ServerRequestInterface
-     */
-    protected $request;
-
-    /**
-     *
-     * @var ResponseInterface
-     */
-    protected $response;
-
-    /**
-     *
      * @var Route
      */
     protected $route;
 
     /**
      * 
-     * @param ServerRequestInterface $request
-     * @param ResponseInterface $response
      * @param Route $route
      */
-    public function __construct(ServerRequestInterface $request = null, ResponseInterface $response = null, Route $route = null) {
-        $this->request = $request;
-        $this->response = $response;
+    public function __construct(Route $route = null) {
         $this->route = $route;
-    }
-
-    /**
-     * 
-     * @return ServerRequestInterface
-     */
-    public function getRequest(): ServerRequestInterface {
-        return $this->request;
-    }
-
-    /**
-     * 
-     * @return ResponseInterface
-     */
-    public function getResponse(): ResponseInterface {
-        return $this->response;
     }
 
     /**

@@ -46,10 +46,12 @@ You can add this script to your `composer.json` when you want to automatic insta
 ## Usage
 
 ```php
+
 require(__DIR__ . "/../vendor/autoload.php");
 
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Rad\Api;
-use Rad\Config\Config;
 use Rad\Controller\Controller;
 use Rad\Log\Log;
 use Rad\Utils\Time;
@@ -57,62 +59,64 @@ use Rad\Utils\Time;
 /**
  * Simple example for testing purpose
  *
- * @author Guillaume Monet
+ * @author guillaume
+ * @RestController
  */
 class MyController extends Controller {
 
     /**
-     * @api 1
-     * @get /helloworld/html/show/
+     * @get /
      * @produce html
      */
-    public function helloWorld() {
-        return "<b>Hello World</b>";
+    public function helloWorld(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
+        $response->getBody()->write("<b>Hello World</b>");
+        return $response;
     }
 
     /**
-     * @api 1
-     * @get /helloworld/json/show/
-     * @middleware Rad\Middleware\Base\Pre_CheckConsume
-     * @middleware Rad\Middleware\Base\Post_SetProduce
+     * @get /json/
      * @produce json
      */
-    public function jsonHelloWorld() {
+    public function jsonHelloWorld(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
         $this->response = $this->response->withAddedHeader('Hello', 'Moto');
-        return array("Hello World");
+        $std            = new stdClass();
+        $std->toto      = "toto/fdsf   sdf://";
+        $std->arr       = ["toto ", "titi"];
+        $response->getBody()->write(json_encode([$std, $std]));
+        return $response;
     }
 
     /**
      * @api 1
-     * @get /helloworld/([aA-zZ]*)/display/(.*)/
-     * @middleware Rad\Middleware\Base\Pre_CheckConsume
-     * @middleware Rad\Middleware\Base\Post_SetProduce
+     * @get /helloworld/(?<name>[aA-zZ]*)/display/(?<welcome>.*)/
      * @produce html
      */
-    public function namedHelloWorld() {
-        return '<b>Hello World</b> ' . $this->route->getArgs()[0] . " to " . $this->route->getArgs()[1];
+    public function namedHelloWorld(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
+        $response->getBody()->write('<b>Hello World</b> ' . $args['name'] . " to " . $args['welcome']);
+        return $response;
     }
 
     /**
      * @api 1
      * @get /server/
-     * @middleware Rad\Middleware\Base\Pre_CheckConsume
-     * @middleware Rad\Middleware\Base\Post_SetProduce
-     * @produce html
-     * @consume json
+     * @cors
+     * @produce json
      */
-    public function serverRequest() {
-        return print_r($this->request->getHeader('HTTP_ACCEPT')[0], true);
+    public function serverRequest(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
+        $response->getBody()->write(json_encode($request->getHeaders()));
+        return $response;
     }
 
 }
 
-$time = Time::get_microtime();
-$app = new Api();
+$time = Time::startCounter();
+$app  = new Api();
 $app->addControllers([MyController::class])
-        ->run();
-$ltime = Time::get_microtime();
-Log::getHandler()->debug("API REQUEST [" . round($ltime - $time, 10) * 1000 . "] ms");
+        ->run(function () {
+            $ltime = Time::endCounter();
+            Log::getHandler()->debug("API REQUEST [" . round($ltime, 10) * 1000 . "] ms");
+        });
+
 ```
 
 ## How is works

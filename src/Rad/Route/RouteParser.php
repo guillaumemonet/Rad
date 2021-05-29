@@ -26,6 +26,7 @@
 
 namespace Rad\Route;
 
+use Psr\Http\Message\ResponseInterface;
 use Rad\Annotation\Annotation;
 use Rad\Controller\Controller;
 use Rad\Log\Log;
@@ -39,7 +40,7 @@ use ReflectionMethod;
  */
 abstract class RouteParser {
 
-    private static $allowed_methods  = ['GET', "POST", "PUT", "PATCH", "DELETE"];
+    private static $allowed_methods  = ['GET', "POST", "PUT", "PATCH", "DELETE", "OPTIONS"];
     private static $annotationsArray = [
         'middleware' => ['method' => 'setMiddlewares', 'type' => 'array'],
         'api'        => ['method' => 'setVersion', 'type' => 'single'],
@@ -70,7 +71,7 @@ abstract class RouteParser {
     public static function parseRoutes(array $classes) {
         Log::getHandler()->debug('Generating Routes');
         $routes = [];
-        array_map(function($class) use(&$routes) {
+        array_map(function ($class) use (&$routes) {
             Log::getHandler()->debug('Loading Class ' . $class);
             if (is_subclass_of($class, Controller::class)) {
                 $routes = array_merge($routes, self::generateRoutes($class));
@@ -85,43 +86,45 @@ abstract class RouteParser {
         $routes        = [];
         $classComments = self::parseClassAnnotations($class);
         $methods       = get_class_methods($class);
-        array_map(function($method) use (&$routes, $class, $classComments) {
-            Log::getHandler()->debug('Loading Method ' . $method);
-            $methodComments = self::parseMethodAnnotations($class, $method);
-            $paths          = self::getPathsFromComment($methodComments);
-            array_walk($paths, function($array, $key) use (&$routes, $class, $classComments, $method, $methodComments) {
-                foreach ($array as $path) {
-                    $route  = new Route();
-                    $route->setClassName($class)->setMethodName($method)->setMethod($key)->setPath($path);
-                    $others = array_merge(self::getOthersFromComment($methodComments), self::getOthersFromComment($classComments));
-                    array_walk($others, function($datas, $key) use ($route) {
-                        if (isset(self::$annotationsArray[$key]) && $key !== "options") {
-                            $method = self::$annotationsArray[$key]['method'];
-                            $type   = self::$annotationsArray[$key]['type'];
-                            $route->{$method}($type === 'array' ? $datas : current($datas));
+        array_map(function ($method) use (&$routes, $class, $classComments) {
+            if ((new ReflectionMethod($class, $method))->getReturnType() == ResponseInterface::class) {
+                Log::getHandler()->debug('Loading Method ' . $method . ' ' . (new ReflectionMethod($class, $method))->getReturnType());
+                $methodComments = self::parseMethodAnnotations($class, $method);
+                $paths          = self::getPathsFromComment($methodComments);
+                array_walk($paths, function ($array, $key) use (&$routes, $class, $classComments, $method, $methodComments) {
+                    foreach ($array as $path) {
+                        $route  = new Route();
+                        $route->setClassName($class)->setMethodName($method)->setMethod($key)->setPath($path);
+                        $others = array_merge(self::getOthersFromComment($methodComments), self::getOthersFromComment($classComments));
+                        array_walk($others, function ($datas, $key) use ($route) {
+                            if (isset(self::$annotationsArray[$key]) && $key !== "options") {
+                                $method = self::$annotationsArray[$key]['method'];
+                                $type   = self::$annotationsArray[$key]['type'];
+                                $route->{$method}($type === 'array' ? $datas : current($datas));
+                            }
+                        });
+                        if (key_exists("options", $others)) {
+                            $oroute   = new Route();
+                            $oroute->setClassName($class)->setMethodName($method)->setMethod("OPTIONS")->setPath($path);
+                            $oroute->enableOptions();
+                            $routes[] = $oroute;
                         }
-                    });
-                    if (key_exists("options", $others)) {
-                        $oroute   = new Route();
-                        $oroute->setClassName($class)->setMethodName($method)->setMethod("OPTIONS")->setPath($path);
-                        $oroute->enableOptions();
-                        $routes[] = $oroute;
+                        $routes[] = $route;
                     }
-                    $routes[] = $route;
-                }
-            });
+                });
+            }
         }, $methods);
         return $routes;
     }
 
     public static function getPathsFromComment($methodComment) {
-        return array_filter($methodComment, function($key) {
+        return array_filter($methodComment, function ($key) {
             return in_array(strtoupper($key), self::$allowed_methods);
         }, ARRAY_FILTER_USE_KEY);
     }
 
     public static function getOthersFromComment($methodComment) {
-        return array_filter($methodComment, function($key) {
+        return array_filter($methodComment, function ($key) {
             return !in_array(strtoupper($key), self::$allowed_methods) && array_key_exists(strtolower($key), self::$annotationsArray);
         }, ARRAY_FILTER_USE_KEY);
     }
