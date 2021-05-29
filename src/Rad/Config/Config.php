@@ -60,28 +60,42 @@ abstract class Config {
         if ($configDir === null) {
             self::loadDefaultConfig();
         } else {
-            if (!file_exists($configDir . 'build_config.json')) {
-                self::loadDefaultConfig();
-                self::parseOtherConfigFiles($configDir);
-                file_put_contents($configDir . 'build_config.json', json_encode(self::$config, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_FORCE_OBJECT));
-            }
-            self::$config = json_decode(file_get_contents($configDir . 'build_config.json'));
-            if (json_last_error() > 0) {
-                throw new ConfigurationException('Configuration build_config.json can\'t be loaded');
-            }
+            self::buildJsonConfig($configDir);
+        }
+    }
+
+    private static function buildJsonConfig($configDir) {
+        if (!file_exists($configDir . 'build_config.json')) {
+            self::loadDefaultConfig();
+            self::parseOtherConfigFiles($configDir);
+            file_put_contents($configDir . 'build_config.json', json_encode(self::$config, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_FORCE_OBJECT));
+        }
+        self::$config = json_decode(file_get_contents($configDir . 'build_config.json'));
+        if (json_last_error() > 0) {
+            throw new ConfigurationException('Configuration build_config.json can\'t be loaded');
         }
     }
 
     private static function parseOtherConfigFiles($configDir) {
-        foreach (glob($configDir . "*.json") as $filename) {
-            if (basename($filename) != "default_config.json") {
-                $config = json_decode(file_get_contents($filename), true);
-                if (json_last_error() > 0) {
-                    throw new ConfigurationException('Configuration ' . $filename . ' can\'t be loaded');
-                }
-                self::$config = array_replace_recursive(self::$config, (array) $config);
+        self::$config = array_reduce(glob($configDir . "*.json"), function ($config, $filename) {
+            $fileConfig = self::loadOtherConfig($filename);
+            if ($fileConfig !== null) {
+                $config = array_replace_recursive((array) $config, (array) $fileConfig);
+            }
+            return $config;
+        }, self::$config);
+    }
+
+    private static function loadOtherConfig($filename) {
+        $fileConfig = null;
+        if (basename($filename) != "default_config.json") {
+            error_log("Loading " . $filename);
+            $fileConfig = json_decode(file_get_contents($filename));
+            if (json_last_error() > 0) {
+                throw new ConfigurationException('Configuration ' . $filename . ' can\'t be loaded');
             }
         }
+        return $fileConfig;
     }
 
     /**
