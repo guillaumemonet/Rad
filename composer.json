@@ -46,21 +46,12 @@
         "psr/http-server-handler": "^1",
         "psr/http-factory": "^1",
         "guzzlehttp/psr7": "1.8.4",
-        "guzzlehttp/promises": "v1.3.1"
+        "guzzlehttp/promises": "v1.3.1",
+        "smarty/smarty": "v4.2.1"
     },
     "require-dev": {
         "phpunit/php-timer": "^1.0.",
         "phpunit/phpunit": "^6.5"
-    },
-    "suggest": {
-        "rad/rad-framework-builder": "dev-master",
-        "rad/rad-framework-template-smarty": "dev-master",
-        "rad/rad-framework-reco-easyrec": "dev-master",
-        "rad/rad-framework-mail-simplemail": "dev-master",
-        "rad/rad-framework-graphql": "dev-master",
-        "rad/rad-framework-orm-doctrine": "dev-master",
-        "rad/rad-framework-ml": "dev-master",
-        "rad/rad-framework-auth": "dev-master"
     },
     "bin": ["bin/rad"]
 }
