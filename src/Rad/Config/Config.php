@@ -43,14 +43,6 @@ abstract class Config {
         
     }
 
-    public static function loadDefaultConfig() {
-        $datas        = file_get_contents(__DIR__ . "/../../../config/default_config.json");
-        self::$config = json_decode($datas);
-        if (json_last_error() > 0) {
-            throw new ConfigurationException('Configuration default_config.json can\'t be loaded');
-        }
-    }
-
     /**
      * 
      * @param string $configDir
@@ -60,7 +52,11 @@ abstract class Config {
         if ($configDir === null) {
             self::loadDefaultConfig();
         } else {
-            self::buildJsonConfig($configDir);
+            if (!is_dir($configDir)) {
+                throw new ConfigurationException("Not a directory : " . $configDir);
+            }
+            $dir = dir($configDir);
+            self::buildJsonConfig($dir->path . "/");
         }
     }
 
@@ -80,17 +76,39 @@ abstract class Config {
         self::$config = array_reduce(glob($configDir . "*.json"), function ($config, $filename) {
             $fileConfig = self::loadOtherConfig($filename);
             if ($fileConfig !== null) {
-                $config = array_replace_recursive((array) $config, (array) $fileConfig);
+                $arrayConfig       = (array) $config;
+                $arrayCustomConfig = (array) $fileConfig;
+                $config            = self::array_merge_recursive_distinct($arrayConfig, $arrayCustomConfig);
             }
             return $config;
         }, self::$config);
+    }
+
+    private static function array_merge_recursive_distinct(array &$default, array &$custom) {
+        $merged = $default;
+        foreach ($custom as $key => &$value) {
+            if (is_array($value) && isset($merged [$key]) && is_array($merged [$key])) {
+                $merged [$key] = self::array_merge_recursive_distinct($merged [$key], $value);
+            } else {
+                $merged [$key] = $value;
+            }
+        }
+        return $merged;
+    }
+
+    public static function loadDefaultConfig() {
+        $datas        = file_get_contents(__DIR__ . "/../../../config/default_config.json");
+        self::$config = json_decode($datas, true);
+        if (json_last_error() > 0) {
+            throw new ConfigurationException('Configuration default_config.json can\'t be loaded');
+        }
     }
 
     private static function loadOtherConfig($filename) {
         $fileConfig = null;
         if (basename($filename) != "default_config.json") {
             error_log("Loading " . $filename);
-            $fileConfig = json_decode(file_get_contents($filename));
+            $fileConfig = json_decode(file_get_contents($filename), true);
             if (json_last_error() > 0) {
                 throw new ConfigurationException('Configuration ' . $filename . ' can\'t be loaded');
             }

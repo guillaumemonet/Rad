@@ -39,7 +39,7 @@ use Rad\Utils\Time;
  * @author guillaume
  * @RestController
  */
-class MyController extends Controller {
+class Example extends Controller {
 
     /**
      * @get /
@@ -55,10 +55,10 @@ class MyController extends Controller {
      * @produce json
      */
     public function jsonHelloWorld(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
-        $this->response = $this->response->withAddedHeader('Hello', 'Moto');
-        $std            = new stdClass();
-        $std->toto      = "toto/fdsf   sdf://";
-        $std->arr       = ["toto ", "titi"];
+        $response  = $response->withAddedHeader('Hello', 'Moto');
+        $std       = new stdClass();
+        $std->toto = "toto/fdsf   sdf://";
+        $std->arr  = ["toto ", "titi"];
         $response->getBody()->write(json_encode([$std, $std]));
         return $response;
     }
@@ -87,8 +87,8 @@ class MyController extends Controller {
 }
 
 $time = Time::startCounter();
-$app  = new Api();
-$app->addControllers([MyController::class])
+$app  = new Api(__DIR__ . "/config/");
+$app->addControllers([Example::class])
         ->run(function () {
             $ltime = Time::endCounter();
             Log::getHandler()->debug("API REQUEST [" . round($ltime, 10) * 1000 . "] ms");

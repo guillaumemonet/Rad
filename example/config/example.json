@@ -1,0 +1,14 @@
+{
+    "services": {
+        "cache": {
+            "default": "file",
+            "handlers": {
+                "file": {
+                    "config": {
+                        "path": "example/cache/"
+                    }
+                }
+            }
+        }
+    }
+}
