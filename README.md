@@ -2,7 +2,6 @@ RAD Framework
 ==========================
 
 [![Latest Stable Version](https://poser.pugx.org/rad/rad-framework/v/stable)](https://packagist.org/packages/rad/rad-framework)
-[![Build Status](https://travis-ci.org/guillaumemonet/Rad.svg?branch=master)](https://travis-ci.org/guillaumemonet/Rad)
 [![Total Downloads](https://poser.pugx.org/rad/rad-framework/downloads)](https://packagist.org/packages/rad/rad-framework)
 [![Latest Unstable Version](https://poser.pugx.org/rad/rad-framework/v/unstable)](https://packagist.org/packages/rad/rad-framework)
 [![License](https://poser.pugx.org/rad/rad-framework/license)](https://packagist.org/packages/rad/rad-framework)
@@ -28,21 +27,6 @@ To get the latest version of RAD Framework, simply add the following line to the
 "rad/rad-framework": "dev-master"
 ```
 
-## Automatic config installation for all `Rad` package
-
-You can add this script to your `composer.json` when you want to automatic install package config file in your config directory
-
-```json
-"scripts": {
-        "post-package-install": [
-            "Rad\\Composer\\Manager::installConfig"
-        ],
-        "post-package-update": [
-            "Rad\\Composer\\Manager::installConfig"
-        ]
-}
-```
-
 ## Usage
 
 ```php
@@ -62,7 +46,7 @@ use Rad\Utils\Time;
  * @author guillaume
  * @RestController
  */
-class MyController extends Controller {
+class Example extends Controller {
 
     /**
      * @get /
@@ -78,7 +62,7 @@ class MyController extends Controller {
      * @produce json
      */
     public function jsonHelloWorld(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
-        $this->response = $this->response->withAddedHeader('Hello', 'Moto');
+        $response = $response->withAddedHeader('Hello', 'Moto');
         $std            = new stdClass();
         $std->toto      = "toto/fdsf   sdf://";
         $std->arr       = ["toto ", "titi"];
