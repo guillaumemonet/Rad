@@ -28,8 +28,25 @@
         "template": {
             "default": "smarty",
             "classname": "Rad\\Template\\TemplateInterface",
+            "default": "smarty",         
             "handlers": {
-
+                "smarty": {
+                    "classname": "Rad\\Template\\SmartyTemplateHandler",
+                    "config": {
+                        "compile_check": true,
+                        "force_compile": false,
+                        "debugging": false,
+                        "error_reporting": true,
+                        "caching": false,
+                        "cache_locking": true,
+                        "cache_lifetime": 3600,
+                        "template_dir": "templates/",
+                        "compile_dir": "cache/",
+                        "config_dir": "config/",
+                        "cache_dir": "cache/",
+                        "cache_type": "smarty"
+                    }
+                }
             }
         },
         "reco": {

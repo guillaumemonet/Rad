@@ -11,12 +11,32 @@
             }
         },
         "log": {
-            "default": "file",
+            "default": "output",
             "displayTime": true,
             "handlers": {
                 "file": {
                     "config": {
                         "file": "example/log/api.log"
+                    }
+                }
+            }
+        },
+        "template": {        
+            "handlers": {
+                "smarty": {
+                    "config": {
+                        "compile_check": true,
+                        "force_compile": false,
+                        "debugging": false,
+                        "error_reporting": true,
+                        "caching": true,
+                        "cache_locking": true,
+                        "cache_lifetime": 3600,
+                        "template_dir": "example/templates/",
+                        "compile_dir": "example/compiled/",
+                        "config_dir": "example/config/",
+                        "cache_dir": "example/cache/",
+                        "cache_type": "smarty"
                     }
                 }
             }

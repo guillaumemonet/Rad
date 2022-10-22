@@ -145,7 +145,7 @@ class Api {
      * @param array $controllers
      * @return $this
      */
-    public function setControllers(array $controllers) {
+    public function setControllers(array $controllers): self {
         $this->controllers = $controllers;
         return $this;
     }

@@ -7,6 +7,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Rad\Api;
 use Rad\Controller\Controller;
 use Rad\Log\Log;
+use Rad\Template\Template;
 use Rad\Utils\Time;
 
 /*
@@ -84,12 +85,29 @@ class Example extends Controller {
         return $response;
     }
 
+    /**
+     * @get /template/
+     * @produce html
+     */
+    public function templateHelloWorld(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
+        $response = $response->withAddedHeader('Hello', 'Moto');
+        if (!Template::getHandler()->isCached("index.tpl", "cached", "compiled")) {
+            Log::getHandler()->debug("Not Cached index.tpl");
+            Template::getHandler()->assign("index", "RAD");
+        }
+        $html = Template::getHandler()->fetch("index.tpl", "cached", "compiled");
+        $response->getBody()->write($html);
+        return $response;
+    }
+
 }
 
 $time = Time::startCounter();
+
 $app  = new Api(__DIR__ . "/config/");
-$app->addControllers([Example::class])
-        ->run(function () {
-            $ltime = Time::endCounter();
-            Log::getHandler()->debug("API REQUEST [" . round($ltime, 10) * 1000 . "] ms");
-        });
+
+$app->addControllers([Example::class])->run(function () {
+    $ltime = Time::endCounter();
+    Log::getHandler()->debug("API REQUEST [" . round($ltime, 10) * 1000 . "] ms");
+});
+
