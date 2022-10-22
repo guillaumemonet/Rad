@@ -43,13 +43,17 @@ class FileLogHandler extends AbstractLogger {
                 $message = print_r($message, true);
             }
             $config->file !== null ?
-                            error_log($this->logFormat(strtoupper($level), $message), 3, $config->file) :
+                            error_log($this->logFormat(strtoupper($level), $message) . "\n", 3, $config->file) :
                             error_log($this->logFormat(strtoupper($level), $message));
         }
     }
 
     private function logFormat(string $type, string $message) {
-        return sprintf("[%-9s] %s", $type, $message);
+        $time = "";
+        if (Config::getServiceConfig("log")->displayTime) {
+            $time = date("[Y-m-d H:i:s] ");
+        }
+        return sprintf("%s[%-9s] %s", $time, $type, $message);
     }
 
 }

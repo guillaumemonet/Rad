@@ -9,6 +9,17 @@
                     }
                 }
             }
+        },
+        "log": {
+            "default": "file",
+            "displayTime": true,
+            "handlers": {
+                "file": {
+                    "config": {
+                        "file": "example/log/api.log"
+                    }
+                }
+            }
         }
     }
 }

@@ -85,6 +85,7 @@
         "log": {
             "default": "output",
             "classname": "Psr\\Log\\AbstractLogger",
+            "displayTime": false,
             "handlers": {
                 "output": {
                     "classname": "Rad\\Log\\OutputLogHandler",
@@ -98,7 +99,7 @@
                 "file": {
                     "classname": "Rad\\Log\\FileLogHandler",
                     "config": {
-                        "path": "logs/api.log",
+                        "file": "logs/api.log",
                         "enabled": true,
                         "debug": true,
                         "warning": true,
