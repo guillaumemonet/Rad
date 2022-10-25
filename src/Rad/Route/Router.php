@@ -157,7 +157,7 @@ class Router implements RouterInterface {
         if ($nodeRoute != null) {
             $route = $nodeRoute->getRoute(explode('/', trim($path, '/')));
         }
-        if ($route !== null) {
+        if ($route !== null && $route !== false) {
             $route->setFullPath($path);
             Log::getHandler()->debug($method . " : " . $path . " Matching " . $route->getPath());
             $middleware       = new Middleware($route->getMiddlewares());
