@@ -14,6 +14,10 @@ namespace Rad\Observer;
  */
 abstract class Observable {
 
+    /**
+     * 
+     * @var Observer[]
+     */
     private $observers = [];
 
     public function attach(Observer $observer) {
@@ -25,7 +29,7 @@ abstract class Observable {
     }
 
     public function notify() {
-        array_map(function($observer) {
+        array_map(function ($observer) {
             $observer->update($this);
         }, $this->observers);
     }

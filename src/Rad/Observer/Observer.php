@@ -12,7 +12,7 @@ namespace Rad\Observer;
  * Description of Observer
  *
  */
-abstract class Observer {
+interface Observer {
 
-    public abstract function update(Observable $observable);
+    public function update(Observable $observable);
 }
