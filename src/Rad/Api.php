@@ -30,7 +30,6 @@ use Closure;
 use ErrorException;
 use Psr\Http\Message\ServerRequestInterface;
 use Rad\Config\Config;
-use Rad\Controller\Controller;
 use Rad\Error\Http\NotFoundException;
 use Rad\Http\Response;
 use Rad\Http\ServerRequest;
@@ -62,7 +61,7 @@ class Api {
 
     /**
      *
-     * @var Controller[]
+     * @var string[]
      */
     private $controllers = [];
 
@@ -132,7 +131,7 @@ class Api {
 
     /**
      *
-     * @param array $controllers
+     * @param string[] $controllers
      * @return $this
      */
     public function addControllers(array $controllers): self {
@@ -142,7 +141,7 @@ class Api {
 
     /**
      *
-     * @param array $controllers
+     * @param string[] $controllers
      * @return $this
      */
     public function setControllers(array $controllers): self {
@@ -152,17 +151,17 @@ class Api {
 
     /**
      *
-     * @param Controller $controller
+     * @param string $controller
      * @return $this
      */
-    public function addController(Controller $controller): self {
+    public function addController(string $controller): self {
         $this->controllers[] = $controller;
         return $this;
     }
 
     /**
      *
-     * @return Controller[]
+     * @return string[]
      */
     public function getControllers(): array {
         return $this->controllers;
