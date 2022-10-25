@@ -42,11 +42,13 @@ use Rad\Utils\Time;
  */
 class Example extends Controller {
 
+    public $state = 1;
+
     /**
      * @get /
      * @produce html
      */
-    public function helloWorld(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
+    public function html(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
         $response->getBody()->write("<b>Hello World</b>");
         return $response;
     }
@@ -55,7 +57,7 @@ class Example extends Controller {
      * @get /json/
      * @produce json
      */
-    public function jsonHelloWorld(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
+    public function json(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
         $response  = $response->withAddedHeader('Hello', 'Moto');
         $std       = new stdClass();
         $std->toto = "toto/fdsf   sdf://";
@@ -69,7 +71,7 @@ class Example extends Controller {
      * @get /helloworld/(?<name>[aA-zZ]*)/display/(?<welcome>.*)/
      * @produce html
      */
-    public function namedHelloWorld(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
+    public function htmlWithArgs(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
         $response->getBody()->write('<b>Hello World</b> ' . $args['name'] . " to " . $args['welcome']);
         return $response;
     }
@@ -89,7 +91,7 @@ class Example extends Controller {
      * @get /template/
      * @produce html
      */
-    public function templateHelloWorld(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
+    public function template(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
         $response = $response->withAddedHeader('Hello', 'Moto');
         if (!Template::getHandler()->isCached("index.tpl", "cached", "compiled")) {
             Log::getHandler()->debug("Not Cached index.tpl");
@@ -100,13 +102,30 @@ class Example extends Controller {
         return $response;
     }
 
+    /**
+     * @get /observer/
+     * @produce html
+     * @observer \TestObserver
+     */
+    public function observer(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
+        $response->getBody()->write("State Change");
+        $this->state = 2;
+        $this->notify();
+        return $response;
+    }
+
 }
 
 $time = Time::startCounter();
 
-$app  = new Api(__DIR__ . "/config/");
+/**
+ * Load TestObserver class
+ */
+require(__DIR__ . '/TestObserver.php');
 
-$app->addControllers([Example::class])->run(function () {
+$app = new Api(__DIR__ . "/config/");
+
+$app->addController(Example::class)->run(function () {
     $ltime = Time::endCounter();
     Log::getHandler()->debug("API REQUEST [" . round($ltime, 10) * 1000 . "] ms");
 });
