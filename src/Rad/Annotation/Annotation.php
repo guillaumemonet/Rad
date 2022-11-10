@@ -54,7 +54,7 @@ abstract class Annotation {
         $matches     = [];
         preg_match_all('/@(?<name>[A-Za-z_-]+)((?<args>.*))[\r\n]/m', $docblock, $matches, PREG_SET_ORDER);
         $annotations = [];
-        array_map(function($match) use (&$annotations) {
+        array_map(function ($match) use (&$annotations) {
             $annotations[$match['name']][] = trim($match['args']);
         }, $matches);
         return $annotations;
@@ -65,11 +65,11 @@ abstract class Annotation {
      * @param string $class
      * @return array
      */
-    public static function getAnnotationsProperties(string $class) {
+    public static function getAnnotationsProperties(string $class): array {
         $reflexion   = new ReflectionClass($class);
         $properties  = $reflexion->getProperties(ReflectionProperty::IS_PUBLIC | ReflectionProperty::IS_PROTECTED);
         $annotations = [];
-        array_map(function($property) use(&$annotations) {
+        array_map(function ($property) use (&$annotations) {
             $annotations[$property->name][] = self::getAnnotations($property->getDocComment());
         }, $properties);
         return $annotations;
@@ -80,7 +80,7 @@ abstract class Annotation {
      * @param string $class
      * @return array
      */
-    public static function getAnnotationsClass(string $class) {
+    public static function getAnnotationsClass(string $class): array {
         $reflexion = new ReflectionClass($class);
         $comments  = $reflexion->getDocComment();
         return self::getAnnotations($comments);
