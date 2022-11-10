@@ -26,6 +26,8 @@
 
 namespace Rad\Config;
 
+use ErrorException;
+use Rad\Encryption\Encryption;
 use Rad\Error\ConfigurationException;
 
 /**
@@ -64,6 +66,7 @@ abstract class Config {
         if (!file_exists($configDir . 'build_config.json')) {
             self::loadDefaultConfig();
             self::parseOtherConfigFiles($configDir);
+            self::generateToken();
             file_put_contents($configDir . 'build_config.json', json_encode(self::$config, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_FORCE_OBJECT));
         }
         self::$config = json_decode(file_get_contents($configDir . 'build_config.json'));
@@ -116,6 +119,12 @@ abstract class Config {
         return $fileConfig;
     }
 
+    private static function generateToken() {
+        if (!isset(self::$config['api']['token'])) {
+            self::$config['api']['token'] = Encryption::generateToken(16);
+        }
+    }
+
     /**
      * Return current config
      * @param string $section
@@ -150,7 +159,7 @@ abstract class Config {
 
     public static function getApiConfig($name = null) {
         if (!isset(self::$config->api)) {
-            throw new \ErrorException('Not Api Config found');
+            throw new ErrorException('Not Api Config found');
         }
         return $name !== null ? self::$config->api->{$name} : self::$config->api;
     }
