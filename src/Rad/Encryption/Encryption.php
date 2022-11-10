@@ -26,6 +26,7 @@
 
 namespace Rad\Encryption;
 
+use Rad\Config\Config;
 use Rad\Service\Service;
 
 /**
@@ -53,7 +54,8 @@ final class Encryption extends Service {
      * @return string
      */
     public static function hashMd5(string $data): string {
-        return hash("md5", $data);
+        $token = Config::getApiConfig('token');
+        return hash("md5", $token . $data);
     }
 
     /**

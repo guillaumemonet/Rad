@@ -9,3 +9,7 @@ composer.phar
 /composer.lock
 /config/config.json
 /config/build_config.json
+/example/config/build_config.json
+/example/cache/*
+/example/compiled/*
+/example/log/api.log

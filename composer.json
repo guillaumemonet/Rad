@@ -35,7 +35,7 @@
         }
     ],
     "require": {
-        "php": " ^7.4",
+        "php": " ^7.1",
         "psr/log": "^1",
         "psr/cache": "^1",
         "psr/container": "^1",
@@ -48,10 +48,6 @@
         "guzzlehttp/psr7": "1.8.4",
         "guzzlehttp/promises": "v1.3.1",
         "smarty/smarty": "v4.2.1"
-    },
-    "require-dev": {
-        "phpunit/php-timer": "^1.0.",
-        "phpunit/phpunit": "^6.5"
     },
     "bin": ["bin/rad"]
 }

@@ -38,7 +38,7 @@ use Rad\Utils\Time;
  * Simple example for testing purpose
  *
  * @author guillaume
- * @RestController
+ * @Controller
  */
 class Example extends Controller {
 
@@ -114,10 +114,27 @@ class Example extends Controller {
         return $response;
     }
 
+    /**
+     * @get /test/large/(?<name>[aA-zZ]*)/one/
+     * @produce html
+     */
+    public function pathOne(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
+        $response->getBody()->write("Path One");
+        return $response;
+    }
+
+    /**
+     * @get /test/large/(?<name>[aA-zZ]*)/two/
+     * @produce html
+     */
+    public function pathTwo(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
+        $response->getBody()->write("Path Two");
+        return $response;
+    }
+
 }
 
 $time = Time::startCounter();
-
 /**
  * Load TestObserver class
  */
@@ -125,7 +142,9 @@ require(__DIR__ . '/TestObserver.php');
 
 $app = new Api(__DIR__ . "/config/");
 
-$app->addController(Example::class)->run(function () {
+$app->addControllers([
+    Example::class
+])->run(function () {
     $ltime = Time::endCounter();
     Log::getHandler()->debug("API REQUEST [" . round($ltime, 10) * 1000 . "] ms");
 });
