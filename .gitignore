@@ -13,3 +13,5 @@ composer.phar
 /example/cache/*
 /example/compiled/*
 /example/log/api.log
+!/example/compiled/.gitkeep
+!/example/cache/.gitkeep
