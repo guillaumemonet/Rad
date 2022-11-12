@@ -45,17 +45,17 @@ use Rad\Encryption\Encryption;
  */
 class MysqlCacheHandler implements CacheInterface {
 
-    private $read = "SELECT id,content FROM output_cache WHERE id IN(%s)";
-    private $write = "INSERT INTO output_cache (id,modified,content) VALUES (\"%s\",%d,\"%s\") ON DUPLICATE KEY UPDATE content=\"%s\",modified=%d";
-    private $purge = "DELETE FROM output_cache WHERE modified < %d";
+    private $read   = "SELECT content FROM output_cache WHERE id IN(%s)";
+    private $write  = "INSERT INTO output_cache (id,modified,content) VALUES (\"%s\",%d,\"%s\") ON DUPLICATE KEY UPDATE content=\"%s\",modified=%d";
+    private $purge  = "DELETE FROM output_cache WHERE modified < %d";
     private $delete = "DELETE FROM output_cache WHERE id=\"%s\"";
 
     public function delete($key) {
-        Database::getHandler()->query(sprintf($this->delete, Encryption::hashMd5($key)));
+        Database::getHandler()->exec(sprintf($this->delete, Encryption::hashMd5($key)));
     }
 
     public function clear(): bool {
-        Database::query(sprintf($this->purge, time()));
+        return Database::getHandler()->exec(sprintf($this->purge, time())) !== false;
     }
 
     public function deleteMultiple($keys): bool {
@@ -66,8 +66,13 @@ class MysqlCacheHandler implements CacheInterface {
     }
 
     public function get($key, $default = null) {
-        $res = Database::getHandler()->query(sprintf($this->read, '"'.Encryption::hashMd5($key).'"'));
-        return $row = $res->fetch(PDO::FETCH_ASSOC) ? stripslashes($row["content"]) : $default;
+        $res = Database::getHandler()->query(sprintf($this->read, '"' . Encryption::hashMd5($key) . '"'));
+        $row = $res->fetch(PDO::FETCH_ASSOC);
+        if ($row !== false && $row !== null) {
+            return $row["content"];
+        } else {
+            return $default;
+        }
     }
 
     public function getMultiple($keys, $default = null) {
@@ -79,20 +84,20 @@ class MysqlCacheHandler implements CacheInterface {
     }
 
     public function has($key): bool {
-        $res = Database::getHandler()->query(sprintf($this->read, '"'.Encryption::hashMd5($key).'"'));
+        $res = Database::getHandler()->query(sprintf($this->read, '"' . Encryption::hashMd5($key) . '"'));
         return $row = $res->fetch();
     }
 
     public function set($key, $value, $ttl = null): bool {
-        $r = sprintf($this->write, Encryption::hashMd5($key), time() + $ttl, addslashes($value), addslashes($value), time());
-        return Database::getHandler()->query($r) !== null;
+        $r = sprintf($this->write, Encryption::hashMd5($key), $ttl, addslashes($value), addslashes($value), $ttl);
+        return Database::getHandler()->exec($r) !== null;
     }
 
     public function setMultiple($values, $ttl = null): bool {
-        $ret = false;
+        $ret  = false;
         $time = time();
         foreach ($values as $key => $value) {
-            $ret &= $this->set($key, $value, $time + $ttl);
+            $ret &= $this->set($key, $value, $time);
         }
         return $ret;
     }
