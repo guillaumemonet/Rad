@@ -45,7 +45,7 @@ use Rad\Encryption\Encryption;
  */
 class MysqlCacheHandler implements CacheInterface {
 
-    private $read = "SELECT content FROM output_cache WHERE id IN(%s)";
+    private $read = "SELECT id,content FROM output_cache WHERE id IN(%s)";
     private $write = "INSERT INTO output_cache (id,modified,content) VALUES (\"%s\",%d,\"%s\") ON DUPLICATE KEY UPDATE content=\"%s\",modified=%d";
     private $purge = "DELETE FROM output_cache WHERE modified < %d";
     private $delete = "DELETE FROM output_cache WHERE id=\"%s\"";
@@ -66,7 +66,7 @@ class MysqlCacheHandler implements CacheInterface {
     }
 
     public function get($key, $default = null) {
-        $res = Database::getHandler()->query(sprintf($this->read, Encryption::hashMd5($key)));
+        $res = Database::getHandler()->query(sprintf($this->read, '"'.Encryption::hashMd5($key).'"'));
         return $row = $res->fetch(PDO::FETCH_ASSOC) ? stripslashes($row["content"]) : $default;
     }
 
@@ -79,20 +79,22 @@ class MysqlCacheHandler implements CacheInterface {
     }
 
     public function has($key): bool {
-        $res = Database::getHandler()->query(sprintf($this->read, Encryption::hashMd5($key)));
+        $res = Database::getHandler()->query(sprintf($this->read, '"'.Encryption::hashMd5($key).'"'));
         return $row = $res->fetch();
     }
 
     public function set($key, $value, $ttl = null): bool {
         $r = sprintf($this->write, Encryption::hashMd5($key), time() + $ttl, addslashes($value), addslashes($value), time());
-        Database::getHandler()->query($r);
+        return Database::getHandler()->query($r) !== null;
     }
 
     public function setMultiple($values, $ttl = null): bool {
+        $ret = false;
         $time = time();
         foreach ($values as $key => $value) {
-            $this->set($key, $value, $time + $ttl);
+            $ret &= $this->set($key, $value, $time + $ttl);
         }
+        return $ret;
     }
 
 }
