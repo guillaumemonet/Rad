@@ -34,7 +34,7 @@ use Rad\Service\Service;
  */
 final class Database extends Service {
 
-    public static function addHandler(string $handlerType, DatabaseAdapter $handler) {
+    public static function addHandler(string $handlerType, $handler) {
         static::getInstance()->addServiceHandler($handlerType, $handler);
     }
 
