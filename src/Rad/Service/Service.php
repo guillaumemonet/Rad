@@ -107,7 +107,7 @@ abstract class Service implements ServiceInterface {
         }
         $this->providedClassName = $config->classname;
         if ($this->providedClassName === null) {
-            throw new ConfigurationException('No Provided Class defined' . $this->serviceType);
+            throw new ConfigurationException('No Provided Class defined ' . $this->serviceType);
         }
         $handlers = $config->handlers;
 
