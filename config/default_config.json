@@ -127,6 +127,7 @@
         },
         "database": {
             "default": "pdo",
+            "classname": "Rad\\Database\\DatabaseAdapter",
             "handlers": {
                 "pdo": {
                     "classname": "Rad\\Database\\PDODatabaseHandler",
