@@ -45,10 +45,10 @@ use Rad\Encryption\Encryption;
  */
 class MysqlCacheHandler implements CacheInterface {
 
-    private $read   = "SELECT content FROM output_cache WHERE id IN(%s)";
+    private $read   = "SELECT id,content FROM output_cache WHERE id IN(%s)";
     private $write  = "INSERT INTO output_cache (id,modified,content) VALUES (\"%s\",%d,\"%s\") ON DUPLICATE KEY UPDATE content=\"%s\",modified=%d";
     private $purge  = "DELETE FROM output_cache WHERE modified < %d";
-    private $delete = "DELETE FROM output_cache WHERE id=\"%s\"";
+    private $delete = "DELETE FROM output_cache WHERE id IN (\"%s\")";
 
     public function delete($key) {
         Database::getHandler()->exec(sprintf($this->delete, Encryption::hashMd5($key)));
@@ -76,11 +76,17 @@ class MysqlCacheHandler implements CacheInterface {
     }
 
     public function getMultiple($keys, $default = null) {
-        $ret = [];
-        foreach ($keys as $k) {
-            $ret[$k] = $this->get($k, $default);
-        }
-        return $ret;
+        $keys = array_flip($keys);
+        array_walk($keys, function (&$value, $key) {
+            $value = Encryption::hashMd5($key);
+        });
+
+        $res   = Database::getHandler()->query(sprintf($this->read, '"' . implode('","', $keys) . '"'));
+        $datas = $res->fetchAll(PDO::FETCH_KEY_PAIR);
+        array_walk($keys, function (&$value, $key) use ($datas) {
+            $value = isset($datas[$value]) ? $datas[$value] : null;
+        });
+        return $keys;
     }
 
     public function has($key): bool {
