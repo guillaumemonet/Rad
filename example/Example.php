@@ -134,7 +134,7 @@ class Example extends Controller {
 
 }
 
-$time = Time::startCounter();
+Time::startCounter();
 /**
  * Load TestObserver class
  */
@@ -145,7 +145,5 @@ $app = new Api(__DIR__ . "/config/");
 $app->addControllers([
     Example::class
 ])->run(function () {
-    $ltime = Time::endCounter();
-    Log::getHandler()->debug("API REQUEST [" . round($ltime, 10) * 1000 . "] ms");
+    Log::getHandler()->debug("API REQUEST [" . round(Time::endCounter(), 10) * 1000 . "] ms");
 });
-

@@ -73,9 +73,10 @@
                         "lifetime": 300
                     }
                 },
-                "mysql": {
-                    "classname": "Rad\\Cache\\MysqlCacheHandler",
+                "database": {
+                    "classname": "Rad\\Cache\\DatabaseCacheHandler",
                     "config": {
+                        "type": "pdo"
                     }
                 },
                 "redis": {
