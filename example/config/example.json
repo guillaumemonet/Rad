@@ -1,7 +1,7 @@
 {
     "services": {
         "cache": {
-            "default": "file",
+            "default": "database",
             "handlers": {
                 "file": {
                     "config": {
@@ -36,7 +36,7 @@
                 }
             }
         },
-        
+
         "template": {        
             "handlers": {
                 "smarty": {
@@ -52,7 +52,7 @@
                         "compile_dir": "example/compiled/",
                         "config_dir": "example/config/",
                         "cache_dir": "example/cache/",
-                        "cache_type": "smarty"
+                        "cache_type": "database"
                     }
                 }
             }
