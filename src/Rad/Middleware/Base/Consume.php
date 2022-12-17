@@ -52,7 +52,7 @@ class Consume extends MiddlewareBefore {
         if ($route->getConsumedMimeType() == null || $route->getConsumedMimeType() == "" || in_array($request->getHeader("Content-Type"), Mime::getMimeTypesFromShort($route->getConsumedMimeType()))) {
             return $response;
         } else {
-            throw new NotAcceptableException("Wrong Content Type " . $request->getHeader("Content-Type") . " Require " . implode(" ", $route->getConsumedMimeType()));
+            throw new NotAcceptableException("Wrong Content Type " . implode(",",$request->getHeader("Content-Type")) . " Require " . implode(" ", $route->getConsumedMimeType()));
         }
     }
 

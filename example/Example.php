@@ -88,6 +88,17 @@ class Example extends Controller {
     }
 
     /**
+     * @api 1
+     * @get /consume/
+     * @consume html
+     * @produce json
+     */
+    public function testConsume(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
+        $response->getBody()->write(json_encode($request->getHeaders()));
+        return $response;
+    }
+
+    /**
      * @get /template/
      * @produce html
      */
