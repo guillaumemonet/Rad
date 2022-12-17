@@ -37,48 +37,18 @@ use Rad\Config\Config;
  */
 final class MemcacheCacheHandler implements CacheInterface {
 
-    private $memcache = null;
+    /**
+     * 
+     * @var Memcached
+     */
+    private $memcache   = null;
     private $defaultTTL = null;
 
     public function __construct() {
-        $config = Config::getServiceConfig('cache', 'memcache')->config;
-        $this->memcache = new Memcached();
+        $config           = Config::getServiceConfig('cache', 'memcache')->config;
+        $this->memcache   = new Memcached();
         $this->memcache->addServer($config->url, (int) $config->port, 100);
         $this->defaultTTL = $config->lifetime;
-    }
-
-    /**
-     * Read values for a set of keys from cache
-     * @param array $keys list of keys to fetch
-     * @return array list of values with the given keys used as indexes
-     * @return boolean true on success, false on failure
-     */
-    public function read(array $keys) {
-        $res = $this->memcache->getMulti($keys);
-        $_res = [];
-        if (is_array($res) && sizeof($res) > 0) {
-            foreach ($res as $k => $v) {
-                $_res[$k] = $v;
-            }
-        }
-        return $_res;
-    }
-
-    /**
-     * Save values for a set of keys to cache
-     * @param array $keys list of values to save
-     * @param int $expire expiration time
-     * @return boolean true on success, false on failure
-     */
-    public function write(array $keys, $expire = null) {
-        
-    }
-
-    /**
-     * Display only stats usage
-     */
-    public function getStats() {
-        return print_r($this->memcache->getextendedstats(), true);
     }
 
     /**
@@ -90,45 +60,87 @@ final class MemcacheCacheHandler implements CacheInterface {
     }
 
     /**
-     * Remove values from cache
-     * @param array $keys list of keys to delete
-     * @return boolean true on success, false on failure
+     * 
+     * @param type $key
      */
     public function delete($key) {
-        
+        $this->memcache->delete(Encryption::hashMd5($key));
     }
 
+    /**
+     * 
+     * @param type $keys
+     * @return bool
+     */
     public function deleteMultiple($keys): bool {
-        $ret = false;
-        foreach ($keys as $k) {
-            $ret &= $this->memcache->delete($k);
-        }
-        return $ret;
+        $keys = array_flip($keys);
+        array_walk($keys, function (&$value, $key) {
+            $value = Encryption::hashMd5($key);
+        });
+        $this->memcache->deleteMulti($keys);
+        return true;
     }
 
+    /**
+     * 
+     * @param type $key
+     * @param type $default
+     * @return type
+     */
     public function get($key, $default = null) {
-        
+        return $this->memcache->get(Encryption::hashMd5($key));
     }
 
+    /**
+     * 
+     * @param type $keys
+     * @param type $default
+     * @return type
+     */
     public function getMultiple($keys, $default = null) {
-        
+        $keys = array_flip($keys);
+        array_walk($keys, function (&$value, $key) {
+            $value = Encryption::hashMd5($key);
+        });
+        return $this->memcache->getMulti($keys);
     }
 
+    /**
+     * 
+     * @param type $key
+     * @return bool
+     */
     public function has($key): bool {
-        
+        return !empty($this->get($key));
     }
 
+    /**
+     * 
+     * @param type $key
+     * @param type $value
+     * @param type $ttl
+     * @return bool
+     */
     public function set($key, $value, $ttl = null): bool {
         if ($ttl == null) {
             $ttl = (int) $this->defaultTTL;
         }
-        return $this->memcache->set($key, $value, $ttl);
+        return $this->memcache->set(Encryption::hashMd5($key), $value, $ttl);
     }
 
+    /**
+     * 
+     * @param type $values
+     * @param type $ttl
+     * @return bool
+     */
     public function setMultiple($values, $ttl = null): bool {
         if ($ttl == null) {
             $ttl = (int) $this->defaultTTL;
         }
+        array_walk($values, function (&$value, &$key) {
+            $key = Encryption::hashMd5($key);
+        });
         return $this->memcache->setMulti($values, $ttl);
     }
 
