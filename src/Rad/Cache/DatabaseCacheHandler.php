@@ -101,15 +101,15 @@ class DatabaseCacheHandler implements CacheInterface {
     }
 
     public function set($key, $value, $ttl = null): bool {
-        $r = sprintf($this->write, Encryption::hashMd5($key), $ttl, addslashes($value), addslashes($value), $ttl);
+        $time = time() + sprintf('%d', $ttl);
+        $r    = sprintf($this->write, Encryption::hashMd5($key), $ttl, addslashes($value), addslashes($value), $time);
         return Database::getHandler($this->type)->exec($r) !== null;
     }
 
     public function setMultiple($values, $ttl = null): bool {
-        $ret  = false;
-        $time = time();
+        $ret = false;
         foreach ($values as $key => $value) {
-            $ret &= $this->set($key, $value, $time);
+            $ret &= $this->set($key, $value, $ttl);
         }
         return $ret;
     }

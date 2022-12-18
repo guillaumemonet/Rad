@@ -1,4 +1,7 @@
 {
+    "api": {
+        "install_path": "example/"
+    },
     "services": {
         "cache": {
             "default": "database",

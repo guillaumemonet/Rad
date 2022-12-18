@@ -5,6 +5,7 @@ require(__DIR__ . "/../vendor/autoload.php");
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Rad\Api;
+use Rad\Config\AutoConfig;
 use Rad\Controller\Controller;
 use Rad\Log\Log;
 use Rad\Template\Template;
@@ -153,8 +154,8 @@ require(__DIR__ . '/TestObserver.php');
 
 $app = new Api(__DIR__ . "/config/");
 
-$app->addControllers([
-    Example::class
-])->run(function () {
+$app->addControllers(
+        AutoConfig::loadControllers()
+)->run(function () {
     Log::getHandler()->debug("API REQUEST [" . round(Time::endCounter(), 10) * 1000 . "] ms");
 });
