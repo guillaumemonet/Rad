@@ -39,26 +39,33 @@ use RegexIterator;
  */
 class AutoConfig {
 
-    public static function loadControllers($caching = true) {
+    public static function loadControllers($caching = true): array {
 
         $controllers = unserialize(Cache::getHandler()->get("controllers"));
-        if (empty($controllers) || $caching     = false) {
-            $installPath = Config::getApiConfig()->install_path;
-            $directory   = new RecursiveDirectoryIterator($installPath);
-            $iterator    = new RecursiveIteratorIterator($directory);
-            $regex       = new RegexIterator($iterator, '/^.+\.php$/i', RecursiveRegexIterator::GET_MATCH);
-            foreach ($regex as $key => $file) {
-                $classname = self::parseFile(current($file));
-                if (!empty($classname)) {
-                    $controllers[] = $classname;
-                }
-            }
+
+        if (empty($controllers) || $caching = false) {
+            $controllers = self::findControllers();
             Cache::getHandler()->set('controllers', serialize($controllers));
         }
         return $controllers;
     }
 
-    private static function parseFile($file) {
+    private static function findControllers(): array {
+        $controllers = [];
+        $installPath = Config::getApiConfig()->install_path;
+        $directory   = new RecursiveDirectoryIterator($installPath);
+        $iterator    = new RecursiveIteratorIterator($directory);
+        $regex       = new RegexIterator($iterator, '/^.+\.php$/i', RecursiveRegexIterator::GET_MATCH);
+        foreach ($regex as $key => $file) {
+            $classname = self::parseFile(current($file));
+            if (!empty($classname)) {
+                $controllers[] = $classname;
+            }
+        }
+        return $controllers;
+    }
+
+    private static function parseFile($file): string {
         $content   = file_get_contents($file);
         $matches   = [];
         $classname = [
