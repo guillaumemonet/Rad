@@ -29,6 +29,7 @@ namespace Rad\Middleware\Base;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Rad\Error\Http\NotAcceptableException;
+use Rad\Http\Header\AcceptHeader;
 use Rad\Middleware\MiddlewareBefore;
 use Rad\Route\Route;
 use Rad\Utils\Mime;
@@ -49,10 +50,15 @@ class Consume extends MiddlewareBefore {
      * @throws NotAcceptableException
      */
     public function middle(ServerRequestInterface $request, ResponseInterface $response, Route $route): ResponseInterface {
-        if ($route->getConsumedMimeType() == null || $route->getConsumedMimeType() == "" || in_array($request->getHeader("Content-Type"), Mime::getMimeTypesFromShort($route->getConsumedMimeType()))) {
+        $consumeTypes = [];
+        foreach ($route->getConsumedMimeType() as $consume) {
+            $consumeTypes += Mime::getMimeTypesFromShort($consume);
+        }
+        $acceptTypes = AcceptHeader::parse(current($request->getHeader("Accept")));
+        if (isset($acceptTypes['*/*']) || sizeof(array_intersect($consumeTypes, array_keys($acceptTypes))) > 0) {
             return $response;
         } else {
-            throw new NotAcceptableException("Wrong Content Type " . implode(",",$request->getHeader("Content-Type")) . " Require " . implode(" ", $route->getConsumedMimeType()));
+            throw new NotAcceptableException("Wrong Content Type " . implode(",", $acceptTypes) . " Require " . implode(" ", $consumeTypes));
         }
     }
 
