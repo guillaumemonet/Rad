@@ -65,7 +65,7 @@ class AutoConfig {
         return $controllers;
     }
 
-    private static function parseFile($file): string {
+    private static function parseFile($file): ?string {
         $content   = file_get_contents($file);
         $matches   = [];
         $classname = [
