@@ -89,8 +89,8 @@ class DatabaseCacheHandler implements CacheInterface {
 
         $res   = Database::getHandler($this->type)->query(sprintf($this->read, '"' . implode('","', $keys) . '"'));
         $datas = $res->fetchAll(PDO::FETCH_KEY_PAIR);
-        array_walk($keys, function (&$value, $key) use ($datas) {
-            $value = isset($datas[$value]) ? $datas[$value] : null;
+        array_walk($keys, function (&$value, $key) use ($datas, $default) {
+            $value = isset($datas[$value]) ? $datas[$value] : $default;
         });
         return $keys;
     }
@@ -102,7 +102,7 @@ class DatabaseCacheHandler implements CacheInterface {
 
     public function set($key, $value, $ttl = null): bool {
         $time = time() + sprintf('%d', $ttl);
-        $r    = sprintf($this->write, Encryption::hashMd5($key), $ttl, addslashes($value), addslashes($value), $time);
+        $r    = sprintf($this->write, Encryption::hashMd5($key), $time, addslashes($value), addslashes($value), $time);
         return Database::getHandler($this->type)->exec($r) !== null;
     }
 
