@@ -30,7 +30,7 @@ use Psr\SimpleCache\CacheInterface;
 use Rad\Service\Service;
 
 /*
- * Description of CacheManager
+ * Description of Cache
  *
  * @author Guillaume Monet
  */

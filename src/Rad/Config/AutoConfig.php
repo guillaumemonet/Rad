@@ -37,7 +37,15 @@ use RegexIterator;
  *
  * @author guillaume
  */
-class AutoConfig {
+abstract class AutoConfig {
+
+    private function __construct() {
+        
+    }
+
+    private function __clone() {
+        
+    }
 
     public static function loadControllers($caching = true): array {
 

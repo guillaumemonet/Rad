@@ -92,7 +92,7 @@ abstract class Annotation {
      * @param string $method
      * @return array
      */
-    public static function getAnnotationsMethods(string $class, string $method) {
+    public static function getAnnotationsMethods(string $class, string $method): array {
         $reflexion = new ReflectionMethod($class, $method);
         $comments  = $reflexion->getDocComment();
         return self::getAnnotations($comments);

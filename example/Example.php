@@ -107,7 +107,8 @@ class Example extends Controller {
         $response = $response->withAddedHeader('Hello', 'Moto');
         if (!Template::getHandler()->isCached("index.tpl", "cached", "compiled")) {
             Log::getHandler()->debug("Not Cached index.tpl");
-            Template::getHandler()->assign("index", "RAD");
+            Template::getHandler()->assign("img1", 'example/cache/test1.jpg');
+            Template::getHandler()->assign("img2", 'example/cache/test2.jpg');
         }
         $html = Template::getHandler()->fetch("index.tpl", "cached", "compiled");
         $response->getBody()->write($html);
@@ -146,14 +147,25 @@ class Example extends Controller {
 
 }
 
+//Pass through for pictures and docs
+$extensions = array("php", "jpg", "jpeg", "gif", "css", "webp", "webm", "png", "svg");
+
+$path = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
+$ext  = pathinfo($path, PATHINFO_EXTENSION);
+if (in_array($ext, $extensions)) {
+    return false;
+}
+
 Time::startCounter();
 /**
  * Load TestObserver class
  */
 require(__DIR__ . '/TestObserver.php');
 
-$app = new Api(__DIR__ . "/config/");
+$file = new Rad\Utils\File();
+$file->downloadMulti(['https://random.imagecdn.app/500/150' => __DIR__ . '/cache/test1.jpg', 'https://random.imagecdn.app/500/151' => __DIR__ . '/cache/test2.jpg'], false);
 
+$app = new Api(__DIR__ . "/config/");
 $app->addControllers(
         AutoConfig::loadControllers()
 )->run(function () {
