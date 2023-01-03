@@ -50,7 +50,7 @@ abstract class RouteParser {
         'xhr'        => ['method' => 'setXhr', 'type' => 'single'],
         'session'    => ['method' => 'enableSession', 'type' => 'single'],
         'cors'       => ['method' => 'enableCors', 'type' => 'single'],
-        'options'    => ['method' => 'enableOptions', 'type' => 'single'],
+        'opts'       => ['method' => 'enableOptions', 'type' => 'single'],
         'cachable'   => ['method' => 'enableCache', 'type' => 'single'],
         'security'   => ['method' => 'enableSecurity', 'type' => 'array'],
         'header'     => ['method' => 'allowHeaders', 'type' => 'array']
@@ -105,15 +105,16 @@ abstract class RouteParser {
             $route->setClassName($class)->setMethodName($method)->setMethod($key)->setPath($path);
             $others = array_merge(self::getOthersFromComment($methodComments), self::getOthersFromComment($classComments));
             array_walk($others, function ($datas, $key) use ($route) {
-                if (isset(self::$annotationsArray[$key]) && $key !== "options") {
+                if (isset(self::$annotationsArray[$key]) && $key !== "opts") {
                     $method = self::$annotationsArray[$key]['method'];
                     $type   = self::$annotationsArray[$key]['type'];
                     $route->{$method}($type === 'array' ? $datas : current($datas));
                 }
             });
-            if (key_exists("options", $others)) {
+            if (key_exists("opts", $others)) {
                 $oroute   = new Route();
                 $oroute->setClassName($class)->setMethodName($method)->setMethod("OPTIONS")->setPath($path);
+                $oroute->enableCors();
                 $oroute->enableOptions();
                 $routes[] = $oroute;
             }
