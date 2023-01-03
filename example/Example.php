@@ -40,6 +40,7 @@ use Rad\Utils\Time;
  *
  * @author guillaume
  * @Controller
+ * @cors *
  */
 class Example extends Controller {
 
@@ -80,7 +81,7 @@ class Example extends Controller {
     /**
      * @api 1
      * @get /server/
-     * @cors
+     * @opts
      * @produce json
      */
     public function serverRequest(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
