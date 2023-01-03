@@ -152,13 +152,13 @@ class Router implements RouterInterface {
     public function route(ServerRequestInterface $request): ResponseInterface {
         $method    = $request->getMethod();
         $path      = $request->getUri()->getPath();
-        $route     = unserialize(Cache::getHandler()->get("rt_cache_" . $path));
+        $route     = unserialize(Cache::getHandler()->get($method . "rt_cache_" . $path));
         //$route     = null;
         $nodeRoute = $this->treeRoutes[strtoupper($method)];
 
         if ($nodeRoute != null && $route === false) { //
             $route = $nodeRoute->getRoute(explode('/', trim($path, '/')));
-            Cache::getHandler()->set("rt_cache_" . $path, serialize($route));
+            Cache::getHandler()->set($method . "rt_cache_" . $path, serialize($route));
         }
 
         //error_log(print_r($route, true));
