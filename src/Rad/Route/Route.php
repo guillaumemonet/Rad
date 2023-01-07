@@ -19,28 +19,29 @@ class Route {
     use RouteSetterTrait;
     use RouteGetterTrait;
 
-    protected $version        = 1;
-    protected $className      = null;
-    protected $methodName     = null;
-    protected $method         = null;
-    protected $path           = null;
-    protected $middlewares    = [];
-    protected $produce        = [];
-    protected $consume        = [];
-    protected $observers      = [];
-    protected $args           = [];
-    protected $sessionEnabled = false;
-    protected $cacheEnabled   = false;
-    protected $fullPath       = null;
-    protected $allowedHeaders = [];
-    protected $corsDomain     = '*';
+    protected $version         = 1;
+    protected $className       = null;
+    protected $methodName      = null;
+    protected $method          = null;
+    protected $path            = null;
+    protected $middlewares     = [];
+    protected $produce         = [];
+    protected $consume         = [];
+    protected $observers       = [];
+    protected $args            = [];
+    protected $sessionEnabled  = false;
+    protected $cacheEnabled    = false;
+    protected $fullPath        = null;
+    protected $allowedHeaders  = [];
+    protected $exposeddHeaders = [];
+    protected $corsDomain      = '*';
 
     /**
      * 
      * @param Observable $observable
      */
     public function applyObservers(Observable $observable) {
-        array_map(function($observer) use ($observable) {
+        array_map(function ($observer) use ($observable) {
             $obs = new $observer();
             $observable->attach($obs);
         }, $this->observers);

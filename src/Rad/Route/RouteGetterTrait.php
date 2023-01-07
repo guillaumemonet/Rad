@@ -69,6 +69,10 @@ trait RouteGetterTrait {
         return $this->allowedHeaders;
     }
 
+    public function getExposedHeaders() {
+        return $this->exposedHeaders;
+    }
+
     public function getCorsDomain() {
         return $this->corsDomain;
     }

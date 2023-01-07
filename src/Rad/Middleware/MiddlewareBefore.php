@@ -28,8 +28,8 @@ abstract class MiddlewareBefore implements MiddlewareInterface {
      * @return ResponseInterface
      */
     public function call(ServerRequestInterface $request, ResponseInterface $response, Route $route, Closure $next): ResponseInterface {
-        $response = $this->middle($request, $response, $route);
-        return $next($request, $response, $route);
+        error_log(get_class($this));
+        return $next($request, $this->middle($request, $response, $route), $route);
     }
 
 }

@@ -28,7 +28,8 @@ namespace Rad\Middleware\Base;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Rad\Middleware\MiddlewareBefore;
+use Rad\Config\Config;
+use Rad\Middleware\MiddlewareAfter;
 use Rad\Route\Route;
 
 /**
@@ -36,7 +37,7 @@ use Rad\Route\Route;
  *
  * @author guillaume
  */
-class Cors extends MiddlewareBefore {
+class Cors extends MiddlewareAfter {
 
     /**
      * 
@@ -46,10 +47,15 @@ class Cors extends MiddlewareBefore {
      * @return ResponseInterface
      */
     public function middle(ServerRequestInterface $request, ResponseInterface $response, Route $route): ResponseInterface {
-        return $response->withAddedHeader("Access-Control-Allow-Origin", $route->getCorsDomain())
-                        ->withAddedHeader("Access-Control-Allow-Credentials", "true")
-                        ->withAddedHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE, PUT, PATCH")
-                        ->withAddedHeader("Access-Control-Expose-Headers", "Content-Range, X-Total-Count",);
+        $headers = (array) Config::getApiConfig("cors");
+        array_map(function ($header, $value) use ($response) {
+            $response = $response->withAddedHeader($header, $value);
+        }, $headers);
+        if (!empty($route->getCorsDomain())) {
+            return $response->withAddedHeader("Access-Control-Allow-Origin", $route->getCorsDomain());
+        } else {
+            return $response;
+        }
     }
 
 }

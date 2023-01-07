@@ -53,7 +53,8 @@ abstract class RouteParser {
         'opts'       => ['method' => 'enableOptions', 'type' => 'single'],
         'cachable'   => ['method' => 'enableCache', 'type' => 'single'],
         'security'   => ['method' => 'enableSecurity', 'type' => 'array'],
-        'header'     => ['method' => 'allowHeaders', 'type' => 'array']
+        'aheaders'   => ['method' => 'allowHeaders', 'type' => 'array'],
+        'xheaders'   => ['method' => 'exposeHeaders', 'type' => 'array']
     ];
 
     private function __construct() {

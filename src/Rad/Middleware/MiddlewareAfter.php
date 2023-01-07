@@ -27,8 +27,8 @@ abstract class MiddlewareAfter implements MiddlewareInterface {
      * @return ResponseInterface
      */
     public function call(ServerRequestInterface $request, ResponseInterface $response, Route $route, Closure $next): ResponseInterface {
-        $response = $next($request, $response, $route);
-        return $this->middle($request, $response, $route);
+        error_log(get_class($this));
+        return $this->middle($request, $next($request, $response, $route), $route);
     }
 
 }

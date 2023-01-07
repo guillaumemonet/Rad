@@ -3,7 +3,7 @@
 /*
  * The MIT License
  *
- * Copyright 2017 guillaume.
+ * Copyright 2019 guillaume.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,29 +30,22 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Rad\Middleware\MiddlewareAfter;
 use Rad\Route\Route;
-use Rad\Utils\Mime;
 
 /**
- * Description of Post_SetProduce
+ * Description of Expose
  *
  * @author guillaume
  */
-class Produce extends MiddlewareAfter {
+class ExposeHeaders extends MiddlewareAfter {
 
     /**
-     * 
      * @param ServerRequestInterface $request
      * @param ResponseInterface $response
      * @param Route $route
      * @return ResponseInterface
      */
     public function middle(ServerRequestInterface $request, ResponseInterface $response, Route $route): ResponseInterface {
-        if (!empty($route->getProcucedMimeType())) {
-            $response = $response->withAddedHeader("Content-Type", Mime::getMimeTypesFromShort(current($route->getProcucedMimeType()))[0]);
-        } else {
-            $response = $response->withAddedHeader("Content-Type", Mime::getMimeTypesFromShort("json")[0]);
-        }
-        return $response;
+        return $response->withAddedHeader("Access-Control-Expose-Headers", $route->getExposedHeaders());
     }
 
 }

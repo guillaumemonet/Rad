@@ -5,6 +5,7 @@ namespace Rad\Route;
 use Rad\Middleware\Base\AllowHeaders;
 use Rad\Middleware\Base\Consume;
 use Rad\Middleware\Base\Cors;
+use Rad\Middleware\Base\ExposeHeaders;
 use Rad\Middleware\Base\Options;
 use Rad\Middleware\Base\Produce;
 use Rad\Middleware\Base\XMLHttpRequest;
@@ -94,6 +95,12 @@ trait RouteSetterTrait {
     public function allowHeaders(array $headers) {
         array_unshift($this->middlewares, AllowHeaders::class);
         $this->allowedHeaders = $headers;
+        return $this;
+    }
+
+    public function exposeHeaders(array $headers) {
+        array_unshift($this->middlewares, ExposeHeaders::class);
+        $this->exposedHeaders = $headers;
         return $this;
     }
 

@@ -6,12 +6,9 @@
         "response": "Rad\\Http\\Response",
         "request": "Rad\\Http\\Request",
         "serverrequest": "Rad\\Http\\ServerRequest",
-        "default_response_headers": {
+        "cors": {
             "Access-Control-Allow-Origin": "*",
-            "Access-Control-Expose-Headers": "Content-Range"
-        },
-        "response_to_options": true,
-        "default_response_options": {
+            "Access-Control-Expose-Headers": "Content-Range, X-Total-Count",
             "Access-Control-Allow-Credentials": "true",
             "Access-Control-Allow-Headers": "*",
             "Access-Control-Allow-Methods": "POST, GET, OPTIONS, DELETE, PUT, PATCH"

@@ -41,6 +41,9 @@ use Rad\Utils\Time;
  * @author guillaume
  * @Controller
  * @cors *
+ * @opts
+ * @aheaders toto
+ * @xheaders roro
  */
 class Example extends Controller {
 
