@@ -48,9 +48,9 @@ class Cors extends MiddlewareAfter {
      */
     public function middle(ServerRequestInterface $request, ResponseInterface $response, Route $route): ResponseInterface {
         $headers = (array) Config::getApiConfig("cors");
-        array_map(function ($header, $value) use ($response) {
+        array_walk($headers, function (&$value, $header) use ($response) {
             $response = $response->withAddedHeader($header, $value);
-        }, $headers);
+        });
         if (!empty($route->getCorsDomain())) {
             return $response->withAddedHeader("Access-Control-Allow-Origin", $route->getCorsDomain());
         } else {

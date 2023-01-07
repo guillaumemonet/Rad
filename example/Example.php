@@ -166,10 +166,11 @@ Time::startCounter();
  */
 require(__DIR__ . '/TestObserver.php');
 
+$app = new Api(__DIR__ . "/config/");
+
 $file = new Rad\Utils\File();
 $file->downloadMulti(['https://random.imagecdn.app/500/150' => __DIR__ . '/cache/test1.jpg', 'https://random.imagecdn.app/500/151' => __DIR__ . '/cache/test2.jpg'], false);
 
-$app = new Api(__DIR__ . "/config/");
 $app->addControllers(
         AutoConfig::loadControllers()
 )->run(function () {
