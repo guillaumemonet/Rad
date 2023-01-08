@@ -1,4 +1,3 @@
-composer.phar
 /vendor/
 /nbproject/
 
@@ -13,6 +12,6 @@ composer.phar
 /example/cache/*
 /example/compiled/*
 /example/log/api.log
-node_modules
+*/node_modules/
 !/example/compiled/.gitkeep
 !/example/cache/.gitkeep
