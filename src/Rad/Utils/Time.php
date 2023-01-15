@@ -33,8 +33,12 @@ use Rad\Cache\Cache;
  *
  * @author Guillaume
  */
-final class Time {
+abstract class Time {
 
+    /**
+     * 
+     * @var float
+     */
     private static $counter = null;
 
     private function __construct() {
@@ -48,18 +52,17 @@ final class Time {
     /**
      * Return current microtime.
      *
-     * @return int
+     * @return float
      */
-    public static function get_microtime() {
-        list($tps_usec, $tps_sec) = explode(' ', microtime());
-        return (float) $tps_usec + (float) $tps_sec;
+    public static function get_microtime(): float {
+        return microtime(true);
     }
 
     public static function startCounter() {
         self::$counter = self::get_microtime();
     }
 
-    public static function endCounter() {
+    public static function endCounter(): ?float {
         if (self::$counter !== null) {
             return self::get_microtime() - self::$counter;
         } else {
@@ -76,16 +79,16 @@ final class Time {
      * @param int $unixTimeStamp
      * @return bool
      */
-    public static function isFrenchHoliday($unixTimeStamp = null) {
-        $date = strtotime(date('m/d/Y', $unixTimeStamp == null ? time() : $unixTimeStamp));
-        $year = date('Y', $date);
+    public static function isFrenchHoliday(int $unixTimeStamp = null): bool {
+        $date     = strtotime(date('m/d/Y', $unixTimeStamp == null ? time() : $unixTimeStamp));
+        $year     = date('Y', $date);
         $holidays = Cache::getHandler('quick')->get('holiday' . $year);
         if ($holidays == null) {
-            $easterDate = easter_date($year) + 3 * 3600;
-            $easterDay = date('j', $easterDate);
+            $easterDate  = easter_date($year) + 3 * 3600;
+            $easterDay   = date('j', $easterDate);
             $easterMonth = date('n', $easterDate);
-            $easterYear = date('Y', $easterDate);
-            $holidays = array(
+            $easterYear  = date('Y', $easterDate);
+            $holidays    = array(
                 // Dates fixes
                 mktime(0, 0, 0, 1, 1, $year), // 1er janvier
                 mktime(0, 0, 0, 5, 1, $year), // Fête du travail
