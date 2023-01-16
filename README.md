@@ -1,3 +1,4 @@
+
 RAD Framework
 ==========================
 
@@ -26,8 +27,13 @@ To get the latest version of RAD Framework, simply add the following line to the
 ```
 "rad/rad-framework": "dev-master"
 ```
+## TODO
+
+* Documentation
 
 ## Usage
+
+Init New Rad Object :
 
 ```php
 
@@ -35,48 +41,20 @@ To get the latest version of RAD Framework, simply add the following line to the
 
 require(__DIR__ . "/../vendor/autoload.php");
 
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Rad\Api;
-use Rad\Controller\Controller;
-use Rad\Log\Log;
-use Rad\Template\Template;
-use Rad\Utils\Time;
+$app = new \Rad\Api(__DIR__ . "/config/");
 
-/*
- * The MIT License
- *
- * Copyright 2017 guillaume.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+...
+```
 
-/**
- * Simple example for testing purpose
- *
- * @author guillaume
- * @Controller
- */
-class Example extends Controller {
 
-    public $state = 1;
+Create new Controller :
 
+```php
+
+<?php
+
+class Exemple extends \Rad\Controller\Controller {
+    
     /**
      * @get /
      * @produce html
@@ -86,105 +64,44 @@ class Example extends Controller {
         return $response;
     }
 
-    /**
-     * @get /json/
-     * @produce json
-     */
-    public function json(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
-        $response  = $response->withAddedHeader('Hello', 'Moto');
-        $std       = new stdClass();
-        $std->toto = "toto/fdsf   sdf://";
-        $std->arr  = ["toto ", "titi"];
-        $response->getBody()->write(json_encode([$std, $std]));
-        return $response;
-    }
-
-    /**
-     * @api 1
-     * @get /helloworld/(?<name>[aA-zZ]*)/display/(?<welcome>.*)/
-     * @produce html
-     */
-    public function htmlWithArgs(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
-        $response->getBody()->write('<b>Hello World</b> ' . $args['name'] . " to " . $args['welcome']);
-        return $response;
-    }
-
-    /**
-     * @api 1
-     * @get /server/
-     * @cors
-     * @produce json
-     */
-    public function serverRequest(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
-        $response->getBody()->write(json_encode($request->getHeaders()));
-        return $response;
-    }
-
-    /**
-     * @get /template/
-     * @produce html
-     */
-    public function template(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
-        $response = $response->withAddedHeader('Hello', 'Moto');
-        if (!Template::getHandler()->isCached("index.tpl", "cached", "compiled")) {
-            Log::getHandler()->debug("Not Cached index.tpl");
-            Template::getHandler()->assign("index", "RAD");
-        }
-        $html = Template::getHandler()->fetch("index.tpl", "cached", "compiled");
-        $response->getBody()->write($html);
-        return $response;
-    }
-
-    /**
-     * @get /observer/
-     * @produce html
-     * @observer \TestObserver
-     */
-    public function observer(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
-        $response->getBody()->write("State Change");
-        $this->state = 2;
-        $this->notify();
-        return $response;
-    }
-
-    /**
-     * @get /test/large/(?<name>[aA-zZ]*)/one/
-     * @produce html
-     */
-    public function pathOne(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
-        $response->getBody()->write("Path One");
-        return $response;
-    }
-
-    /**
-     * @get /test/large/(?<name>[aA-zZ]*)/two/
-     * @produce html
-     */
-    public function pathTwo(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
-        $response->getBody()->write("Path Two");
-        return $response;
-    }
-
 }
+```
 
-$time = Time::startCounter();
-/**
- * Load TestObserver class
- */
-require(__DIR__ . '/TestObserver.php');
+Add controller to the Rad API :
 
-$app = new Api(__DIR__ . "/config/");
+```php
 
 $app->addControllers([
-    Example::class
-])->run(function () {
-    $ltime = Time::endCounter();
-    Log::getHandler()->debug("API REQUEST [" . round($ltime, 10) * 1000 . "] ms");
+    Example:class
+]);
+```
+
+Run the Rad API :
+
+```php
+
+$app->run();
+```
+
+You can add Closure to the run method :
+
+```php
+
+$app->run(function(){
+	echo "End";
 });
 ```
 
+
 ## How is works
 
+* **Config**
+
+* **Middleware**
+
+* **Route**
+
+* **Controller**
 
 ## PSR Support
 
@@ -196,6 +113,3 @@ $app->addControllers([
 * [psr-15](http://www.php-fig.org/psr/psr-15/) Middleware (WIP)
 * [psr-16](http://www.php-fig.org/psr/psr-16/) Caching
 * [psr-17](http://www.php-fig.org/psr/psr-17/) Http Factory (Thanks to Guzzle Http)
-
-
-
