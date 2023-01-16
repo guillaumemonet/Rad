@@ -168,13 +168,11 @@ class Router implements RouterInterface {
             $middleware       = new Middleware($route->getMiddlewares());
             $classController  = $route->getClassName();
             $methodController = $route->getMethodName();
-            $route->isSessionEnabled() ? Session::getHandler()->start() : '';
             $response         = $middleware->call($request, new Response(200), $route, function ($request, $response, $route) use ($classController, $methodController) {
                 $controller = new $classController($route);
                 $route->applyObservers($controller);
                 return $controller->{$methodController}($request, $response, $route->getArgs());
             });
-            $route->isSessionEnabled() ? Session::getHandler()->end() : '';
             return $response;
         } else {
             throw new NotFoundException("No Method " . $method . " found for " . $path);

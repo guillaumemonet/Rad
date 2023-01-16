@@ -8,6 +8,8 @@ use Rad\Middleware\Base\Cors;
 use Rad\Middleware\Base\ExposeHeaders;
 use Rad\Middleware\Base\Options;
 use Rad\Middleware\Base\Produce;
+use Rad\Middleware\Base\SessionEnd;
+use Rad\Middleware\Base\SessionStart;
 use Rad\Middleware\Base\XMLHttpRequest;
 
 /**
@@ -79,6 +81,8 @@ trait RouteSetterTrait {
 
     public function enableSession() {
         $this->sessionEnabled = true;
+        array_unshift($this->middlewares, SessionStart::class);
+        $this->middlewares[]  = SessionEnd::class;
         return $this;
     }
 
