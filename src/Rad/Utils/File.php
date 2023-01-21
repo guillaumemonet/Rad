@@ -69,28 +69,47 @@ class File {
      * @param bool $overwrite
      */
     private function fetchAndProcessUrls(array $urls, callable $f, bool $overwrite) {
-
         $multi = curl_multi_init();
         $reqs  = [];
-
-        foreach ($urls as $originFile => $destinationFile) {
+        array_walk($urls, function ($destinationFile, $originFile) use (&$reqs, $multi, $overwrite) {
             if ($overwrite || !file_exists($destinationFile)) {
-                Log::getHandler()->debug($originFile);
-                $req                    = curl_init();
-                curl_setopt($req, CURLOPT_URL, $originFile);
-                curl_setopt($req, CURLOPT_HEADER, false);
-                curl_setopt($req, CURLOPT_VERBOSE, false);
-                curl_setopt($req, CURLOPT_FOLLOWLOCATION, true);
-                curl_setopt($req, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($req, CURLOPT_SSL_VERIFYHOST, 0);
-                curl_setopt($req, CURLOPT_SSL_VERIFYPEER, 0);
-                curl_multi_add_handle($multi, $req);
-                $reqs[$destinationFile] = $req;
+                $reqs[$destinationFile] = $this->buildCurl($multi, $originFile);
             }
-        }
+        });
+        $this->waitForExec($multi);
+        array_walk($reqs, function ($req, $destinationFile)use ($multi, $f) {
+            $f($destinationFile, curl_multi_getcontent($req));
+            curl_multi_remove_handle($multi, $req);
+        });
+        curl_multi_close($multi);
+    }
 
+    /**
+     * 
+     * @param type $multi
+     * @param type $originFile
+     * @return type
+     */
+    private function buildCurl($multi, $originFile) {
+        Log::getHandler()->debug($originFile);
+        $req = curl_init();
+        curl_setopt($req, CURLOPT_URL, $originFile);
+        curl_setopt($req, CURLOPT_HEADER, false);
+        curl_setopt($req, CURLOPT_VERBOSE, false);
+        curl_setopt($req, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($req, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($req, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($req, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_multi_add_handle($multi, $req);
+        return $req;
+    }
+
+    /**
+     * 
+     * @param type $multi
+     */
+    private function waitForExec($multi) {
         $active = null;
-
         do {
             $mrc = curl_multi_exec($multi, $active);
         } while ($mrc == CURLM_CALL_MULTI_PERFORM);
@@ -102,12 +121,6 @@ class File {
                 } while ($mrc == CURLM_CALL_MULTI_PERFORM);
             }
         }
-
-        foreach ($reqs as $destinationFile => $req) {
-            $f($destinationFile, curl_multi_getcontent($req));
-            curl_multi_remove_handle($multi, $req);
-        }
-        curl_multi_close($multi);
     }
 
 }
