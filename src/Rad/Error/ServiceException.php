@@ -26,35 +26,11 @@
 
 namespace Rad\Error;
 
-use ErrorException;
-use JsonSerializable;
-
 /**
- * Description of DefaultError
+ * Description of ContainerException
  *
  * @author guillaume
  */
-abstract class RadException extends ErrorException implements JsonSerializable {
-
-    /**
-     * Constructor
-     *
-     * @param string $message Service execption
-     * @param string $code Status code, defaults to 500
-     */
-    public function __construct(string $message = null, $code = 500) {
-        if (empty($message)) {
-            $message = 'RAD Exception';
-        }
-        parent::__construct($message, $code);
-    }
-
-    public function __toString(): string {
-        return $this->message;
-    }
-
-    public function jsonSerialize() {
-        return json_encode((array) $this);
-    }
-
+class ServiceException extends RadException {
+    
 }

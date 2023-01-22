@@ -5,10 +5,13 @@ require(__DIR__ . "/../vendor/autoload.php");
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Rad\Api;
+use Rad\Build\Build;
 use Rad\Config\AutoConfig;
 use Rad\Controller\Controller;
 use Rad\Log\Log;
+use Rad\Session\Session;
 use Rad\Template\Template;
+use Rad\Utils\File;
 use Rad\Utils\Time;
 
 /*
@@ -40,10 +43,6 @@ use Rad\Utils\Time;
  *
  * @author guillaume
  * @Controller
- * @cors *
- * @opts
- * @aheaders toto
- * @xheaders roro
  */
 class Example extends Controller {
 
@@ -59,11 +58,22 @@ class Example extends Controller {
     }
 
     /**
+     * @get /build
+     * @produce html
+     */
+    public function build(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
+        $ret = Build::getHandler()->build();
+        $response->getBody()->write($ret);
+        return $response;
+    }
+
+    /**
      * @get /json/
-     * @produce json
+     * @options /json/
+     * @produce html
      */
     public function json(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
-        $response  = $response->withAddedHeader('Hello', 'Moto');
+        //$response  = $response->withAddedHeader('Hello', 'Moto');
         $std       = new stdClass();
         $std->toto = "toto/fdsf   sdf://";
         $std->arr  = ["toto ", "titi"];
@@ -100,6 +110,20 @@ class Example extends Controller {
      */
     public function testConsume(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
         $response->getBody()->write(json_encode($request->getHeaders()));
+        return $response;
+    }
+
+    /**
+     * @api 1
+     * @get /session/
+     * @session
+     * @produce html
+     */
+    public function testSession(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
+        $ret = "OLD " . Session::getHandler()->get('time') . "<br />";
+        Session::getHandler()->set('time', time());
+        $ret .= "New " . Session::getHandler()->get('time') . "<br />";
+        $response->getBody()->write($ret);
         return $response;
     }
 
@@ -166,9 +190,10 @@ Time::startCounter();
  */
 require(__DIR__ . '/TestObserver.php');
 
+//Init Api
 $app = new Api(__DIR__ . "/config/");
 
-$file = new Rad\Utils\File();
+$file = new File();
 $file->downloadMulti(['https://random.imagecdn.app/500/150' => __DIR__ . '/cache/test1.jpg', 'https://random.imagecdn.app/500/151' => __DIR__ . '/cache/test2.jpg'], false);
 
 $app->addControllers(

@@ -29,7 +29,7 @@ namespace Rad\Middleware\Base;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Rad\Config\Config;
-use Rad\Middleware\MiddlewareAfter;
+use Rad\Middleware\MiddlewareBefore;
 use Rad\Route\Route;
 
 /**
@@ -37,7 +37,7 @@ use Rad\Route\Route;
  *
  * @author guillaume
  */
-class Options extends MiddlewareAfter {
+class Options extends MiddlewareBefore {
 
     /**
      * 
@@ -46,12 +46,16 @@ class Options extends MiddlewareAfter {
      * @param Route $route
      */
     public function middle(ServerRequestInterface $request, ResponseInterface $response, Route $route): ResponseInterface {
-        $headers = (array) Config::getApiConfig("cors");
-        array_walk($headers, function (&$value, $header) use ($response) {
-            $response = $response->withAddedHeader($header, $value);
-        });
-        $response->withStatus(200)->send();
-        exit;
+        if (strtoupper($request->getMethod()) == 'OPTIONS') {
+            $headers = (array) Config::getApiConfig("cors");
+            array_walk($headers, function (&$value, $header) use (&$response) {
+                $response = $response->withAddedHeader($header, $value);
+            });
+            $response->withStatus(200)->send();
+            exit;
+        } else {
+            return $response;
+        }
     }
 
 }

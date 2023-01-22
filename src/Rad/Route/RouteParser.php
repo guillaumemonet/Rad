@@ -50,7 +50,7 @@ abstract class RouteParser {
         'xhr'        => ['method' => 'setXhr', 'type' => 'single'],
         'session'    => ['method' => 'enableSession', 'type' => 'single'],
         'cors'       => ['method' => 'enableCors', 'type' => 'single'],
-        'opts'       => ['method' => 'enableOptions', 'type' => 'single'],
+        'options'    => ['method' => 'enableOptions', 'type' => 'single'],
         'cachable'   => ['method' => 'enableCache', 'type' => 'single'],
         'security'   => ['method' => 'enableSecurity', 'type' => 'array'],
         'aheaders'   => ['method' => 'allowHeaders', 'type' => 'array'],
@@ -86,50 +86,51 @@ abstract class RouteParser {
     public static function generateRoutes($class) {
         $routes        = [];
         $classComments = self::parseClassAnnotations($class);
-        $methods       = get_class_methods($class);
-        array_map(function ($method) use (&$routes, $class, $classComments) {
-            if ((new ReflectionMethod($class, $method))->getReturnType() == ResponseInterface::class) {
-                Log::getHandler()->debug('Loading Method ' . $method . ' ' . (new ReflectionMethod($class, $method))->getReturnType());
-                $methodComments = self::parseMethodAnnotations($class, $method);
-                $paths          = self::getPathsFromComment($methodComments);
-                array_walk($paths, function ($array, $key) use (&$routes, $class, $classComments, $method, $methodComments) {
-                    self::createRoute($routes, $array, $key, $class, $classComments, $method, $methodComments);
+        //Cleaning non controller methods
+        $methods       = array_filter(get_class_methods($class), function ($method) use ($class) {
+            Log::getHandler()->debug('Loading Method ' . $method . ' ' . (new ReflectionMethod($class, $method))->getReturnType());
+            return ((new ReflectionMethod($class, $method))->getReturnType() == ResponseInterface::class);
+        });
+        array_walk($methods, function ($method) use (&$routes, $class, $classComments) {
+            $methodComments = self::parseMethodAnnotations($class, $method);
+            $paths          = self::getPathsFromComment($methodComments);
+            array_walk($paths, function ($array, $action) use (&$routes, $class, $classComments, $method, $methodComments) {
+                array_walk($array, function ($path) use (&$routes, $action, $class, $classComments, $method, $methodComments) {
+                    $route    = new Route();
+                    $route->setClassName($class)->setMethodName($method)->setMethod($action)->setPath($path);
+                    self::enableFunctions($route, $action);
+                    $others   = array_merge(self::getOthersFromComment($methodComments), self::getOthersFromComment($classComments));
+                    self::enableOtherFunctions($others, $route);
+                    $routes[] = $route;
                 });
-            }
-        }, $methods);
+            });
+        });
         return $routes;
     }
 
-    private static function createRoute(&$routes, $array, $key, $class, $classComments, $method, $methodComments) {
-        foreach ($array as $path) {
-            $route  = new Route();
-            $route->setClassName($class)->setMethodName($method)->setMethod($key)->setPath($path);
-            $others = array_merge(self::getOthersFromComment($methodComments), self::getOthersFromComment($classComments));
-            array_walk($others, function ($datas, $key) use ($route) {
-                if (isset(self::$annotationsArray[$key]) && $key !== "opts") {
-                    $method = self::$annotationsArray[$key]['method'];
-                    $type   = self::$annotationsArray[$key]['type'];
-                    $route->{$method}($type === 'array' ? $datas : current($datas));
-                }
-            });
-            if (key_exists("opts", $others)) {
-                $oroute   = new Route();
-                $oroute->setClassName($class)->setMethodName($method)->setMethod("OPTIONS")->setPath($path);
-                $oroute->enableCors();
-                $oroute->enableOptions();
-                $routes[] = $oroute;
-            }
-            $routes[] = $route;
+    private static function enableFunctions(&$route, $function, $datas = []) {
+        $f = strtolower($function);
+        if (isset(self::$annotationsArray[strtolower($f)])) {
+            $method = self::$annotationsArray[$f]['method'];
+            $type   = self::$annotationsArray[$f]['type'];
+            $route->{$method}($type === 'array' ? $datas : current($datas));
+            Log::getHandler()->debug("Enable function $f -> $method");
         }
     }
 
-    public static function getPathsFromComment($methodComment) {
+    private static function enableOtherFunctions($others, &$route) {
+        array_walk($others, function ($datas, $key) use ($route) {
+            self::enableFunctions($route, $key, $datas);
+        });
+    }
+
+    private static function getPathsFromComment($methodComment) {
         return array_filter($methodComment, function ($key) {
             return in_array(strtoupper($key), self::$allowed_methods);
         }, ARRAY_FILTER_USE_KEY);
     }
 
-    public static function getOthersFromComment($methodComment) {
+    private static function getOthersFromComment($methodComment) {
         return array_filter($methodComment, function ($key) {
             return !in_array(strtoupper($key), self::$allowed_methods) && array_key_exists(strtolower($key), self::$annotationsArray);
         }, ARRAY_FILTER_USE_KEY);

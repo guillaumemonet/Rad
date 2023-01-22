@@ -33,7 +33,6 @@ use Rad\Error\Http\NotFoundException;
 use Rad\Http\Response;
 use Rad\Log\Log;
 use Rad\Middleware\Middleware;
-use Rad\Session\Session;
 
 /**
  * Description of Route
@@ -153,15 +152,11 @@ class Router implements RouterInterface {
         $method    = $request->getMethod();
         $path      = $request->getUri()->getPath();
         $route     = unserialize(Cache::getHandler()->get($method . "rt_cache_" . $path));
-        //$route     = null;
         $nodeRoute = $this->treeRoutes[strtoupper($method)];
-
         if ($nodeRoute != null && $route === false) { //
             $route = $nodeRoute->getRoute(explode('/', trim($path, '/')));
             Cache::getHandler()->set($method . "rt_cache_" . $path, serialize($route));
         }
-
-        //error_log(print_r($route, true));
         if ($route !== null && $route !== false) {
             $route->setFullPath($path);
             Log::getHandler()->debug($method . " : " . $path . " Matching " . $route->getPath());
