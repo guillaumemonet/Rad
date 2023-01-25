@@ -72,7 +72,7 @@ abstract class Service implements ServiceInterface {
         if ($handler instanceof $this->providedClassName) {
             $this->handlers[$shortName] = $handler;
         } else {
-            throw new ErrorException('Can\'t add ' . $shortName . ' handler, doesn\'t inherit from ' . $this->providedClassName);
+            throw new ServiceException('Can\'t add ' . $shortName . ' handler, doesn\'t inherit from ' . $this->providedClassName);
         }
     }
 
@@ -82,7 +82,7 @@ abstract class Service implements ServiceInterface {
         }
         if (!static::hasHandler($handlerType)) {
             if (!static::hasService($handlerType)) {
-                throw new ErrorException('Service ' . $handlerType . ' Not Found');
+                throw new ServiceException('Service ' . $handlerType . ' Not Found');
             }
             $instance                     = new $this->services[$handlerType];
             $this->handlers[$handlerType] = $instance instanceof $this->providedClassName ? $instance : null;

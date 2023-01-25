@@ -6,6 +6,9 @@ exclude_paths:
   - "bin/*"
   - "doc/*"
   - "config/*"
+exclude_patterns:
+- "src/Rad/Utils/Mime.php"
+- "vendor/"
 engines:
   sonar-php:
     enabled: true
