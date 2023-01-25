@@ -29,6 +29,7 @@ namespace Rad\Config;
 use ErrorException;
 use Rad\Encryption\Encryption;
 use Rad\Error\ConfigurationException;
+use Rad\Log\Log;
 
 /**
  *
@@ -63,28 +64,51 @@ abstract class Config {
     }
 
     private static function buildJsonConfig($configDir) {
-        if (!file_exists($configDir . 'build_config.json')) {
+        $configFile = $configDir . 'build_config.json';
+        if (!file_exists($configFile)) {
             self::loadDefaultConfig();
-            self::parseOtherConfigFiles($configDir);
+            $md5                                = self::parseOtherConfigFiles($configDir);
             self::generateToken();
-            file_put_contents($configDir . 'build_config.json', json_encode(self::$config, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_FORCE_OBJECT));
+            self::$config['api']['config_date'] = $md5;
+            file_put_contents($configFile, json_encode(self::$config, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_FORCE_OBJECT));
         }
-        self::$config = json_decode(file_get_contents($configDir . 'build_config.json'));
+        self::$config = json_decode(file_get_contents($configFile));
         if (json_last_error() > 0) {
             throw new ConfigurationException('Configuration build_config.json can\'t be loaded');
+        }
+        self::checkConfigModification($configDir, $configFile);
+    }
+
+    private static function checkConfigModification($configDir, $configFile) {
+        $stringTime = "";
+        foreach (glob($configDir . "*.json") as $filename) {
+            if (basename($filename) != "build_config.json") {
+                $stringTime .= filemtime($filename);
+            }
+        }
+        $md5 = md5($stringTime);
+        if (!isset(self::$config->api->config_date) || self::$config->api->config_date != $md5) {
+            unlink($configFile);
+            Log::getHandler()->debug("Regenerate config file");
+            self::buildJsonConfig($configDir);
         }
     }
 
     private static function parseOtherConfigFiles($configDir) {
-        self::$config = array_reduce(glob($configDir . "*.json"), function ($config, $filename) {
-            $fileConfig = self::loadOtherConfig($filename);
-            if ($fileConfig !== null) {
-                $arrayConfig       = (array) $config;
-                $arrayCustomConfig = (array) $fileConfig;
-                $config            = self::array_merge_recursive_distinct($arrayConfig, $arrayCustomConfig);
+        $stringTime   = "";
+        self::$config = array_reduce(glob($configDir . "*.json"), function ($config, $filename) use (&$stringTime) {
+            if (basename($filename) != "build_config.json") {
+                $stringTime .= filemtime($filename);
+                $fileConfig = self::loadOtherConfig($filename);
+                if ($fileConfig !== null) {
+                    $arrayConfig       = (array) $config;
+                    $arrayCustomConfig = (array) $fileConfig;
+                    $config            = self::array_merge_recursive_distinct($arrayConfig, $arrayCustomConfig);
+                }
             }
             return $config;
         }, self::$config);
+        return md5($stringTime);
     }
 
     private static function array_merge_recursive_distinct(array &$default, array &$custom) {
@@ -109,7 +133,7 @@ abstract class Config {
 
     private static function loadOtherConfig($filename) {
         $fileConfig = null;
-        if (basename($filename) != "default_config.json") {
+        if (basename($filename) != "build_config.json") {
             error_log("Loading " . $filename);
             $fileConfig = json_decode(file_get_contents($filename), true);
             if (json_last_error() > 0) {
