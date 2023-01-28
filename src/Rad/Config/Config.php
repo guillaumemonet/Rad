@@ -183,7 +183,7 @@ abstract class Config {
 
     public static function getApiConfig($name = null) {
         if (!isset(self::$config->api)) {
-            throw new ErrorException('Not Api Config found');
+            throw new ConfigurationException('Not Api Config found');
         }
         return $name !== null ? self::$config->api->{$name} : self::$config->api;
     }
