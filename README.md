@@ -41,7 +41,7 @@ Init New Rad Object :
 
 require(__DIR__ . "/../vendor/autoload.php");
 
-$app = new \Rad\Api(__DIR__ . "/config/");
+$app = new \Rad\Rad(__DIR__ . "/config/");
 
 ...
 ```
