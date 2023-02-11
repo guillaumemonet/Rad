@@ -2,6 +2,9 @@
 
 /**
  * @license http://www.opensource.org/licenses/mit-license.php MIT (see the LICENSE file)
+ * @author Guillaume Monet
+ * @link https://github.com/guillaumemonet/Rad
+ * @package Rad
  */
 
 namespace Rad\Model;
@@ -71,7 +74,7 @@ abstract class Model extends ModelDAO implements JsonSerializable {
         $model = new stdClass();
         if (isset($object->resource_name)) {
             $className = $object->resource_namespace . "\\" . $object->resource_name;
-            $model = new $className();
+            $model     = new $className();
         }
         return $model;
     }
@@ -82,7 +85,7 @@ abstract class Model extends ModelDAO implements JsonSerializable {
      * @param type $model
      */
     private static function buildObjectContent($object, $model) {
-        array_walk($object, function($val, $key) use ($model) {
+        array_walk($object, function ($val, $key) use ($model) {
             $model->$key = self::hydrate($val);
         });
     }
@@ -93,7 +96,7 @@ abstract class Model extends ModelDAO implements JsonSerializable {
      * @param array $array
      */
     private static function buildArrayContent($object, array &$array) {
-        array_walk($object, function($val, $key) use (&$array) {
+        array_walk($object, function ($val, $key) use (&$array) {
             $array[$key] = self::hydrate($val);
         });
     }
