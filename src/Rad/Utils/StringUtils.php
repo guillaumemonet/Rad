@@ -1,34 +1,24 @@
 <?php
 
-/*
- * The MIT License
- *
- * Copyright 2017 Guillaume Monet.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+/**
+ * @license http://www.opensource.org/licenses/mit-license.php MIT (see the LICENSE file)
+ * @author Guillaume Monet
+ * @link https://github.com/guillaumemonet/Rad
+ * @package Rad
  */
 
 namespace Rad\Utils;
 
-final class StringUtils {
+/**
+ * 
+ */
+abstract class StringUtils {
 
     private function __construct() {
+        
+    }
+
+    private function __clone() {
         
     }
 
@@ -48,7 +38,7 @@ final class StringUtils {
      *
      * @return bool
      */
-    public static function isEMail($email) {
+    public static function isEMail(string $email): string {
         return (boolean) !(filter_var($email, FILTER_VALIDATE_EMAIL) === false);
     }
 
@@ -76,7 +66,7 @@ final class StringUtils {
      *
      * @return type
      */
-    public static function removeSpecialChars($str) {
+    public static function removeSpecialChars(string $str): string {
         return preg_replace('#[^A-Za-z0-9_-]+#', ' ', $str);
     }
 
@@ -90,7 +80,7 @@ final class StringUtils {
      * @param string $str
      * @return string
      */
-    public static function removeAccents($str) {
+    public static function removeAccents(string $str): string {
         $str = str_replace(' & ', ' ', $str);
         $str = htmlentities($str);
         $str = preg_replace('#&([A-Za-z])(?:acute|grave|cedil|circ|orn|ring|slash|th|tilde|uml);#', '\1', $str);
@@ -110,7 +100,7 @@ final class StringUtils {
      * @param string $text
      * @return string
      */
-    public static function slugify($text) {
+    public static function slugify(string $text): string {
         // replace non letter or digits by -
         $text = preg_replace('~[^\pL\d]+~u', '-', $text);
         // transliterate
@@ -140,7 +130,7 @@ final class StringUtils {
      * @param string $needle
      * @return boolean
      */
-    public static function startsWith($haystack, $needle) {
+    public static function startsWith($haystack, $needle): bool {
         // search backwards starting from haystack length characters from the end
         return $needle === "" || strrpos($haystack, $needle, -strlen($haystack)) !== false;
     }
@@ -156,7 +146,7 @@ final class StringUtils {
      * @param string $needle
      * @return boolean
      */
-    public static function endsWith($haystack, $needle) {
+    public static function endsWith($haystack, $needle): bool {
         // search forward starting from end minus needle length characters
         return $needle === "" || (($temp = strlen($haystack) - strlen($needle)) >= 0 && strpos($haystack, $needle, $temp) !== false);
     }
@@ -179,7 +169,7 @@ final class StringUtils {
      * 
      * @return boolean
      */
-    public static function strContains($haystack, $needle, $cs = false) {
+    public static function strContains($haystack, $needle, $cs = false): bool {
         if ($cs) {
             return strpos($haystack, $needle) !== false;
         } else {
@@ -191,16 +181,16 @@ final class StringUtils {
      * Parse comment, used only when generate php
      * @param string $comments
      */
-    public static function parseComments($comments) {
-        $ret = [];
+    public static function parseComments(string $comments): array {
+        $ret            = [];
         //trim(str_replace(array('/', '*', '**'), '', substr($comments, 0, strpos($comments, '@'))));
-        $comments = str_replace(array('/*', '*', '**'), '', $comments);
+        $comments       = str_replace(array('/*', '*', '**'), '', $comments);
         $array_comments = explode("\n", $comments);
         foreach ($array_comments as $k => $line) {
             $line = trim($line);
             if (self::startsWith($line, "@")) {
-                $params = explode(" ", $line);
-                $c = trim(str_replace("@", "", array_shift($params)));
+                $params  = explode(" ", $line);
+                $c       = trim(str_replace("@", "", array_shift($params)));
                 $ret[$c] = $params;
             }
         }
@@ -237,7 +227,7 @@ final class StringUtils {
      * @param type $name
      * @return type
      */
-    public static function camelCase(string $name) {
+    public static function camelCase(string $name): string {
         return str_replace("_", "", ucwords($name, '_'));
     }
 
