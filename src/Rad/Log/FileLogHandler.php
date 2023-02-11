@@ -43,7 +43,7 @@ class FileLogHandler extends AbstractLogger {
                 $message = print_r($message, true);
             }
             $config->file !== null ?
-                            error_log($this->logFormat(strtoupper($level), $message) . "\n", 3, $config->file) :
+                            error_log($this->logFormat(strtoupper($level), $message) . "\n", 3, Config::getApiConfig()->install_path . $config->file) :
                             error_log($this->logFormat(strtoupper($level), $message));
         }
     }
