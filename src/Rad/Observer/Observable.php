@@ -3,7 +3,8 @@
 /**
  * @license http://www.opensource.org/licenses/mit-license.php MIT (see the LICENSE file)
  * @author Guillaume Monet
- * @package rad-framework
+ * @link https://github.com/guillaumemonet/Rad
+ * @package Rad
  */
 
 namespace Rad\Observer;
