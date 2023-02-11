@@ -2,6 +2,7 @@
     "api": {
         "url": "http://localhost:8000/",
         "install_path": "/YOUR/PATH",
+        "controllers_path": "src/",
         "router": "Rad\\Route\\Router",
         "response": "Rad\\Http\\Response",
         "request": "Rad\\Http\\Request",
@@ -178,6 +179,31 @@
                     "classname": "Rad\\Encryption\\MCryptEncryption",
                     "config": {
                         "key": ""
+                    }
+                }
+            }
+        },
+        "session": {
+            "default": "php",
+            "classname": "Rad\\Session\\SessionInterface",
+            "handlers": {
+                "php": {
+                    "classname": "Rad\\Session\\PHPSessionHandler",
+                    "config": {
+                    }
+                }
+            }
+        },
+        "build": {
+            "default": "databasebuilder",
+            "classname": "Rad\\Build\\BuildInterface",
+            "handlers": {
+                "databasebuilder": {
+                    "classname": "Rad\\Build\\DatabaseBuildHandler",
+                    "config": {
+                        "databaseService": "pdo",
+                        "classesPath": "",
+                        "controllersPath": ""
                     }
                 }
             }
