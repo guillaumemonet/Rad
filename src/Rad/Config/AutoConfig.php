@@ -58,29 +58,21 @@ abstract class AutoConfig {
     }
 
     private static function parseFile($file): ?string {
-        $content   = file_get_contents($file);
-        $matches   = [];
-        $classname = [
-            'namespace' => '',
-            'classname' => ''
-        ];
+        $content    = file_get_contents($file);
+        $namespaces = [];
+        $classnames = [];
+        preg_match("/namespace\s+(.*);/", $content, $namespaces);
+        preg_match('/class\s+(\w+)\s+/', $content, $classnames);
 
-        if (preg_match("/namespace\s+(.*);/", $content, $matches)) {
-            $classname['namespace'] = $matches[1];
-        }
-
-        if (preg_match('/class\s+(\w+)\s+/', $content, $matches)) {
-            $classname['classname'] = $matches[1];
-        }
-        if ($classname['classname'] != '') {
-            $clname    = $classname['namespace'] . "\\" . $classname['classname'];
+        try {
+            $clname    = $namespaces[1] . "\\" . $classnames[1];
             $reflector = new ReflectionClass($clname);
             if ($reflector->isSubclassOf('Rad\\Controller\\Controller')) {
                 return $clname;
             } else {
                 return null;
             }
-        } else {
+        } catch (Exception $ex) {
             return null;
         }
     }
