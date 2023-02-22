@@ -92,12 +92,15 @@ abstract class Service implements ServiceInterface {
         if ($this->providedClassName === null) {
             throw new ConfigurationException('No Provided Class defined ' . $this->serviceType);
         }
-        $handlers = $config->handlers;
+        $this->services = (array) $config->handlers;
 
-        $this->services = array_combine(array_keys((array) $handlers), array_map(function ($handler) {
-                    return $handler->classname;
-                }, (array) $handlers));
+        array_walk($this->services, function (&$value, $key) {
+            $value = $value->classname;
+        });
     }
 
+    /**
+     * return string of service name wich match config service name
+     */
     protected abstract function getServiceType(): string;
 }
