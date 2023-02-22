@@ -31,9 +31,13 @@ namespace Rad\Http;
  *
  * @author guillaume
  */
-final class Buffer {
+abstract class Buffer {
 
     private function __construct() {
+        
+    }
+
+    private function __clone() {
         
     }
 
@@ -54,6 +58,7 @@ final class Buffer {
         header("Connection: close"); //or redirect to some url: header('Location: http://www.google.com');
         ob_end_flush();
         flush(); //really send content, can't change the order:1.ob buffer to normal buffer, 2.normal buffer to output
+        fastcgi_finish_request();
     }
 
 }
