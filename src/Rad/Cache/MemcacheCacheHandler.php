@@ -12,6 +12,7 @@ namespace Rad\Cache;
 use Memcached;
 use Psr\SimpleCache\CacheInterface;
 use Rad\Config\Config;
+use Rad\Encryption\Encryption;
 
 /**
  * Description of CacheManager
@@ -30,8 +31,8 @@ final class MemcacheCacheHandler implements CacheInterface {
     public function __construct() {
         $config           = Config::getServiceConfig('cache', 'memcache')->config;
         $this->memcache   = new Memcached();
-        $this->memcache->addServer($config->url, (int) $config->port, 100);
-        $this->defaultTTL = $config->lifetime;
+        $this->memcache->addServer($config->host, (int) $config->port, 100);
+        $this->defaultTTL = isset($config->lifetime) ? $config->lifetime : 3600;
     }
 
     /**
