@@ -82,10 +82,9 @@ final class MemcacheCacheHandler implements CacheInterface {
      * @return type
      */
     public function getMultiple($keys, $default = null) {
-        $keys = array_flip($keys);
-        array_walk($keys, function (&$value, $key) {
-            $value = Encryption::hashMd5($key);
-        });
+        array_map(function ($v) {
+            return Encryption::hashMd5($v);
+        }, $keys);
         return $this->memcache->getMulti($keys);
     }
 
