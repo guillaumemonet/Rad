@@ -57,10 +57,9 @@ final class MemcacheCacheHandler implements CacheInterface {
      * @return bool
      */
     public function deleteMultiple($keys): bool {
-        $keys = array_flip($keys);
-        array_walk($keys, function (&$value, $key) {
-            $value = Encryption::hashMd5($key);
-        });
+        array_map(function ($v) {
+            return Encryption::hashMd5($v);
+        }, $keys);
         $this->memcache->deleteMulti($keys);
         return true;
     }
@@ -82,10 +81,11 @@ final class MemcacheCacheHandler implements CacheInterface {
      * @return type
      */
     public function getMultiple($keys, $default = null) {
-        array_map(function ($v) {
+        $nkeys = array_map(function ($v) {
             return Encryption::hashMd5($v);
         }, $keys);
-        return $this->memcache->getMulti($keys);
+        $values = $this->memcache->getMulti($nkeys, Memcached::GET_PRESERVE_ORDER);
+        return array_combine($keys, array_values($values));
     }
 
     /**
@@ -94,7 +94,7 @@ final class MemcacheCacheHandler implements CacheInterface {
      * @return bool
      */
     public function has($key): bool {
-        return !empty($this->get($key));
+        return !empty($this->get(Encryption::hashMd5($key)));
     }
 
     /**
@@ -121,10 +121,11 @@ final class MemcacheCacheHandler implements CacheInterface {
         if ($ttl == null) {
             $ttl = (int) $this->defaultTTL;
         }
-        array_walk($values, function (&$value, &$key) {
-            $key = Encryption::hashMd5($key);
-        });
-        return $this->memcache->setMulti($values, $ttl);
+        $keys = array_map(function ($v) {
+            return Encryption::hashMd5($v);
+        }, array_keys($values));
+        $nvalues = array_combine($keys, $values);
+        return $this->memcache->setMulti($nvalues, $ttl);
     }
 
 }
