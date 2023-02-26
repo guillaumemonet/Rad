@@ -57,10 +57,10 @@ final class MemcacheCacheHandler implements CacheInterface {
      * @return bool
      */
     public function deleteMultiple($keys): bool {
-        array_map(function ($v) {
+        $nkeys = array_map(function ($v) {
             return Encryption::hashMd5($v);
         }, $keys);
-        $this->memcache->deleteMulti($keys);
+        $this->memcache->deleteMulti($nkeys);
         return true;
     }
 
