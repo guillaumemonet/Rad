@@ -23,7 +23,7 @@ final class Encryption extends Service {
         static::getInstance()->addServiceHandler($handlerType, $handler);
     }
 
-    public static function getHandler(string $handlerType = null): Encryption {
+    public static function getHandler(string $handlerType = null): EncryptionInterface {
         return static::getInstance()->getServiceHandler($handlerType);
     }
 
