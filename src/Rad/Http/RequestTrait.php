@@ -37,13 +37,6 @@ trait RequestTrait {
         return $_SERVER["REQUEST_URI"];
     }
 
-    /**
-     * 
-     */
-    protected function checkMethod(): bool {
-        
-    }
-
     public function isCache() {
         return ($this->getHeader('Cache-Control') !== null) ? (!current($this->getHeader('Cache-Control')) == 'no-cache') : true;
     }

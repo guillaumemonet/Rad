@@ -26,7 +26,6 @@
 
 namespace Rad\Http;
 
-use GuzzleHttp\Psr7\LazyOpenStream;
 use GuzzleHttp\Psr7\ServerRequest as GServerRequest;
 
 /**
@@ -38,7 +37,7 @@ class ServerRequest extends GServerRequest {
 
     use RequestTrait;
 
-    public static function fromGlobals() {
+    /*public static function fromGlobals() {
         $method = isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : 'GET';
         $headers = function_exists('getallheaders') ? getallheaders() : [];
         $uri = self::getUriFromGlobals();
@@ -52,6 +51,6 @@ class ServerRequest extends GServerRequest {
                         ->withQueryParams($_GET)
                         ->withParsedBody($_POST)
                         ->withUploadedFiles(self::normalizeFiles($_FILES));
-    }
+    }*/
 
 }
