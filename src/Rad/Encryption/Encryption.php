@@ -59,4 +59,14 @@ final class Encryption extends Service {
         return "*" . strtoupper(sha1(sha1($input, true)));
     }
 
+    /**
+     * Sign current datas
+     * @param string $data
+     * @param string $secret
+     * @return string
+     */
+    public static function sign(string $data, string $secret): string {
+        return base64_encode(hash_hmac('md5', $data, $secret, true));
+    }
+
 }

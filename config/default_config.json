@@ -172,14 +172,11 @@
             }
         },
         "encrypt": {
-            "default": "mcrypt",
+            "default": "openssl",
             "classname": "Rad\\Encryption\\EncryptionInterface",
             "handlers": {
-                "mcrypt": {
-                    "classname": "Rad\\Encryption\\MCryptEncryption",
-                    "config": {
-                        "key": ""
-                    }
+                "openssl": {
+                    "classname": "Rad\\Encryption\\OpenSSLEncryption"
                 }
             }
         },
@@ -188,8 +185,19 @@
             "classname": "Rad\\Session\\SessionInterface",
             "handlers": {
                 "php": {
-                    "classname": "Rad\\Session\\PHPSessionHandler",
+                    "classname": "Rad\\Session\\PHPSessionHandler"
+                }
+            }
+        },
+
+        "cookie": {
+            "default": "php",
+            "classname": "Rad\\Cookie\\CookieInterface",
+            "handlers": {
+                "php": {
+                    "classname": "Rad\\Cookie\\CookieHandler",
                     "config": {
+                        "name": "default"
                     }
                 }
             }

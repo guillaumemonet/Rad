@@ -13,7 +13,7 @@ use Rad\Config\Config;
 
 /**
  * Description of MCryptEncryption
- *
+ * @deprecated
  * @author guillaume
  */
 class MCryptEncryption implements EncryptionInterface {
@@ -26,7 +26,7 @@ class MCryptEncryption implements EncryptionInterface {
      * @param string $data
      * @return string
      */
-    public function crypt(string $data) {
+    public function encrypt(string $data) {
         $keyHash = md5(Config::getConfig()->encrypt->key);
         $key     = substr($keyHash, 0, mcrypt_get_key_size(self::$cipher, self::$mode));
         $iv      = substr($keyHash, 0, mcrypt_get_block_size(self::$cipher, self::$mode));
@@ -43,16 +43,6 @@ class MCryptEncryption implements EncryptionInterface {
         $key     = substr($keyHash, 0, mcrypt_get_key_size(self::$cipher, self::$mode));
         $iv      = substr($keyHash, 0, mcrypt_get_block_size(self::$cipher, self::$mode));
         return mcrypt_decrypt(self::$cipher, $key, base64_decode($data), self::$mode, $iv);
-    }
-
-    /**
-     * Sign current datas
-     * @param string $data
-     * @param string $secret
-     * @return string
-     */
-    public function sign(string $data, string $secret): string {
-        return base64_encode(hash_hmac('md5', $data, $secret, true));
     }
 
 }
