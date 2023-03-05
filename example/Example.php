@@ -12,8 +12,8 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Rad\Api;
 use Rad\Build\Build;
-use Rad\Config\AutoConfig;
 use Rad\Controller\Controller;
+use Rad\Cookie\Cookie;
 use Rad\Log\Log;
 use Rad\Session\Session;
 use Rad\Template\Template;
@@ -155,6 +155,18 @@ class Example extends Controller {
         return $response;
     }
 
+    /**
+     * @get /cookie/
+     * @produce html
+     */
+    public function cookie(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
+        $response->getBody()->write(Cookie::getHandler()->get('time'));
+        Cookie::getHandler()->set("time", time());
+        Cookie::getHandler()->save();
+
+        return $response;
+    }
+
 }
 
 //Pass through for pictures and docs
@@ -179,7 +191,7 @@ $file = new File();
 $file->downloadMulti(['https://random.imagecdn.app/500/150' => __DIR__ . '/cache/test1.jpg', 'https://random.imagecdn.app/500/151' => __DIR__ . '/cache/test2.jpg'], false);
 
 $app->addControllers(
-        AutoConfig::loadControllers()
+        [Example::class]
 )->run(function () {
     Log::getHandler()->debug("API REQUEST [" . round(Time::endCounter(), 10) * 1000 . "] ms");
 });
