@@ -10,7 +10,7 @@
 namespace Rad;
 
 /**
- * Description of Api
+ * Compatibility Class
  *
  * @author Guillaume Monet
  */
