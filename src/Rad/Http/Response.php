@@ -30,7 +30,6 @@ use GuzzleHttp\Psr7\Response as GResponse;
 use Psr\Http\Message\StreamInterface;
 use Rad\Codec\Codec;
 use Rad\Utils\Mime;
-use Rad\Utils\StringUtils;
 
 /**
  * 
@@ -64,12 +63,13 @@ class Response extends GResponse {
         http_response_code($this->getStatusCode());
         $datas = Codec::getHandler($this->type)->serialize($this->getBody());
         if ($this->secret != null) {
-            header('Signature', Codec::getHandler($this->type)->sign($datas, $this->secret));
+            header('Signature: ' . Codec::getHandler($this->type)->sign($datas, $this->secret));
         }
-        foreach ($this->getHeaders() as $key => $value) {
-            header($key . ': ' . $this->getHeaderLine($key));
-        }
-        echo $datas;
+        $headers = $this->getHeaders();
+        array_walk($headers, function ($items, $key) {
+            header($key . ': ' . implode(', ', $items));
+        });
+        echo($datas);
     }
 
     /**
