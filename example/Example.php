@@ -160,10 +160,10 @@ class Example extends Controller {
      * @produce html
      */
     public function cookie(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
-        $response->getBody()->write(Cookie::getHandler()->get('time'));
+        $datas = Cookie::getHandler()->get('time');
+        $response->getBody()->write($datas ? (string) $datas : "");
         Cookie::getHandler()->set("time", time());
         Cookie::getHandler()->save();
-
         return $response;
     }
 
