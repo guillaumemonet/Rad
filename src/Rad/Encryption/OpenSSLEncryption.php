@@ -36,10 +36,16 @@ use Rad\Config\Config;
  */
 class OpenSSLEncryption implements EncryptionInterface {
 
-    const METHOD = 'aes-256-ctr';
+    private $method = 'aes-256-ctr';
+
+    public function __construct() {
+        if (isset(Config::getServiceConfig("encrypt", "openssl")->config->method)) {
+            $this->method = Config::getServiceConfig("encrypt", "openssl")->config->method;
+        }
+    }
 
     /**
-     * Encrypts (but does not authenticate) a message
+     * Encrypts
      * 
      * @param string $message - plaintext message
      * @param string $key - encryption key (raw binary expected)
@@ -48,12 +54,12 @@ class OpenSSLEncryption implements EncryptionInterface {
      */
     public function encrypt($datas) {
         $key       = Config::getConfig()->api->token;
-        $nonceSize = openssl_cipher_iv_length(self::METHOD);
+        $nonceSize = openssl_cipher_iv_length($this->method);
         $nonce     = openssl_random_pseudo_bytes($nonceSize);
 
         $ciphertext = openssl_encrypt(
                 $datas,
-                self::METHOD,
+                $this->method,
                 $key,
                 OPENSSL_RAW_DATA,
                 $nonce
@@ -76,23 +82,19 @@ class OpenSSLEncryption implements EncryptionInterface {
         }
         $key = Config::getConfig()->api->token;
 
-        $nonceSize  = openssl_cipher_iv_length(self::METHOD);
+        $nonceSize  = openssl_cipher_iv_length($this->method);
         $nonce      = mb_substr($datas, 0, $nonceSize, '8bit');
         $ciphertext = mb_substr($datas, $nonceSize, null, '8bit');
 
         $plaintext = openssl_decrypt(
                 $ciphertext,
-                self::METHOD,
+                $this->method,
                 $key,
                 OPENSSL_RAW_DATA,
                 $nonce
         );
 
         return $plaintext;
-    }
-
-    public function sign(string $data, string $secret) {
-        return null;
     }
 
 }
