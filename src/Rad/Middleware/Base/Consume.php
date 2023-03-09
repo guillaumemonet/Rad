@@ -12,7 +12,7 @@ namespace Rad\Middleware\Base;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Rad\Error\Http\NotAcceptableException;
-use Rad\Http\Header\AcceptHeader;
+use Rad\Http\HttpHeaders;
 use Rad\Middleware\MiddlewareBefore;
 use Rad\Route\Route;
 use Rad\Utils\Mime;
@@ -37,7 +37,7 @@ class Consume extends MiddlewareBefore {
         foreach ($route->getConsumedMimeType() as $consume) {
             $consumeTypes += Mime::getMimeTypesFromShort($consume);
         }
-        $acceptTypes = AcceptHeader::parse(current($request->getHeader("Accept")));
+        $acceptTypes = HttpHeaders::parseAccepted(current($request->getHeader("Accept")));
         if (isset($acceptTypes['*/*']) || sizeof(array_intersect($consumeTypes, array_keys($acceptTypes))) > 0) {
             return $response;
         } else {
