@@ -29,7 +29,6 @@ namespace Rad\Http;
 use GuzzleHttp\Psr7\Response as GResponse;
 use Psr\Http\Message\StreamInterface;
 use Rad\Codec\Codec;
-use Rad\Utils\Mime;
 
 /**
  * 
@@ -70,27 +69,6 @@ class Response extends GResponse {
             header($key . ': ' . implode(', ', $items));
         });
         echo($datas);
-    }
-
-    /**
-     * 
-     * @param string $type
-     * @param string $allow_origin
-     * @param string $vary
-     */
-    public function doResponse($type = "json", $allow_origin = "*", $vary = "User-Agent", $encoding = "utf-8") {
-        if ($allow_origin !== null) {
-            $this->addHeader('Access-Control-Allow-Origin', $allow_origin);
-        }
-        $this->addHeader("Access-Control-Expose-Headers", "Content-Range");
-        if (isset(Mime::MIME_TYPES[$type]) && Mime::MIME_TYPES[$type][0] !== null) {
-            $this->addHeader('Content-Type', Mime::MIME_TYPES[$type][0] . '; charset=' . $encoding);
-        } else {
-            $this->addHeader('Content-Type', Mime::MIME_TYPES["json"][0] . '; charset=' . $encoding);
-        }
-        if ($vary !== null) {
-            $this->addHeader('Vary', $vary);
-        }
     }
 
     /**
