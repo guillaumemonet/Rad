@@ -9,6 +9,7 @@
 
 namespace Rad\Route;
 
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
@@ -18,25 +19,25 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 interface RouterInterface {
 
-    public function addGetRoute(Route $route);
+    public function addGetRoute(Route $route): self;
 
-    public function addPostRoute(Route $route);
+    public function addPostRoute(Route $route): self;
 
-    public function addPutRoute(Route $route);
+    public function addPutRoute(Route $route): self;
 
-    public function addPatchRoute(Route $route);
+    public function addPatchRoute(Route $route): self;
 
-    public function addDeleteRoute(Route $route);
+    public function addDeleteRoute(Route $route): self;
 
-    public function addOptionsRoute(Route $route);
+    public function addOptionsRoute(Route $route): self;
 
-    public function mapRoute(string $method, Route $route);
+    public function mapRoute(string $method, Route $route): self;
 
-    public function setRoutes(array $routes);
+    public function setRoutes(array $routes): self;
 
-    public function route(ServerRequestInterface $request);
+    public function route(ServerRequestInterface $request): ResponseInterface;
 
-    public function load(): bool;
+    public function load(array $controllers): self;
 
-    public function save();
+    public function save(): self;
 }

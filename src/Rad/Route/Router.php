@@ -25,6 +25,12 @@ use Rad\Middleware\Middleware;
 class Router implements RouterInterface {
 
     /**
+     * 
+     * @var string
+     */
+    private $cacheName = "RadRoute";
+
+    /**
      * @var TreeNodeRoute[]
      */
     private $treeRoutes = [];
@@ -108,7 +114,7 @@ class Router implements RouterInterface {
      * @param int $version
      * @return $this
      */
-    public function mapRoute(string $method, Route $route) {
+    public function mapRoute(string $method, Route $route): self {
         if (!isset($this->treeRoutes[$method])) {
             $this->treeRoutes[$method] = new TreeNodeRoute($method);
         }
@@ -159,25 +165,24 @@ class Router implements RouterInterface {
 
     /**
      * 
+     * @return self
      */
-    public function save() {
-        $cacheName = "RadRoute";
-        Cache::getHandler()->set($cacheName, serialize($this->treeRoutes));
+    public function save(): self {
+        Cache::getHandler()->set($this->cacheName, serialize($this->treeRoutes));
+        return $this;
     }
 
     /**
      * 
      * @return bool
      */
-    public function load(): bool {
-        $cacheName = "RadRoute";
-        $routes    = unserialize(Cache::getHandler()->get($cacheName));
-        if (isset($routes) && $routes != null && sizeof($routes) > 0) {
-            $this->treeRoutes = $routes;
-            return true;
-        } else {
-            return false;
+    public function load(array $controllers): self {
+        $this->treeRoutes = unserialize(Cache::getHandler()->get($this->cacheName));
+        if (empty($this->treeRoutes)) {
+            $this->setRoutes(RouteParser::parseRoutes($controllers))
+                    ->save();
         }
+        return $this;
     }
 
 }

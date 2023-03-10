@@ -63,12 +63,10 @@ class Rad {
      */
     public final function run(Closure $finalClosure = null, Closure $errorClosure = null): void {
         try {
-            if (!$this->getRouter()->load()) {
-                $this->getRouter()->setRoutes(RouteParser::parseRoutes($this->getControllers()));
-                $this->getRouter()->save();
-            }
-            $response = $this->getRouter()->route($this->request);
-            $response->send();
+            $this->getRouter()
+                    ->load($this->controllers)
+                    ->route($this->request)
+                    ->send();
         } catch (ErrorException $ex) {
             Log::getHandler()->error($ex->getMessage());
             $response = new Response($ex->getCode());
