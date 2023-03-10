@@ -18,6 +18,8 @@ use Rad\Log\Log;
  */
 abstract class Config {
 
+    const BUILD_NAME = 'build_config.json';
+
     public static $config = [];
 
     private function __construct() {
@@ -38,7 +40,7 @@ abstract class Config {
             self::loadDefaultConfig();
         } else {
             if (!is_dir($configDir)) {
-                throw new ConfigurationException("Not a directory : " . $configDir);
+                throw new ConfigurationException('Not a directory : ' . $configDir);
             }
             $dir = dir($configDir);
             self::buildJsonConfig($dir->path . "/");
@@ -46,7 +48,7 @@ abstract class Config {
     }
 
     private static function buildJsonConfig($configDir) {
-        $configFile = $configDir . 'build_config.json';
+        $configFile = $configDir . self::BUILD_NAME;
         if (!file_exists($configFile)) {
             self::loadDefaultConfig();
             $md5                                = self::parseOtherConfigFiles($configDir);
@@ -63,23 +65,23 @@ abstract class Config {
 
     private static function checkConfigModification($configDir, $configFile) {
         $stringTime = "";
-        foreach (glob($configDir . "*.json") as $filename) {
-            if (basename($filename) != "build_config.json") {
+        foreach (glob($configDir . '*.json') as $filename) {
+            if (basename($filename) != self::BUILD_NAME) {
                 $stringTime .= filemtime($filename);
             }
         }
         $md5 = md5($stringTime);
         if (!isset(self::$config->api->config_date) || self::$config->api->config_date != $md5) {
             unlink($configFile);
-            Log::getHandler()->debug("Regenerate config file");
+            Log::getHandler()->debug('Regenerate config file');
             self::buildJsonConfig($configDir);
         }
     }
 
     private static function parseOtherConfigFiles($configDir) {
         $stringTime   = "";
-        self::$config = array_reduce(glob($configDir . "*.json"), function ($config, $filename) use (&$stringTime) {
-            if (basename($filename) != "build_config.json") {
+        self::$config = array_reduce(glob($configDir . '*.json'), function ($config, $filename) use (&$stringTime) {
+            if (basename($filename) != self::BUILD_NAME) {
                 $stringTime .= filemtime($filename);
                 $fileConfig = self::loadOtherConfig($filename);
                 if ($fileConfig !== null) {
@@ -115,7 +117,7 @@ abstract class Config {
 
     private static function loadOtherConfig($filename) {
         $fileConfig = null;
-        if (basename($filename) != "build_config.json") {
+        if (basename($filename) != self::BUILD_NAME) {
             error_log("Loading " . $filename);
             $fileConfig = json_decode(file_get_contents($filename), true);
             if (json_last_error() > 0) {
