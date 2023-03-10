@@ -61,7 +61,7 @@ class Rad {
      * 
      * @param Closure $finalClosure
      */
-    public final function run(Closure $finalClosure = null) {
+    public final function run(Closure $finalClosure = null, Closure $errorClosure = null): void {
         try {
             if (!$this->getRouter()->load()) {
                 $this->getRouter()->setRoutes(RouteParser::parseRoutes($this->getControllers()));
@@ -70,10 +70,14 @@ class Rad {
             $response = $this->getRouter()->route($this->request);
             $response->send();
         } catch (ErrorException $ex) {
-            Log::getHandler()->error($ex->getMessage());
-            $response = new Response($ex->getCode());
-            $response->getBody()->write($ex->getCode() . ' ' . $ex->getMessage());
-            $response->send();
+            if ($errorClosure === null) {
+                Log::getHandler()->error($ex->getMessage());
+                $response = new Response($ex->getCode());
+                $response->getBody()->write($ex->getCode() . ' ' . $ex->getMessage());
+                $response->send();
+            } else {
+                call_user_func_array($finalClosure, [$ex]);
+            }
         } finally {
             if ($finalClosure != null) {
                 call_user_func_array($finalClosure, []);
