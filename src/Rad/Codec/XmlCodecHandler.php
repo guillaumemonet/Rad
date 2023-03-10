@@ -23,7 +23,7 @@ class XmlCodecHandler implements CodecInterface {
     }
 
     public function deserialize(string $string) {
-        throw new ErrorException("Not supported yet!");
+        throw new CodecException("Not supported yet!");
     }
 
     public function getMimeTypes(): array {
