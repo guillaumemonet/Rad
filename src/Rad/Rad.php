@@ -70,13 +70,12 @@ class Rad {
             $response = $this->getRouter()->route($this->request);
             $response->send();
         } catch (ErrorException $ex) {
-            if ($errorClosure === null) {
-                Log::getHandler()->error($ex->getMessage());
-                $response = new Response($ex->getCode());
-                $response->getBody()->write($ex->getCode() . ' ' . $ex->getMessage());
-                $response->send();
-            } else {
-                call_user_func_array($finalClosure, [$ex]);
+            Log::getHandler()->error($ex->getMessage());
+            $response = new Response($ex->getCode());
+            $response->getBody()->write($ex->getCode() . ' ' . $ex->getMessage());
+            $response->send();
+            if ($errorClosure !== null) {
+                call_user_func_array($errorClosure, [$ex]);
             }
         } finally {
             if ($finalClosure != null) {
