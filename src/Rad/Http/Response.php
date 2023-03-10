@@ -68,7 +68,7 @@ class Response extends GResponse {
         array_walk($headers, function ($items, $key) {
             header($key . ': ' . implode(', ', $items));
         });
-        echo($datas);
+        echo $datas;
     }
 
     /**
