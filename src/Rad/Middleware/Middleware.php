@@ -63,8 +63,7 @@ class Middleware {
      */
     public function call(ServerRequestInterface $request, ResponseInterface $response, Route $route, Closure $core) {
         $coreFunction  = $this->createCoreFunction($core);
-        $layers        = $this->layers;
-        $completeOnion = array_reduce($layers, function ($nextLayer, $layer) {
+        $completeOnion = array_reduce($this->layers, function ($nextLayer, $layer) {
             return $this->createLayer($nextLayer, $layer);
         }, $coreFunction);
         return $completeOnion($request, $response, $route);
