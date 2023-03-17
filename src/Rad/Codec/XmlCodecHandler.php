@@ -9,7 +9,7 @@
 
 namespace Rad\Codec;
 
-use ErrorException;
+use Rad\Error\CodecException;
 
 /**
  * Description of Xml_CodecHandler
@@ -19,11 +19,11 @@ use ErrorException;
 class XmlCodecHandler implements CodecInterface {
 
     public function __toString() {
-        return "XML encode/decode";
+        return 'XML encode/decode';
     }
 
     public function deserialize(string $string) {
-        throw new CodecException("Not supported yet!");
+        throw new CodecException('Not supported yet!');
     }
 
     public function getMimeTypes(): array {

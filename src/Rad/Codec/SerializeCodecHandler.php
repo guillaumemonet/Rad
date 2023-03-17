@@ -6,6 +6,7 @@
  * @link https://github.com/guillaumemonet/Rad
  * @package Rad
  */
+
 namespace Rad\Codec;
 
 /**
@@ -28,7 +29,7 @@ class SerializeCodecHandler implements CodecInterface {
     }
 
     public function __toString() {
-        return "Default PHP serialize/deserialize";
+        return 'Default PHP serialize/deserialize';
     }
 
     public function sign($datas, $secret) {

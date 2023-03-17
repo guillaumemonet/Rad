@@ -25,11 +25,11 @@ class NoCodecHandler implements CodecInterface {
     }
 
     public function serialize($object): string {
-        return "".$object;
+        return "" . $object;
     }
 
     public function __toString() {
-        return "Default Codec Handler";
+        return 'Default Codec Handler';
     }
 
     public function sign($datas, $secret) {

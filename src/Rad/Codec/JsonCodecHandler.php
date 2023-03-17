@@ -25,7 +25,7 @@ class JsonCodecHandler implements CodecInterface {
     public function deserialize(string $string) {
         $ret = json_decode($string);
         if (json_last_error() > 0) {
-            throw new CodecException("Error during json_decode", json_last_error_msg());
+            throw new CodecException('Error during json_decode', json_last_error_msg());
         }
         return $ret;
     }
@@ -33,7 +33,7 @@ class JsonCodecHandler implements CodecInterface {
     public function serialize($object): string {
         $ret = json_encode((array) $object);
         if (json_last_error() > 0) {
-            throw new CodecException("Error during json_encode", json_last_error_msg());
+            throw new CodecException('Error during json_encode', json_last_error_msg());
         }
         return $ret;
     }
