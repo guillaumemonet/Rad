@@ -31,7 +31,7 @@ class SmartyTemplateHandler extends Smarty implements TemplateInterface {
         $this->compile_dir     = Config::getApiConfig()->install_path . $config->compile_dir;
         $this->config_dir      = Config::getApiConfig()->install_path . $config->config_dir;
         $this->cache_dir       = Config::getApiConfig()->install_path . $config->cache_dir;
-        if ($config->cache_type !== "smarty") {
+        if ($config->cache_type !== 'smarty') {
             $this->caching_type = $config->cache_type;
             $this->registerCacheResource($config->cache_type, new SmartyTemplateCacheHandler($config->cache_type));
         }
