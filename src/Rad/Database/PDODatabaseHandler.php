@@ -23,9 +23,9 @@ use Rad\Log\Log;
 class PDODatabaseHandler extends DatabaseAdapter {
 
     public function __construct() {
-        $config = Config::getServiceConfig("database", "pdo")->config;
+        $config = Config::getServiceConfig('database', 'pdo')->config;
         try {
-            parent::__construct($config->type . ":host=" . $config->host . ";dbname=" . $config->database, $config->user, $config->password);
+            parent::__construct($config->type . ':host=' . $config->host . ';dbname=' . $config->database, $config->user, $config->password);
             $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
             $this->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
         } catch (PDOException $ex) {
@@ -105,7 +105,7 @@ class PDODatabaseHandler extends DatabaseAdapter {
     }
 
     public function schema($table) {
-        return $this->query("SHOW COLUMUNS FROM `$table`");
+        return $this->query(sprintf('SHOW COLUMUNS FROM `%s`', $table));
     }
 
     /**
