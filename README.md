@@ -2,10 +2,11 @@
 RAD Framework
 ==========================
 
-[![Latest Stable Version](https://poser.pugx.org/rad/rad-framework/v/stable)](https://packagist.org/packages/rad/rad-framework)
-[![Total Downloads](https://poser.pugx.org/rad/rad-framework/downloads)](https://packagist.org/packages/rad/rad-framework)
-[![Latest Unstable Version](https://poser.pugx.org/rad/rad-framework/v/unstable)](https://packagist.org/packages/rad/rad-framework)
-[![License](https://poser.pugx.org/rad/rad-framework/license)](https://packagist.org/packages/rad/rad-framework)
+[![Latest Stable Version](http://poser.pugx.org/rad/rad-framework/v)](https://packagist.org/packages/rad/rad-framework) 
+[![Total Downloads](http://poser.pugx.org/rad/rad-framework/downloads)](https://packagist.org/packages/rad/rad-framework) 
+[![Latest Unstable Version](http://poser.pugx.org/rad/rad-framework/v/unstable)](https://packagist.org/packages/rad/rad-framework) 
+[![License](http://poser.pugx.org/rad/rad-framework/license)](https://packagist.org/packages/rad/rad-framework) 
+[![PHP Version Require](http://poser.pugx.org/rad/rad-framework/require/php)](https://packagist.org/packages/rad/rad-framework)
 [![Maintainability](https://api.codeclimate.com/v1/badges/8e095176dd6216eea653/maintainability)](https://codeclimate.com/github/guillaumemonet/Rad/maintainability)
 
 ## What is RAD?
@@ -20,7 +21,7 @@ Any advice is welcome.
 
 ## Installation
 
-[PHP](https://php.net) 7.1+ and [Composer](https://getcomposer.org) are required.
+[PHP](https://php.net) 7.4+ and [Composer](https://getcomposer.org) are required.
 
 To get the latest version of RAD Framework, simply add the following line to the require block of your `composer.json` file:
 
