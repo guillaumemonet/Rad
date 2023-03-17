@@ -47,7 +47,7 @@ abstract class Service implements ServiceInterface {
         return static::$instances[$calledClass];
     }
 
-    final private function __clone() {
+    private function __clone() {
         
     }
 
