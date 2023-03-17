@@ -17,7 +17,6 @@ use Rad\Error\Http\NotFoundException;
 use Rad\Http\Response;
 use Rad\Http\ServerRequest;
 use Rad\Log\Log;
-use Rad\Route\RouteParser;
 use Rad\Route\Router;
 use Rad\Route\RouterInterface;
 
