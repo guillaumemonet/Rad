@@ -20,7 +20,7 @@ use Rad\Config\Config;
 class OutputLogHandler extends AbstractLogger {
 
     public function log($level, $message, array $context = []) {
-        $config = Config::getServiceConfig("log", "output")->config;
+        $config = Config::getServiceConfig('log', 'output')->config;
         if ($config->enabled == 1 && $config->{$level} == 1) {
             if (is_array($message)) {
                 $message = print_r($message, true);
@@ -30,7 +30,7 @@ class OutputLogHandler extends AbstractLogger {
     }
 
     private function logFormat(string $type, string $message) {
-        return sprintf("[%-9s] %s", $type, $message);
+        return sprintf('[%-9s] %s', $type, $message);
     }
 
 }
