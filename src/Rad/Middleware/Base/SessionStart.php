@@ -31,7 +31,7 @@ class SessionStart extends MiddlewareBefore {
      */
     public function middle(ServerRequestInterface $request, ResponseInterface $response, Route $route): ResponseInterface {
         Session::getHandler()->start();
-        Log::getHandler()->debug("Start Session " . session_id());
+        Log::getHandler()->debug('Start Session ' . session_id());
         return $response;
     }
 

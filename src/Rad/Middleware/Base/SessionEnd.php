@@ -31,7 +31,7 @@ class SessionEnd extends MiddlewareAfter {
      */
     public function middle(ServerRequestInterface $request, ResponseInterface $response, Route $route): ResponseInterface {
         Session::getHandler()->end();
-        Log::getHandler()->debug("End Session " . session_id());
+        Log::getHandler()->debug('End Session ' . session_id());
         return $response;
     }
 

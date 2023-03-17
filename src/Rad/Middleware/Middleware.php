@@ -48,7 +48,7 @@ class Middleware {
             $layers = [$layers];
         }
         if (!is_array($layers)) {
-            throw new InvalidArgumentException(get_class($layers) . " is not a valid middleware.");
+            throw new InvalidArgumentException(get_class($layers) . ' is not a valid middleware.');
         }
         $this->layers = array_merge($this->layers, $layers);
     }

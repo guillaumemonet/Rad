@@ -30,7 +30,7 @@ class Options extends MiddlewareBefore {
      */
     public function middle(ServerRequestInterface $request, ResponseInterface $response, Route $route): ResponseInterface {
         if (strtoupper($request->getMethod()) == 'OPTIONS') {
-            $headers = (array) Config::getApiConfig("cors");
+            $headers = (array) Config::getApiConfig('cors');
             array_walk($headers, function (&$value, $header) use (&$response) {
                 $response = $response->withAddedHeader($header, $value);
             });

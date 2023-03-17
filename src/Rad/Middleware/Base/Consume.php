@@ -37,11 +37,11 @@ class Consume extends MiddlewareBefore {
         foreach ($route->getConsumedMimeType() as $consume) {
             $consumeTypes += Mime::getMimeTypesFromShort($consume);
         }
-        $acceptTypes = HttpHeaders::parseAccepted(current($request->getHeader("Accept")));
+        $acceptTypes = HttpHeaders::parseAccepted(current($request->getHeader('Accept')));
         if (isset($acceptTypes['*/*']) || sizeof(array_intersect($consumeTypes, array_keys($acceptTypes))) > 0) {
             return $response;
         } else {
-            throw new NotAcceptableException("Wrong Content Type " . implode(",", $acceptTypes) . " Require " . implode(" ", $consumeTypes));
+            throw new NotAcceptableException('Wrong Content Type ' . implode(',', $acceptTypes) . ' Require ' . implode(' ', $consumeTypes));
         }
     }
 

@@ -34,7 +34,7 @@ class XMLHttpRequest extends MiddlewareBefore {
         if ($request->isXhr()) {
             return $response;
         } else {
-            throw new PreconditionFailedException("Must be an XmlHttpRequest");
+            throw new PreconditionFailedException('Must be an XmlHttpRequest');
         }
     }
 

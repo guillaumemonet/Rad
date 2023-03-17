@@ -31,9 +31,9 @@ class Produce extends MiddlewareAfter {
      */
     public function middle(ServerRequestInterface $request, ResponseInterface $response, Route $route): ResponseInterface {
         if (!empty($route->getProcucedMimeType())) {
-            $response = $response->withAddedHeader("Content-Type", Mime::getMimeTypesFromShort(current($route->getProcucedMimeType()))[0]);
+            $response = $response->withAddedHeader('Content-Type', Mime::getMimeTypesFromShort(current($route->getProcucedMimeType()))[0]);
         } else {
-            $response = $response->withAddedHeader("Content-Type", Mime::getMimeTypesFromShort("json")[0]);
+            $response = $response->withAddedHeader('Content-Type', Mime::getMimeTypesFromShort('json')[0]);
         }
         return $response;
     }

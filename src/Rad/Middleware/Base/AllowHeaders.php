@@ -28,7 +28,7 @@ class AllowHeaders extends MiddlewareBefore {
      * @return ResponseInterface
      */
     public function middle(ServerRequestInterface $request, ResponseInterface $response, Route $route): ResponseInterface {
-        return $response->withAddedHeader("Access-Control-Allow-Headers", $route->getAllowedHeaders());
+        return $response->withAddedHeader('Access-Control-Allow-Headers', $route->getAllowedHeaders());
     }
 
 }

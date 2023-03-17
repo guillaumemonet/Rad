@@ -28,7 +28,7 @@ class ExposeHeaders extends MiddlewareAfter {
      * @return ResponseInterface
      */
     public function middle(ServerRequestInterface $request, ResponseInterface $response, Route $route): ResponseInterface {
-        return $response->withAddedHeader("Access-Control-Expose-Headers", $route->getExposedHeaders());
+        return $response->withAddedHeader('Access-Control-Expose-Headers', $route->getExposedHeaders());
     }
 
 }
