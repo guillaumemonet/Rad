@@ -44,15 +44,7 @@ class OpenSSLEncryption implements EncryptionInterface {
         }
     }
 
-    /**
-     * Encrypts
-     * 
-     * @param string $message - plaintext message
-     * @param string $key - encryption key (raw binary expected)
-     * @param boolean $encode - set to TRUE to return a base64-encoded 
-     * @return string (raw binary)
-     */
-    public function encrypt($datas) {
+    public function encrypt($datas): string {
         $key       = Config::getConfig()->api->token;
         $nonceSize = openssl_cipher_iv_length($this->method);
         $nonce     = openssl_random_pseudo_bytes($nonceSize);
@@ -67,15 +59,7 @@ class OpenSSLEncryption implements EncryptionInterface {
         return base64_encode($nonce . $ciphertext);
     }
 
-    /**
-     * Decrypts a message
-     * 
-     * @param string $message - ciphertext message
-     * @param string $key - encryption key (raw binary expected)
-     * @param boolean $encoded - are we expecting an encoded string?
-     * @return string
-     */
-    public function decrypt($datas) {
+    public function decrypt($datas): ?string {
         $datas = base64_decode($datas, true);
         if ($datas === false) {
             throw new Exception('Encryption failure');
@@ -94,7 +78,7 @@ class OpenSSLEncryption implements EncryptionInterface {
                 $nonce
         );
 
-        return $plaintext;
+        return $plaintext !== false ? $plaintext : null;
     }
 
 }

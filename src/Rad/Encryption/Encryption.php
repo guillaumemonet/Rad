@@ -38,7 +38,7 @@ final class Encryption extends Service {
      */
     public static function hashMd5(string $data): string {
         $token = Config::getApiConfig('token');
-        return hash("md5", $token . $data);
+        return hash('md5', $token . $data);
     }
 
     /**
@@ -56,7 +56,7 @@ final class Encryption extends Service {
      * @return string
      */
     public static function password($input): string {
-        return "*" . strtoupper(sha1(sha1($input, true)));
+        return '*' . strtoupper(sha1(sha1($input, true)));
     }
 
     /**

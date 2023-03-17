@@ -16,7 +16,7 @@ namespace Rad\Encryption;
  */
 interface EncryptionInterface {
 
-    public function encrypt(string $data);
+    public function encrypt(string $data): string;
 
-    public function decrypt(string $data);
+    public function decrypt(string $data): ?string;
 }
