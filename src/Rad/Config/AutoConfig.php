@@ -33,7 +33,7 @@ abstract class AutoConfig {
 
     public static function loadControllers($caching = true): array {
 
-        $controllers = unserialize(Cache::getHandler()->get("controllers"));
+        $controllers = unserialize(Cache::getHandler()->get('controllers'));
 
         if (empty($controllers) || $caching = false) {
             $controllers = self::findControllers();
@@ -48,7 +48,7 @@ abstract class AutoConfig {
         $directory   = new RecursiveDirectoryIterator($installPath);
         $iterator    = new RecursiveIteratorIterator($directory);
         $regex       = new RegexIterator($iterator, '/^.+\.php$/i', RecursiveRegexIterator::GET_MATCH);
-        foreach ($regex as $key => $file) {
+        foreach ($regex as $file) {
             $classname = self::parseFile(current($file));
             if (!empty($classname)) {
                 $controllers[] = $classname;
@@ -61,11 +61,11 @@ abstract class AutoConfig {
         $content    = file_get_contents($file);
         $namespaces = [];
         $classnames = [];
-        preg_match("/namespace\s+(.*);/", $content, $namespaces);
+        preg_match('/namespace\s+(.*);/', $content, $namespaces);
         preg_match('/class\s+(\w+)\s+/', $content, $classnames);
 
         try {
-            $clname    = $namespaces[1] . "\\" . $classnames[1];
+            $clname    = $namespaces[1] . '\\' . $classnames[1];
             $reflector = new ReflectionClass($clname);
             if ($reflector->isSubclassOf('Rad\\Controller\\Controller')) {
                 return $clname;
