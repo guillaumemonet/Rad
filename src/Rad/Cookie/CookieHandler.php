@@ -27,7 +27,7 @@ class CookieHandler implements CookieInterface {
     private $name  = null;
 
     public function __construct() {
-        $this->name = Config::getServiceConfig("cookie", "php")->config->name;
+        $this->name = Config::getServiceConfig('cookie', 'php')->config->name;
         if (isset($_COOKIE[$this->name])) {
             $this->datas = unserialize(Encryption::getHandler()->decrypt($_COOKIE[$this->name]));
         }
