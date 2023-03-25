@@ -10,11 +10,11 @@ require(__DIR__ . "/../vendor/autoload.php");
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Rad\Api;
 use Rad\Build\Build;
 use Rad\Controller\Controller;
 use Rad\Cookie\Cookie;
 use Rad\Log\Log;
+use Rad\Rad;
 use Rad\Session\Session;
 use Rad\Template\Template;
 use Rad\Utils\File;
@@ -50,12 +50,20 @@ class Example extends Controller {
     }
 
     /**
+     * @get /info
+     * @produce html
+     */
+    public function info(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
+        phpinfo();
+        exit;
+    }
+
+    /**
      * @get /json/
      * @options /json/
      * @produce json
      */
     public function json(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
-        //$response  = $response->withAddedHeader('Hello', 'Moto');
         $std       = new stdClass();
         $std->toto = "toto/fdsf   sdf://";
         $std->arr  = ["toto ", "titi"];
@@ -116,6 +124,8 @@ class Example extends Controller {
     public function template(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
         $response = $response->withAddedHeader('Hello', 'Moto');
         if (!Template::getHandler()->isCached("index.tpl", "cached", "compiled")) {
+            $file = new File();
+            $file->downloadMulti(['https://random.imagecdn.app/500/150' => __DIR__ . '/cache/test1.jpg', 'https://random.imagecdn.app/500/151' => __DIR__ . '/cache/test2.jpg'], false);
             Log::getHandler()->debug("Not Cached index.tpl");
             Template::getHandler()->assign("img1", 'example/cache/test1.jpg');
             Template::getHandler()->assign("img2", 'example/cache/test2.jpg');
@@ -169,8 +179,8 @@ class Example extends Controller {
 
 }
 
-//Pass through for pictures and docs
-$extensions = array("php", "jpg", "jpeg", "gif", "css", "webp", "webm", "png", "svg");
+//Pass through for pictures,docs,fonts
+$extensions = ["php", "jpg", "jpeg", "gif", "css", "webp", "webm", "png", "svg", "ico", "ttf", "woff", "woff2", "js", "map", "eot"];
 
 $path = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
 $ext  = pathinfo($path, PATHINFO_EXTENSION);
@@ -185,10 +195,7 @@ Time::startCounter();
 require(__DIR__ . '/TestObserver.php');
 
 //Init Api
-$app = new Api(__DIR__ . "/config/");
-
-$file = new File();
-$file->downloadMulti(['https://random.imagecdn.app/500/150' => __DIR__ . '/cache/test1.jpg', 'https://random.imagecdn.app/500/151' => __DIR__ . '/cache/test2.jpg'], false);
+$app = new Rad(__DIR__ . "/config/");
 
 $app->addControllers(
         [Example::class]
