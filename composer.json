@@ -45,9 +45,9 @@
         "psr/http-server-middleware": "^1",
         "psr/http-server-handler": "^1",
         "psr/http-factory": "^1",
-        "guzzlehttp/psr7": "2.4.3",
-        "smarty/smarty": "v4.2.1",
-        "nette/php-generator": "v3.6.9"
+        "guzzlehttp/psr7": "^2.4",
+        "smarty/smarty": "^v4.2",
+        "nette/php-generator": "^v3"
     },
     "bin": ["bin/rad"]
 }
