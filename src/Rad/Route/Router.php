@@ -152,11 +152,13 @@ class Router implements RouterInterface {
             $middleware       = new Middleware($route->getMiddlewares());
             $classController  = $route->getClassName();
             $methodController = $route->getMethodName();
-            $response         = $middleware->call($request, new Response(200), $route, function ($request, $response, $route) use ($classController, $methodController) {
-                $controller = new $classController($route);
-                $route->applyObservers($controller);
-                return $controller->{$methodController}($request, $response, $route->getArgs());
-            });
+            $response         = $middleware->call($request, new Response(200), $route,
+                    function ($request, $response, $route) use ($classController, $methodController) {
+                        $controller = new $classController($route);
+                        $route->applyObservers($controller);
+                        return $controller->{$methodController}($request, $response, $route->getArgs());
+                    }
+            );
             return $response;
         } else {
             throw new NotFoundException("No Method " . $method . " found for " . $path);
@@ -179,6 +181,7 @@ class Router implements RouterInterface {
     public function load(array $controllers): self {
         $this->treeRoutes = unserialize(Cache::getHandler()->get($this->cacheName));
         if (empty($this->treeRoutes)) {
+            Log::getHandler()->debug('Generate Tree Route');
             $this->setRoutes(RouteParser::parseRoutes($controllers))
                     ->save();
         }
