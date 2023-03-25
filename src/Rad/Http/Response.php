@@ -29,6 +29,7 @@ namespace Rad\Http;
 use GuzzleHttp\Psr7\Response as GResponse;
 use Psr\Http\Message\StreamInterface;
 use Rad\Codec\Codec;
+use Rad\Log\Log;
 
 /**
  * 
@@ -78,7 +79,8 @@ class Response extends GResponse {
     public static function headerStatus($statusCode, $redirect_url = null) {
         if (StatusCode::httpHeaderFor($statusCode) !== null) {
             header(StatusCode::httpHeaderFor($statusCode));
-            if ($redirect_url !== null && Uri::isURL($redirect_url)) {
+            if ($redirect_url !== null) {
+                Log::getHandler()->debug('Redirect to ' . $redirect_url);
                 header('Location: ' . $redirect_url);
                 exit;
             }
