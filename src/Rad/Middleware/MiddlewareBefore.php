@@ -12,7 +12,6 @@ namespace Rad\Middleware;
 use Closure;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Rad\Middleware\MiddlewareInterface;
 use Rad\Route\Route;
 
 /**
@@ -21,6 +20,8 @@ use Rad\Route\Route;
  * @author Guillaume Monet
  */
 abstract class MiddlewareBefore implements MiddlewareInterface {
+
+    public static $priority = 1;
 
     /**
      * 

@@ -11,7 +11,6 @@ namespace Rad\Middleware\Base;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Rad\Log\Log;
 use Rad\Middleware\MiddlewareBefore;
 use Rad\Route\Route;
 use Rad\Session\Session;
@@ -23,6 +22,8 @@ use Rad\Session\Session;
  */
 class SessionStart extends MiddlewareBefore {
 
+    public static $priority = 9;
+
     /**
      * @param ServerRequestInterface $request
      * @param ResponseInterface $response
@@ -31,7 +32,6 @@ class SessionStart extends MiddlewareBefore {
      */
     public function middle(ServerRequestInterface $request, ResponseInterface $response, Route $route): ResponseInterface {
         Session::getHandler()->start();
-        Log::getHandler()->debug('Start Session ' . session_id());
         return $response;
     }
 

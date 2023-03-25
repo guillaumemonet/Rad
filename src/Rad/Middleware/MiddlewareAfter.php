@@ -21,6 +21,8 @@ use Rad\Route\Route;
  */
 abstract class MiddlewareAfter implements MiddlewareInterface {
 
+    public static $priority = 1;
+
     /**
      * 
      * @param ServerRequestInterface $request

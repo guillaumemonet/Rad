@@ -62,10 +62,15 @@ class Middleware {
      * @return type
      */
     public function call(ServerRequestInterface $request, ResponseInterface $response, Route $route, Closure $core) {
-        $this->layers  = array_reverse($this->layers);
+        usort($this->layers, function ($a, $b) {
+            if ($a::$priority == $b::$priority) {
+                return 0;
+            }
+            return ($a::$priority < $b::$priority ) ? -1 : 1;
+        });
         $coreFunction  = $this->createCoreFunction($core);
         $completeOnion = array_reduce($this->layers, function ($nextLayer, $layer) {
-            return $this->createLayer($nextLayer, $layer);
+            return $this->createLayer($nextLayer, new $layer());
         }, $coreFunction);
         return $completeOnion($request, $response, $route);
     }
