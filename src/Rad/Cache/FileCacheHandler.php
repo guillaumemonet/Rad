@@ -128,6 +128,7 @@ class FileCacheHandler implements CacheInterface {
                 @unlink($this->path . $file);
             }
         }
+        return true;
     }
 
     /**
