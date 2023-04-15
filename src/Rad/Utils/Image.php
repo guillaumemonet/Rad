@@ -108,7 +108,7 @@ class Image {
         if (!array_key_exists($type, $this->image_functions['create'])) {
             throw new ServiceException('Unsupported image type');
         }
-        $create_function = $this->image_function['create'][$type];
+        $create_function = $this->image_functions['create'][$type];
         $this->image     = $create_function($source);
     }
 
