@@ -29,6 +29,7 @@ namespace Rad\Utils;
 use finfo;
 use GdImage;
 use Rad\Error\ServiceException;
+use Rad\Log\Log;
 
 class Image {
 
@@ -95,9 +96,11 @@ class Image {
                 case IMAGETYPE_WEBP:
                     $this->image = imagecreatefromwebp($source);
                     break;
+                default:
+                    throw new ServiceException('Not type defined');
             }
         } catch (Exception $ex) {
-            new ServiceException('Unable to load ' . $source);
+            Log::getHandler()->error('Unable to load ' . $source . ' ' . $ex->getMessage());
         }
     }
 
@@ -121,9 +124,11 @@ class Image {
                 case IMAGETYPE_WEBP:
                     imagewebp($this->image, $destination, $this->quality);
                     break;
+                default:
+                    throw new ServiceException('Not type defined');
             }
         } catch (Exception $ex) {
-            new ServiceException('Unable to save ' . $destination);
+            Log::getHandler()->error('Unable to save ' . $destination . ' ' . $ex->getMessage());
         }
     }
 
@@ -157,7 +162,7 @@ class Image {
      * @param int $height
      * @return Image
      */
-    public static function resize($source, $destination, $height) {
+    public static function resize($source, $destination, $height): Image {
         $image            = new Image($source);
         $newimage         = new Image();
         $newimage->height = $height;
