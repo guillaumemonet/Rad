@@ -24,25 +24,115 @@
  * THE SOFTWARE.
  */
 
-namespace Rad\utils;
+namespace Rad\Utils;
 
-use Rad\manager\Config as Config;
-use Rad\manager\Log;
 use finfo;
+use GdImage;
+use Rad\Error\ServiceException;
 
-/**
- * @deprecated
- */
-abstract class Image {
-
-    private $tabExt = array('jpg', 'gif', 'png', 'jpeg');    // Extensions autorisees
-    private $infosImg = [];
+class Image {
 
     /**
      * 
+     * @var GdImage
      */
-    public function upload() {
-        
+    public $image;
+
+    /**
+     * 
+     * @var int
+     */
+    public $height;
+
+    /**
+     * 
+     * @var int
+     */
+    public $width;
+
+    /**
+     * 
+     * @var int
+     */
+    public $type;
+
+    /**
+     * 
+     * @var int
+     */
+    public $quality = -1;
+
+    public function __construct($source = null) {
+        if ($source == null) {
+            return;
+        } else {
+            $this->load($source);
+        }
+    }
+
+    /**
+     * 
+     * @param String $source
+     */
+    public function load($source) {
+        try {
+            $infos_image  = getimagesize($source);
+            $this->width  = $infos_image[0];
+            $this->height = $infos_image[1];
+            $this->type   = $infos_image[2];
+
+            // Chargement de l'image
+            switch ($this->type) {
+                case IMAGETYPE_JPEG:
+                    $this->image = imagecreatefromjpeg($source);
+                    break;
+                case IMAGETYPE_PNG:
+                    $this->image = imagecreatefrompng($source);
+                    break;
+                case IMAGETYPE_GIF:
+                    $this->image = imagecreatefromgif($source);
+                    break;
+                case IMAGETYPE_WEBP:
+                    $this->image = imagecreatefromwebp($source);
+                    break;
+            }
+        } catch (Exception $ex) {
+            new ServiceException('Unable to load ' . $source);
+        }
+    }
+
+    /**
+     * 
+     * @param String $destination
+     */
+    public function save($destination) {
+        try {
+            // Enregistrement de la nouvelle image
+            switch ($this->type) {
+                case IMAGETYPE_JPEG:
+                    imagejpeg($this->image, $destination, $this->quality);
+                    break;
+                case IMAGETYPE_PNG:
+                    imagepng($this->image, $destination, $this->quality);
+                    break;
+                case IMAGETYPE_GIF:
+                    imagegif($this->image, $destination);
+                    break;
+                case IMAGETYPE_WEBP:
+                    imagewebp($this->image, $destination, $this->quality);
+                    break;
+            }
+        } catch (Exception $ex) {
+            new ServiceException('Unable to save ' . $destination);
+        }
+    }
+
+    /**
+     * 
+     * @param int $type
+     */
+    public function convertTo($type = IMAGETYPE_WEBP) {
+        $this->type = $type;
     }
 
     public static function getStreamMimeType($buffer) {
@@ -50,8 +140,40 @@ abstract class Image {
         return $finfo->buffer($buffer);
     }
 
-    public static function getFileMimeType($path) {
-        
+    public static function convertToWebP($source, $destination, $quality = 80) {
+        $image          = new Image($source);
+        $image->quality = $quality;
+
+        $image->convertTo(IMAGETYPE_WEBP);
+        $image->save($destination);
+        // Libérer la mémoire
+        $image = null;
+    }
+
+    /**
+     * 
+     * @param String $source
+     * @param String $destination
+     * @param int $height
+     * @return Image
+     */
+    public static function resize($source, $destination, $height) {
+        $image            = new Image($source);
+        $newimage         = new Image();
+        $newimage->height = $height;
+        $ratio            = $newimage->height / $image->height;
+        $newimage->width  = round($image->width * $ratio);
+
+        // Création d'une nouvelle image avec les dimensions souhaitées
+
+        $newimage->image = imagecreatetruecolor($width, $height);
+
+        // Redimensionnement de l'image
+        imagecopyresampled($newimage->image, $image->image, 0, 0, 0, 0, $newimage->width, $newimage->height, $image->width, $image->height);
+        $newimage->save($destination);
+        // Libération de la mémoire
+        $image = null;
+        return $newimage;
     }
 
 }
