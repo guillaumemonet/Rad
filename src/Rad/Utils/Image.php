@@ -63,6 +63,25 @@ class Image {
      */
     public $quality = -1;
 
+    /**
+     * 
+     * @var array
+     */
+    public $image_functions = [
+        'create' => [
+            IMAGETYPE_JPEG => 'imagecreatefromjpeg',
+            IMAGETYPE_PNG  => 'imagecreatefrompng',
+            IMAGETYPE_GIF  => 'imagecreatefromgif',
+            IMAGETYPE_WEBP => 'imagecreatefromwebp'
+        ],
+        'save'   => [
+            IMAGETYPE_JPEG => 'imagejpeg',
+            IMAGETYPE_PNG  => 'imagepng',
+            IMAGETYPE_GIF  => 'imagegif',
+            IMAGETYPE_WEBP => 'imagewebp',
+        ]
+    ];
+
     public function __construct($source = null) {
         if ($source == null) {
             return;
@@ -76,32 +95,21 @@ class Image {
      * @param String $source
      */
     public function load($source) {
-        try {
-            $infos_image  = getimagesize($source);
-            $this->width  = $infos_image[0];
-            $this->height = $infos_image[1];
-            $this->type   = $infos_image[2];
-
-            // Chargement de l'image
-            switch ($this->type) {
-                case IMAGETYPE_JPEG:
-                    $this->image = imagecreatefromjpeg($source);
-                    break;
-                case IMAGETYPE_PNG:
-                    $this->image = imagecreatefrompng($source);
-                    break;
-                case IMAGETYPE_GIF:
-                    $this->image = imagecreatefromgif($source);
-                    break;
-                case IMAGETYPE_WEBP:
-                    $this->image = imagecreatefromwebp($source);
-                    break;
-                default:
-                    throw new ServiceException('Not type defined');
-            }
-        } catch (Exception $ex) {
-            Log::getHandler()->error('Unable to load ' . $source . ' ' . $ex->getMessage());
+        $infos_image = @getimagesize($source);
+        if (!$infos_image) {
+            Log::getHandler()->error('Unable to get image size for ' . $source);
+            return;
         }
+        list($width, $height, $type) = $infos_image;
+        $this->width  = $width;
+        $this->height = $height;
+        $this->type   = $type;
+
+        if (!array_key_exists($type, $this->image_functions['create'])) {
+            throw new ServiceException('Unsupported image type');
+        }
+        $create_function = $this->image_function['create'][$type];
+        $this->image     = $create_function($source);
     }
 
     /**
@@ -109,26 +117,17 @@ class Image {
      * @param String $destination
      */
     public function save($destination) {
-        try {
-            // Enregistrement de la nouvelle image
-            switch ($this->type) {
-                case IMAGETYPE_JPEG:
-                    imagejpeg($this->image, $destination, $this->quality);
-                    break;
-                case IMAGETYPE_PNG:
-                    imagepng($this->image, $destination, $this->quality);
-                    break;
-                case IMAGETYPE_GIF:
-                    imagegif($this->image, $destination);
-                    break;
-                case IMAGETYPE_WEBP:
-                    imagewebp($this->image, $destination, $this->quality);
-                    break;
-                default:
-                    throw new ServiceException('Not type defined');
-            }
-        } catch (Exception $ex) {
-            Log::getHandler()->error('Unable to save ' . $destination . ' ' . $ex->getMessage());
+        if (!array_key_exists($this->type, $this->image_functions['save'])) {
+            throw new ServiceException('Unsupported image type');
+        }
+        $save_function = $this->image_functions['save'][$this->type];
+        if ($this->type === IMAGETYPE_JPEG || $this->type === IMAGETYPE_WEBP) {
+            $success = $save_function($this->image, $destination, $this->quality);
+        } else {
+            $success = $save_function($this->image, $destination);
+        }
+        if (!$success) {
+            Log::getHandler()->error('Unable to save ' . $destination);
         }
     }
 
