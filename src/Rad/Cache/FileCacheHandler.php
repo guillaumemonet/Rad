@@ -136,12 +136,14 @@ class FileCacheHandler implements CacheInterface {
      * @return bool
      */
     public function purge(): bool {
+        $ret    = false;
         $handle = opendir($this->path);
         while ($handle !== false && false !== ($file   = readdir($handle))) {
             if ($file != ".." && $file != ".") {
-                @unlink($this->path . $file);
+                $ret &= unlink($this->path . $file);
             }
         }
+        return $ret;
     }
 
 }
