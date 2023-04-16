@@ -185,9 +185,7 @@ class Image {
     public static function convertToWebP($source, $destination, $quality = 80) {
         $image          = new Image($source);
         $image->quality = $quality;
-
-        $image->convertTo(IMAGETYPE_WEBP);
-        $image->save($destination);
+        $image->convertTo(IMAGETYPE_WEBP)->save($destination);
         return $image;
     }
 

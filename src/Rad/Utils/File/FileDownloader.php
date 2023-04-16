@@ -7,16 +7,16 @@
  * @package Rad
  */
 
-namespace Rad\Utils;
+namespace Rad\Utils\File;
 
 use Rad\Log\Log;
 
 /**
- * Description of File
+ * Description of Downloader
  *
  * @author Guillaume Monet
  */
-class File {
+class FileDownloader {
 
     /**
      * 
