@@ -21,9 +21,6 @@ class FileCSV extends File {
      * @return array
      */
     public function parseCSV(string $separator = ';', bool $hasHeader = false): array {
-        if (empty($this->content)) {
-            throw new ServerException('Can\'t parse empty content from ' . $this->source);
-        }
         $stream = fopen('php://temp', 'r+');
         fwrite($stream, $this->content);
         rewind($stream);
