@@ -14,9 +14,13 @@ namespace Rad\Utils;
  *
  * @author Guillaume Monet
  */
-final class Math {
+abstract class Math {
 
     private function __construct() {
+        
+    }
+
+    private function __clone() {
         
     }
 
@@ -26,7 +30,7 @@ final class Math {
      * @param int $precision
      * @return float
      */
-    public static function round(float $float, int $precision = 2) {
+    public static function round(float $float, int $precision = 3) {
         return round($float, $precision);
     }
 
