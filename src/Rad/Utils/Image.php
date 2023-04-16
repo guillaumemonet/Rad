@@ -135,23 +135,36 @@ class Image {
     }
 
     public function display($raw = true) {
-        if ($raw) {
-            $extension = pathinfo($this->source, PATHINFO_EXTENSION);
-            $mime_type = 'image/' . $extension;
-            $content   = file_get_contents($this->source);
-        } else {
-            if (!array_key_exists($this->type, $this->image_functions['build'])) {
-                throw new ServiceException('Unsupported image type');
-            }
-            $display_function = $this->image_functions['build'][$this->type];
-            $extension        = image_type_to_extension($this->type);
-            $mime_type        = 'image/' . $extension;
-            ob_start();
-            $success          = $display_function($this->image);
-            $content          = ob_get_clean();
-            if (!$success) {
-                throw new ServiceException('Unable to display image');
-            }
+        $raw ? $this->displayRaw() : $this->displayContent();
+    }
+
+    /**
+     * 
+     */
+    private function displayRaw() {
+        $extension = pathinfo($this->source, PATHINFO_EXTENSION);
+        $mime_type = 'image/' . $extension;
+        $content   = file_get_contents($this->source);
+        header('Content-Type: ' . $mime_type);
+        echo $content;
+    }
+
+    /**
+     * 
+     * @throws ServiceException
+     */
+    private function displayContent() {
+        if (!array_key_exists($this->type, $this->image_functions['build'])) {
+            throw new ServiceException('Unsupported image type');
+        }
+        $display_function = $this->image_functions['build'][$this->type];
+        $extension        = image_type_to_extension($this->type);
+        $mime_type        = 'image/' . $extension;
+        ob_start();
+        $success          = $display_function($this->image);
+        $content          = ob_get_clean();
+        if (!$success) {
+            throw new ServiceException('Unable to display image');
         }
         header('Content-Type: ' . $mime_type);
         echo $content;

@@ -32,9 +32,9 @@ class FileCSV extends File {
         while ($fields = fgetcsv($stream, 0, $separator)) {
             if ($hasHeader && !$header) {
                 $header = $fields;
-                continue;
+            } else {
+                $data[] = array_combine($header ?? range(0, count($fields) - 1), $fields);
             }
-            $data[] = array_combine($header ?? range(0, count($fields) - 1), $fields);
         }
         fclose($stream);
         return $data;
