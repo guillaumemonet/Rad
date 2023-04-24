@@ -247,13 +247,9 @@ abstract class StringUtils {
                 $newCode .= $trimmedLine . "\n";
                 continue;
             }
-            if (strpos($trimmedLine, '}') !== false) {
-                $indentLevel--;
-            }
+            strpos($trimmedLine, '}') !== false ? $indentLevel-- : '';
             $newCode .= str_repeat($tab, $indentLevel) . $trimmedLine . "\n";
-            if (strpos($trimmedLine, '{') !== false) {
-                $indentLevel++;
-            }
+            strpos($trimmedLine, '{') !== false ? $indentLevel++ : '';
         }
         return $newCode;
     }
