@@ -231,4 +231,39 @@ abstract class StringUtils {
         return str_replace("_", "", ucwords($name, '_'));
     }
 
+    /**
+     * Very simple reindent from string
+     * @param string $code
+     * @param string $tab
+     * @return string
+     */
+    public static function reindent(string $code, string $tab = '    '): string {
+        $lines       = explode("\n", $code);
+        $indentLevel = 0;
+        $newCode     = '';
+
+        foreach ($lines as $line) {
+            $trimmedLine  = trim($line);
+            $indentChange = 0;
+            if ($trimmedLine === '') {
+                $newCode .= $trimmedLine;
+            } else {
+                if (strpos($trimmedLine, '}') !== false) {
+                    $indentLevel--;
+                }
+                if (strpos($trimmedLine, '{') !== false) {
+                    $indentChange = 1;
+                }
+            }
+            if ($indentLevel > 0) {
+                $newCode .= str_repeat($tab, $indentLevel);
+            }
+            $newCode .= $trimmedLine . "\n";
+
+            $indentLevel += $indentChange;
+        }
+
+        return $newCode;
+    }
+
 }
