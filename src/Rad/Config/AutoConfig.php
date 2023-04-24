@@ -63,6 +63,10 @@ abstract class AutoConfig {
         $classnames = [];
         preg_match('/namespace\s+(.*);/', $content, $namespaces);
         preg_match('/class\s+(\w+)\s+/', $content, $classnames);
+        if (count($namespaces) == 0 && count($classnames) == 0) {
+            error_log("Not a class " . $file);
+            return null;
+        }
 
         try {
             $clname    = $namespaces[1] . '\\' . $classnames[1];
