@@ -239,30 +239,22 @@ abstract class StringUtils {
      */
     public static function reindent(string $code, string $tab = '    '): string {
         $lines       = explode("\n", $code);
-        $indentLevel = 0;
         $newCode     = '';
-
+        $indentLevel = 0;
         foreach ($lines as $line) {
-            $trimmedLine  = trim($line);
-            $indentChange = 0;
+            $trimmedLine = trim($line);
             if ($trimmedLine === '') {
-                $newCode .= $trimmedLine;
-            } else {
-                if (strpos($trimmedLine, '}') !== false) {
-                    $indentLevel--;
-                }
-                if (strpos($trimmedLine, '{') !== false) {
-                    $indentChange = 1;
-                }
+                $newCode .= $trimmedLine . "\n";
+                continue;
             }
-            if ($indentLevel > 0) {
-                $newCode .= str_repeat($tab, $indentLevel);
+            if (strpos($trimmedLine, '}') !== false) {
+                $indentLevel--;
             }
-            $newCode .= $trimmedLine . "\n";
-
-            $indentLevel += $indentChange;
+            $newCode .= str_repeat($tab, $indentLevel) . $trimmedLine . "\n";
+            if (strpos($trimmedLine, '{') !== false) {
+                $indentLevel++;
+            }
         }
-
         return $newCode;
     }
 
