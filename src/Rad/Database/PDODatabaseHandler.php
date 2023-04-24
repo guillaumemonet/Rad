@@ -52,7 +52,7 @@ class PDODatabaseHandler extends DatabaseAdapter {
      *
      * @return PDOStatement
      */
-    public function prepare($sql, $options = null) {
+    public function prepare(string $sql, array $options = []): PDOStatement|false {
         try {
             Log::getHandler()->debug($sql);
             $stmt = parent::prepare($sql, $options);
@@ -67,17 +67,22 @@ class PDODatabaseHandler extends DatabaseAdapter {
      *
      * @return PDOStatement
      */
-    public function query($sql) {
+    public function query(string $sql, ?int $fetchMode = null, mixed ...$fetchModeArgs): PDOStatement|false {
         try {
             Log::getHandler()->debug($sql);
-            return parent::query($sql);
+            return parent::query($sql, $fetchMode);
         } catch (PDOException $ex) {
             Log::getHandler()->error($ex->getMessage());
         }
         return false;
     }
 
-    public function exec($sql) {
+    /**
+     * 
+     * @param string $sql
+     * @return boolean
+     */
+    public function exec(string $sql): int|false {
         try {
             Log::getHandler()->debug($sql);
             return parent::exec($sql);
