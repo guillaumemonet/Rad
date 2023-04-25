@@ -31,19 +31,19 @@ class Rad {
      *
      * @var RouterInterface
      */
-    protected $router = null;
+    protected ?RouterInterface $router = null;
 
     /**
      *
      * @var ServerRequestInterface
      */
-    protected $request = null;
+    protected ?ServerRequestInterface $request = null;
 
     /**
      *
      * @var string[]
      */
-    private $controllers = [];
+    private array $controllers = [];
 
     /**
      *
