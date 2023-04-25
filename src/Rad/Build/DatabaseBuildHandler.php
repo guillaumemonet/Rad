@@ -487,21 +487,22 @@ class DatabaseBuildHandler implements BuildInterface {
 
     private function setType($row, $column) {
 
-        if (strstr($row["Type"], "char") !== false || strstr($row["Type"], "text") !== false) {
-            $column->type_sql = "\\PDO::PARAM_STR";
-            $column->type_php = "string";
-        } else if (strstr($row["Type"], "tinyint") !== false) {
-            $column->type_sql = "\\PDO::PARAM_INT";
-            $column->type_php = "bool";
-        } else if (strstr($row["Type"], "blob") !== false) {
-            $column->type_sql = "\\PDO::PARAM_BLOB";
-            $column->type_php = "binary";
-        } else if (strstr($row["Type"], "int") !== false) {
-            $column->type_sql = "\\PDO::PARAM_INT";
-            $column->type_php = "int";
-        } else if (strstr("float", $row["Type"]) !== false || strstr("long", $row["Type"]) !== false || strstr("double", $row["Type"]) !== false) {
-            $column->type_sql = "\\PDO::PARAM_STR";
-            $column->type_php = "decimal";
+        $type = strtolower($row["Type"]);
+
+        $types = [
+            "char"    => ["\\PDO::PARAM_STR", "string"],
+            "text"    => ["\\PDO::PARAM_STR", "string"],
+            "tinyint" => ["\\PDO::PARAM_INT", "bool"],
+            "blob"    => ["\\PDO::PARAM_BLOB", "binary"],
+            "int"     => ["\\PDO::PARAM_INT", "int"],
+            "float"   => ["\\PDO::PARAM_STR", "decimal"],
+            "long"    => ["\\PDO::PARAM_STR", "decimal"],
+            "double"  => ["\\PDO::PARAM_STR", "decimal"]
+        ];
+
+        if (array_key_exists($type, $types)) {
+            $column->type_sql = $types[$type][0];
+            $column->type_php = $types[$type][1];
         } else {
             $column->type_sql = "\\PDO::PARAM_STR";
             $column->type_php = "string";
