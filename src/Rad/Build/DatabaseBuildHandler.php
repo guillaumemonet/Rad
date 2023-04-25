@@ -82,6 +82,7 @@ class DatabaseBuildHandler implements BuildInterface {
             $class = $namespace->addClass($className);
 
             $this->generateProperties($class, $table);
+            $this->generateTableFormat($class, $table);
             $this->generateCreate($class, $table);
             $this->generateRead($class, $table);
             $this->generateUpdate($class, $table);
@@ -116,11 +117,14 @@ class DatabaseBuildHandler implements BuildInterface {
                     ->setType("?" . $col->type_php)
                     ->setVisibility('public');
         }
+    }
 
+    public function generateTableFormat(ClassType $class, Table $table) {
         $property = $class->addProperty('tableFormat')
                 ->setType('array')
                 ->setStatic();
-        $tab      = [];
+
+        $tab = [];
         foreach ($table->columns as $col_name => $col) {
             $tab[$col_name] = $col->type_sql;
         }
