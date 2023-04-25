@@ -20,12 +20,12 @@ use Rad\Error\ServiceException;
  */
 abstract class Service implements ServiceInterface {
 
-    protected static $instances  = [];
-    protected $serviceType       = null;
-    protected $providedClassName = null;
+    protected static array $instances  = [];
+    protected ?string $serviceType       = null;
+    protected ?string $providedClassName = null;
     protected $default           = null;
-    protected $services          = [];
-    protected $handlers          = [];
+    protected array $services          = [];
+    protected array $handlers          = [];
 
     protected function __construct() {
         $this->serviceType = $this->getServiceType();
@@ -35,11 +35,7 @@ abstract class Service implements ServiceInterface {
         $this->loadConfig();
     }
 
-    /**
-     * 
-     * @return Service
-     */
-    final public static function getInstance() {
+    final public static function getInstance(): static {
         $calledClass = get_called_class();
         if (!isset(static::$instances[$calledClass])) {
             static::$instances[$calledClass] = new $calledClass();
@@ -51,7 +47,7 @@ abstract class Service implements ServiceInterface {
         
     }
 
-    protected function addServiceHandler(string $shortName, $handler) {
+    protected function addServiceHandler(string $shortName, object $handler): void {
         if ($handler instanceof $this->providedClassName) {
             $this->handlers[$shortName] = $handler;
         } else {
@@ -59,7 +55,7 @@ abstract class Service implements ServiceInterface {
         }
     }
 
-    protected function getServiceHandler(string $handlerType = null) {
+    protected function getServiceHandler(?string $handlerType = null): ?object {
         if ($handlerType === null || $handlerType === '' || !isset($handlerType)) {
             $handlerType = $this->default;
         }
@@ -73,15 +69,15 @@ abstract class Service implements ServiceInterface {
         return $this->handlers[$handlerType];
     }
 
-    private function hasHandler(string $handlerType) {
+    private function hasHandler(string $handlerType): bool {
         return isset($this->handlers[$handlerType]);
     }
 
-    private function hasService(string $serviceName) {
+    private function hasService(string $serviceName): bool {
         return isset($this->services[$serviceName]);
     }
 
-    private function loadConfig() {
+    private function loadConfig(): void {
         $config = Config::getServiceConfig($this->serviceType);
 
         $this->default = $config->default;
@@ -99,8 +95,5 @@ abstract class Service implements ServiceInterface {
         });
     }
 
-    /**
-     * return string of service name wich match config service name
-     */
     protected abstract function getServiceType(): string;
 }
