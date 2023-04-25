@@ -82,7 +82,7 @@ class SFTPConnection {
         $files  = [];
         $stream = opendir("ssh2.sftp://" . intval($this->sftp) . "/./$directory");
         if (!$stream) {
-            throw new ErrorException("Could not open directory: $directory");
+            $this->throwError("Could not open directory: $directory");
         }
         while (false != ($entry = readdir($stream))) {
             if (!in_array($entry, array(".", ".."))) {
@@ -99,7 +99,7 @@ class SFTPConnection {
      * @throws ErrorException
      */
     private function throwError(string $message = "") {
-        throw new ErrorException($message);
+        throw new RadException($message);
     }
 
 }
