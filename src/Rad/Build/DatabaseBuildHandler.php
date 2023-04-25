@@ -142,10 +142,9 @@ class DatabaseBuildHandler implements BuildInterface {
     }
 
     public function generateParse(ClassType $class, Table $table) {
-        $parse = $class->addMethod('parse')
-                ->setVisibility('public')
-                ->addParameter("row")
-                ->setType("array");
+        $parse = $class->addMethod('parse');
+        $parse->setVisibility('public');
+        $parse->addParameter("row")->setType("array");
         foreach ($table->columns as $col_name => $col) {
             $def = "null";
             if (isset($col->default)) {
@@ -194,8 +193,8 @@ class DatabaseBuildHandler implements BuildInterface {
 
     public function generatePrimaryIndexGetter(ClassType $class, $k, $i) {
         $parse = $class->addMethod('get' . $class->getName())
-                ->setStatic()
-                ->setVisibility('public');
+                ->setStatic();
+        $parse->setVisibility('public');
 
         foreach ($i->getColumns("name") as $param) {
             $parse->addParameter($param);
@@ -208,9 +207,8 @@ class DatabaseBuildHandler implements BuildInterface {
     }
 
     public function generateUniqueIndexGetter(ClassType $class, Table $table, $k, $i) {
-        $parse = $class->addMethod($k)
-                ->setStatic()
-                ->setVisibility('public');
+        $parse = $class->addMethod($k)->setStatic();
+        $parse->setVisibility('public');
 
         foreach ($i->getColumns("name") as $param) {
             $parse->addParameter($param);
@@ -233,9 +231,8 @@ class DatabaseBuildHandler implements BuildInterface {
 
     public function generateOtherIndexGetter(ClassType $class, Table $table, $k, $i) {
 
-        $parse = $class->addMethod($k)
-                ->setStatic()
-                ->setVisibility('public');
+        $parse = $class->addMethod($k)->setStatic();
+        $parse->setVisibility('public');
 
         foreach ($i->getColumns("name") as $param) {
             $parse->addParameter($param);
@@ -260,8 +257,8 @@ class DatabaseBuildHandler implements BuildInterface {
     }
 
     public function generateCreate(ClassType $class, Table $table) {
-        $parse = $class->addMethod('create')
-                ->setVisibility('public');
+        $parse = $class->addMethod('create');
+        $parse->setVisibility('public');
 
         $parse->addParameter("force")->setDefaultValue(false)->setType("bool");
 
@@ -318,8 +315,8 @@ class DatabaseBuildHandler implements BuildInterface {
 
     public function generateRead(ClassType $class, Table $table) {
 
-        $parse = $class->addMethod('read')
-                ->setVisibility('public');
+        $parse = $class->addMethod('read');
+        $parse->setVisibility('public');
         foreach ($table->getPrimaryColumns("name") as $name) {
             $parse->addParameter($name);
         }
@@ -338,8 +335,8 @@ class DatabaseBuildHandler implements BuildInterface {
     }
 
     public function generateUpdate(ClassType $class, Table $table) {
-        $parse = $class->addMethod('update')
-                ->setVisibility('public');
+        $parse = $class->addMethod('update');
+        $parse->setVisibility('public');
         if (isset($table->columns["slug"]) && isset($table->columns["name"])) {
             $parse->addBody("\$this->slug=StringUtils::slugify(\$this->name);");
         }
@@ -362,8 +359,8 @@ class DatabaseBuildHandler implements BuildInterface {
     }
 
     public function generateDelete(ClassType $class, Table $table) {
-        $parse = $class->addMethod('delete')
-                ->setVisibility('public');
+        $parse = $class->addMethod('delete');
+        $parse->setVisibility('public');
         if (isset($table->columns["trash"])) {
             $parse->addBody("\$this->trash=true;");
             $parse->addBody("return \$this->update();");
@@ -376,9 +373,9 @@ class DatabaseBuildHandler implements BuildInterface {
 
     public function generateGetAll(ClassType $class, Table $table) {
 
-        $parse = $class->addMethod('getAll')
-                ->setStatic()
-                ->setVisibility('public');
+        $parse = $class->addMethod('getAll')->setStatic();
+        $parse->setVisibility('public');
+
         $parse->addParameter('offset');
         $parse->addParameter('limit');
         $parse->addBody("\$c_key = \"key_" . $class->getName() . "_all_" . $table->name . "_\".\$limit.\"_\".\$offset;");
@@ -401,8 +398,8 @@ class DatabaseBuildHandler implements BuildInterface {
     public function generateOneToManys(ClassType $class, Table $table) {
 
         foreach ($table->onetomany as $k => $ref_tables) {
-            $parse      = $class->addMethod('getAll' . StringUtils::camelCase($k))
-                    ->setVisibility('public');
+            $parse      = $class->addMethod('getAll' . StringUtils::camelCase($k));
+            $parse->setVisibility('public');
             $parse->addParameter('offset');
             $parse->addParameter('limit');
             $sql_cols   = [];
