@@ -2,6 +2,10 @@
 <?php
 
 declare(strict_types=1);
+
+use Rad\Composer\Manager;
+use Rad\Rad;
+
 $rootDir = realpath(__DIR__ . '/../');
 
 // Autoloader for standalone install (installed via `composer create-project` or cloned locally)
@@ -20,3 +24,28 @@ if (!$autoloader) {
 }
 
 require_once $autoloader;
+
+$app = new Rad($rootDir . "/config/");
+
+$actionName = $argv[1];
+
+switch ($actionName) {
+    case 'build':
+        fireBuild($argv);
+        break;
+}
+
+function fireBuild($argv) {
+    checkArg($argv, 2, 'Missing namespace');
+    checkArg($argv, 3, 'Missing path');
+
+    Manager::build($argv[2], $argv[3]);
+}
+
+function checkArg($arg, $position, $message) {
+    if (!isset($arg[$position])) {
+        throw new RuntimeException(
+                        $message
+        );
+    }
+}
