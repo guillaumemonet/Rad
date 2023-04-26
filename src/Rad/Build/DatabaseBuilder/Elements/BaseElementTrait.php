@@ -7,7 +7,7 @@
  * @package Rad
  */
 
-namespace Rad\Build\Elements;
+namespace Rad\Build\DatabaseBuilder\Elements;
 
 /**
  * Description of BaseElementTrait

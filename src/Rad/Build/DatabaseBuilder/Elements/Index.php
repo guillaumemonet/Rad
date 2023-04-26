@@ -7,9 +7,7 @@
  * @package Rad
  */
 
-namespace Rad\Build\Elements;
-
-use Rad\Build\Elements\BaseElementTrait;
+namespace Rad\Build\DatabaseBuilder\Elements;
 
 /**
  * Description of Index
