@@ -39,10 +39,9 @@ trait ClassesGeneratorStaticTrait {
         foreach ($i->getColumns("name") as $param) {
             $parse->addParameter($param);
         }
-        $parse->addParameter("useCache")->setDefaultValue(false)->setType("bool");
 
         $parse->addBody('$c = new ' . $class->getName() . '();');
-        $parse->addBody('$c->read(' . implode(",", $i->getColumns("php")) . ',$useCache);');
+        $parse->addBody('$c->read(' . implode(",", $i->getColumns("php")) . ');');
         $parse->addBody('return $c;');
     }
 

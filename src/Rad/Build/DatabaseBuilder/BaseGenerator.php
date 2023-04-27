@@ -16,17 +16,6 @@ namespace Rad\Build\DatabaseBuilder;
  */
 class BaseGenerator {
 
-    public $baseRequire = [
-        "PDO",
-        "Rad\\Model\\Model",
-        "Rad\\Model\\ModelDAO",
-        "Rad\\Database\\Database",
-        "Rad\\Cache\\Cache",
-        "Rad\\Log\\Log",
-        "Rad\\Utils\\StringUtils",
-        "Rad\\Encryption\\Encryption"
-    ];
-    
     protected string $query   = "\$result = Database::getHandler()->query(\$sql)";
     protected string $prepare = "\$result = Database::getHandler()->prepare(\$sql)";
     protected string $execute = "\$result->execute(%s)";

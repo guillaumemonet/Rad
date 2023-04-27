@@ -23,8 +23,19 @@ class ClassesGenerator extends BaseGenerator {
 
     use ClassesGeneratorStaticTrait;
 
-    public ?string $namespace = null;
-    public ?string $path      = null;
+    public ?string $namespace   = null;
+    public ?string $path        = null;
+    
+    public array $baseRequire = [
+        "PDO",
+        "Rad\\Model\\Model",
+        "Rad\\Model\\ModelDAO",
+        "Rad\\Database\\Database",
+        "Rad\\Cache\\Cache",
+        "Rad\\Log\\Log",
+        "Rad\\Utils\\StringUtils",
+        "Rad\\Encryption\\Encryption"
+    ];
 
     public function generateCreate(ClassType $class, Table $table) {
         $parse = $class->addMethod('create');
