@@ -16,5 +16,5 @@ namespace Rad\Build;
  */
 interface BuildInterface {
 
-    public function build($namespace = null, $path = null);
+    public function build();
 }

@@ -14,6 +14,8 @@ use Nette\PhpGenerator\PhpNamespace;
 use Rad\Build\DatabaseBuilder\ClassesGenerator;
 use Rad\Build\DatabaseBuilder\ControllersGenerator;
 use Rad\Build\DatabaseBuilder\GeneratorTools;
+use Rad\Cache\Cache;
+use Rad\Config\Config;
 use Rad\Utils\StringUtils;
 
 /**
@@ -25,23 +27,28 @@ class DatabaseBuildHandler implements BuildInterface {
     private ?ControllersGenerator $controllersGenerator = null;
 
     public function __construct() {
+        $config                     = Config::getServiceConfig('build', 'databasebuilder')->config;
         $this->classesGenerator     = new ClassesGenerator();
         $this->controllersGenerator = new ControllersGenerator();
+
+        $this->classesGenerator->path          = Config::getApiConfig()->install_path . $config->classesPath;
+        $this->classesGenerator->namespace     = $config->classesNamespace;
+        $this->controllersGenerator->path      = Config::getApiConfig()->install_path . $config->controllersPath;
+        $this->controllersGenerator->namespace = $config->controllersNamespace;
     }
 
-    public function build($namespace = "Rad\\Datas", $path = null) {
-        $this->classesGenerator->namespace     = $namespace;
-        $this->controllersGenerator->namespace = $namespace;
-        if ($path === null) {
-            $this->classesGenerator->path     = __DIR__ . '/../Datas/';
-            $this->controllersGenerator->path = __DIR__ . '/../Datas/';
-        } else {
-            $this->classesGenerator->path     = $path;
-            $this->controllersGenerator->path = $path;
+    public function build() {
+        if (!is_dir($this->classesGenerator->path)) {
+            mkdir($this->classesGenerator->path, 0777, true);
         }
+        if (!is_dir($this->controllersGenerator->path)) {
+            mkdir($this->controllersGenerator->path, 0777, true);
+        }
+
         $tables = GeneratorTools::generateArrayTables();
         $this->generateClasses($tables);
 
+        Cache::getHandler()->clear();
         return "Generated";
     }
 
@@ -57,6 +64,7 @@ class DatabaseBuildHandler implements BuildInterface {
                 $namespace->addUse($n);
             }
             $class = $namespace->addClass($className);
+            $class->setExtends('Rad\\Model\\Model');
 
             $this->classesGenerator->generateProperties($class, $table);
             $this->classesGenerator->generateTableFormat($class, $table);

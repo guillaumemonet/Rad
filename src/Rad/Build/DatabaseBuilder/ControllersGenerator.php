@@ -37,8 +37,8 @@ class ControllersGenerator extends BaseGenerator {
         $parse->addComment("@produce json");
 
         $parse->addBody('
-                $offset = sprintf(\'%d\',$_GET[\'offset\']);
-                $limit = sprintf(\'%d\',$_GET[\'limit\']);
+                $offset = isset($_GET[\'offset\']) ? sprintf(\'%d\',$_GET[\'offset\']) : null;
+                $limit = isset($_GET[\'limit\']) ? sprintf(\'%d\',$_GET[\'limit\']) : null;
                 $datas = ' . $mainClass->getName() . '::getAll($offset,$limit);
                $response->getBody()->write(json_encode($datas));
         return $response;');
@@ -54,8 +54,8 @@ class ControllersGenerator extends BaseGenerator {
         $parse->addComment("@get /" . strtolower($mainClass->getName()) . "/(?<id>[0-9]*)/");
         $parse->addComment("@produce json");
         $parse->addBody('
-            $' . $mainClass->getName() . ' = ' . $mainClass->getName() . '::get' . $mainClass->getName() . '($args[\'id\']);
-            $response->getBody()->write(json_encode($' . $mainClass->getName() . '));
+            $' . strtolower($mainClass->getName()) . ' = ' . $mainClass->getName() . '::get' . $mainClass->getName() . '($args[\'id\']);
+            $response->getBody()->write(json_encode($' . strtolower($mainClass->getName()) . '));
             return $response;');
     }
 
@@ -69,10 +69,11 @@ class ControllersGenerator extends BaseGenerator {
         $parse->addComment("@post /" . strtolower($mainClass->getName()) . "/");
         $parse->addComment("@produce json");
         $parse->addComment("@consume json");
-        $parse->addBody('$' . $mainClass->getName() . ' = new ' . $mainClass->getName() . '();
-                $' . $mainClass->getName() . '->hydrate(unserialize($request->getBody()->getContents()));
-                $' . $mainClass->getName() . '->create();
-                ');
+        $parse->addBody('$' . strtolower($mainClass->getName()) . ' = new ' . $mainClass->getName() . '();
+                $' . strtolower($mainClass->getName()) . '->hydrate(json_decode($request->getBody()->getContents()));
+                $' . strtolower($mainClass->getName()) . '->create();
+                $response->getBody()->write(json_encode($' . strtolower($mainClass->getName()) . '));
+                return $response;');
     }
 
     public function generateControllerPutOne(ClassType $mainClass, ClassType $class) {
@@ -85,10 +86,11 @@ class ControllersGenerator extends BaseGenerator {
         $parse->addComment("@put /" . strtolower($mainClass->getName()) . "/(?<id>[0-9]*)/");
         $parse->addComment("@produce json");
         $parse->addComment("@consume json");
-        $parse->addBody('$' . $mainClass->getName() . ' = ' . $mainClass->getName() . '::get' . $mainClass->getName() . '($args[\'id\']);
-                $' . $mainClass->getName() . '->hydrate(unserialize($request->getBody()->getContents()));
-                $' . $mainClass->getName() . '->update();
-                ');
+        $parse->addBody('$' . strtolower($mainClass->getName()) . ' = ' . $mainClass->getName() . '::get' . $mainClass->getName() . '($args[\'id\']);
+                $' . strtolower($mainClass->getName()) . '->hydrate(json_decode($request->getBody()->getContents()));
+                $' . strtolower($mainClass->getName()) . '->update();
+                $response->getBody()->write(json_encode($' . strtolower($mainClass->getName()) . '));
+                return $response;');
     }
 
     public function generateControllerPatchOne(ClassType $mainClass, ClassType $class) {
@@ -101,10 +103,11 @@ class ControllersGenerator extends BaseGenerator {
         $parse->addComment("@patch /" . strtolower($mainClass->getName()) . "/(?<id>[0-9]*)/");
         $parse->addComment("@produce json");
         $parse->addComment("@consume json");
-        $parse->addBody('$' . $mainClass->getName() . ' = ' . $mainClass->getName() . '::get' . $mainClass->getName() . '($args[\'id\']);
-                $' . $mainClass->getName() . '->hydrate(unserialize($request->getBody()->getContents()));
-                $' . $mainClass->getName() . '->update();
-                ');
+        $parse->addBody('$' . strtolower($mainClass->getName()) . ' = ' . $mainClass->getName() . '::get' . $mainClass->getName() . '($args[\'id\']);
+                $' . strtolower($mainClass->getName()) . '->hydrate(json_decode($request->getBody()->getContents()));
+                $' . strtolower($mainClass->getName()) . '->update();
+                $response->getBody()->write(json_encode($' . strtolower($mainClass->getName()) . '));
+                return $response;');
     }
 
     public function generateControllerDeleteOne(ClassType $mainClass, ClassType $class) {
@@ -117,9 +120,10 @@ class ControllersGenerator extends BaseGenerator {
         $parse->addComment("@delete /" . strtolower($mainClass->getName()) . "/(?<id>[0-9]*)/");
         $parse->addComment("@produce json");
         $parse->addComment("@consume json");
-        $parse->addBody('$' . $mainClass->getName() . ' = ' . $mainClass->getName() . '::get' . $mainClass->getName() . '($args[\'id\']);
-                $' . $mainClass->getName() . '->delete();
-                ');
+        $parse->addBody('$' . strtolower($mainClass->getName()) . ' = ' . $mainClass->getName() . '::get' . $mainClass->getName() . '($args[\'id\']);
+                $' . strtolower($mainClass->getName()) . '->delete();
+                $response->getBody()->write(json_encode($' . strtolower($mainClass->getName()) . '));
+                return $response;');
     }
 
 }
