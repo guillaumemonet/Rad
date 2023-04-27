@@ -20,7 +20,16 @@
             "default": "databasebuilder",
             "classname": "Rad\\Build\\BuildInterface",
             "handlers": {
-
+                "databasebuilder": {
+                    "classname": "Rad\\Build\\DatabaseBuildHandler",
+                    "config": {
+                        "databaseService": "pdo",
+                        "classesPath": "",
+                        "classesNamespace": "",
+                        "controllersPath": "",
+                        "controllersNamespace": ""
+                    }
+                }
             }
         },
         "template": {
