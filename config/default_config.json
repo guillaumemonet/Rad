@@ -27,7 +27,8 @@
                         "classesPath": "",
                         "classesNamespace": "",
                         "controllersPath": "",
-                        "controllersNamespace": ""
+                        "controllersNamespace": "",
+                        "controllersPrefix": ""
                     }
                 }
             }
@@ -207,20 +208,6 @@
                     "classname": "Rad\\Cookie\\CookieHandler",
                     "config": {
                         "name": "default"
-                    }
-                }
-            }
-        },
-        "build": {
-            "default": "databasebuilder",
-            "classname": "Rad\\Build\\BuildInterface",
-            "handlers": {
-                "databasebuilder": {
-                    "classname": "Rad\\Build\\DatabaseBuildHandler",
-                    "config": {
-                        "databaseService": "pdo",
-                        "classesPath": "",
-                        "controllersPath": ""
                     }
                 }
             }

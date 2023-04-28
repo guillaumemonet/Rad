@@ -35,6 +35,7 @@ class DatabaseBuildHandler implements BuildInterface {
         $this->classesGenerator->namespace     = $config->classesNamespace;
         $this->controllersGenerator->path      = Config::getApiConfig()->install_path . $config->controllersPath;
         $this->controllersGenerator->namespace = $config->controllersNamespace;
+        $this->controllersGenerator->prefix    = $config->controllersPrefix;
     }
 
     public function build() {
