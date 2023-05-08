@@ -40,6 +40,7 @@ abstract class HttpClient {
             $get_params = array_filter($get_array, function ($value) {
                 return $value !== null;
             });
+            $url .= "?" . http_build_query($get_params);
         }
 
         if ($post_array !== null && count($post_params) > 0) {
@@ -55,7 +56,7 @@ abstract class HttpClient {
             ];
             $context = stream_context_create($opts);
         }
-        $url .= "?" . http_build_query($get_params);
+
         return file_get_contents($url, false, $context);
     }
 
