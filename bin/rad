@@ -33,13 +33,16 @@ switch ($actionName) {
     case 'build':
         fireBuild($argv);
         break;
+    case 'clearCache':
+        fireClearCache($arv);
 }
 
 function fireBuild($argv) {
-    checkArg($argv, 2, 'Missing namespace');
-    checkArg($argv, 3, 'Missing path');
+    Manager::build();
+}
 
-    Manager::build($argv[2], $argv[3]);
+function fireClearCache($argv) {
+    Manager::clean();
 }
 
 function checkArg($arg, $position, $message) {
