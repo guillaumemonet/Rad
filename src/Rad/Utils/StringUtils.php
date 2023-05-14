@@ -38,18 +38,8 @@ abstract class StringUtils {
      *
      * @return bool
      */
-    public static function isEMail(string $email): string {
-        return (boolean) !(filter_var($email, FILTER_VALIDATE_EMAIL) === false);
-    }
-
-    /**
-     * Quick debug var.
-     * @pre1 <code>$var=true;</code>
-     * @post1 <code>$result=null;</code>
-     * @param any $var
-     */
-    public static function qd($var) {
-        error_log(print_r($var, true));
+    public static function isEMail(string $email): bool {
+        return (bool) !(filter_var($email, FILTER_VALIDATE_EMAIL) === false);
     }
 
     /**
@@ -120,64 +110,6 @@ abstract class StringUtils {
     }
 
     /**
-     * @pre1 <code>$haystack = "totoleheros";$needle="toto";</code>
-     * @post1 <code>$result=true;</code>
-     * @pre2 <code>$haystack = "boboleheros";$needle="toto";</code>
-     * @post2 <code>$result=false;</code>
-     * @pre3 <code>$haystack = "totoleheros";$needle="heros";</code>
-     * @post3 <code>$result=false;</code>
-     * @param string $haystack
-     * @param string $needle
-     * @return boolean
-     */
-    public static function startsWith($haystack, $needle): bool {
-        // search backwards starting from haystack length characters from the end
-        return $needle === "" || strrpos($haystack, $needle, -strlen($haystack)) !== false;
-    }
-
-    /**
-     * @pre1 <code>$haystack = "totoleheros";$needle="heros";</code>
-     * @post1 <code>$result=true;</code>
-     * @pre2 <code>$haystack = "boboletoto";$needle="heros";</code>
-     * @post2 <code>$result=false;</code>
-     * @pre3 <code>$haystack = "totoleheros";$needle="toto";</code>
-     * @post3 <code>$result=false;</code>
-     * @param string $haystack
-     * @param string $needle
-     * @return boolean
-     */
-    public static function endsWith($haystack, $needle): bool {
-        // search forward starting from end minus needle length characters
-        return $needle === "" || (($temp = strlen($haystack) - strlen($needle)) >= 0 && strpos($haystack, $needle, $temp) !== false);
-    }
-
-    /**
-     * Check if a string contains another string.
-     * @pre1 <code>$haystack = "totoleheros";$needle="Heros";$cs=false;</code>
-     * @post1 <code>$result=true;</code>
-     * @pre2 <code>$haystack = "totoleHeros";$needle="heros";$cs=false;</code>
-     * @post2 <code>$result=true;</code>
-     * @pre3 <code>$haystack = "totoleHeros";$needle="heros";$cs=true;</code>
-     * @post3 <code>$result=false;</code>
-     * @pre4 <code>$haystack = "totoleheros";$needle="Heros";$cs=true;</code>
-     * @post4 <code>$result=false;</code>
-     * @pre5 <code>$haystack = "boboletoto";$needle="heros";$cs=false;</code>
-     * @post5 <code>$result=false;</code>
-     * @param  string $haystack
-     * @param  string $needle
-     * @param boolean $cs
-     * 
-     * @return boolean
-     */
-    public static function strContains($haystack, $needle, $cs = false): bool {
-        if ($cs) {
-            return strpos($haystack, $needle) !== false;
-        } else {
-            return stripos($haystack, $needle) !== false;
-        }
-    }
-
-    /**
      * Parse comment, used only when generate php
      * @param string $comments
      */
@@ -188,9 +120,9 @@ abstract class StringUtils {
         $array_comments = explode("\n", $comments);
         foreach ($array_comments as $k => $line) {
             $line = trim($line);
-            if (self::startsWith($line, "@")) {
+            if (str_starts_with($line, '@')) {
                 $params  = explode(" ", $line);
-                $c       = trim(str_replace("@", "", array_shift($params)));
+                $c       = trim(str_replace('@', '', array_shift($params)));
                 $ret[$c] = $params;
             }
         }
