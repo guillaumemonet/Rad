@@ -10,6 +10,7 @@
 namespace Rad\Composer;
 
 use Rad\Build\Build;
+use Rad\Cache\Cache;
 
 /**
  * Description of Manager
@@ -18,12 +19,12 @@ use Rad\Build\Build;
  */
 abstract class Manager {
 
-    public static function build($namespace = null, $path = null) {
-        Build::getHandler()->build($namespace, $path);
+    public static function build() {
+        Build::getHandler()->build();
     }
 
     public static function clean() {
-        
+        Cache::getHandler()->clear();
     }
 
 }
