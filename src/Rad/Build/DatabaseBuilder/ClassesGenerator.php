@@ -23,8 +23,8 @@ class ClassesGenerator extends BaseGenerator {
 
     use ClassesGeneratorStaticTrait;
 
-    public ?string $namespace = null;
-    public ?string $path      = null;
+    public ?string $namespace   = null;
+    public ?string $path        = null;
     public array $baseRequire = [
         "PDO",
         "Rad\\Model\\Model",
@@ -47,7 +47,7 @@ class ClassesGenerator extends BaseGenerator {
             $parse->addBody("}");
         }
         foreach ($table->columns as $col_name => $col) {
-            if (StringUtils::endsWith($col_name, "_i18n") && $col->auto == 0 && !StringUtils::startsWith($table->name, "i18n")) {
+            if (str_ends_with($col_name, "_i18n") && $col->auto == 0 && !str_starts_with($table->name, "i18n")) {
                 $parse->addBody("if(" . $col->getAsVar("this") . " == null){");
                 $parse->addBody("\$li18n = new I18n();");
                 $parse->addBody("\$li18n->name = \"" . $table->name . "_" . $col_name . "\";");
@@ -81,7 +81,7 @@ class ClassesGenerator extends BaseGenerator {
         foreach ($table->columns as $col_name => $col) {
             if ($col->auto > 0) {
                 $parse->addBody("\$this->$col_name = (" . $col->type_php . ") Database::getHandler()->lastInsertId();");
-                //$parse->addBody("\$this->generateResourceURI();");
+                $parse->addBody("\$this->generateResource();");
                 break;
             }
         }
@@ -99,7 +99,7 @@ class ClassesGenerator extends BaseGenerator {
         foreach ($table->getPrimaryColumns("name") as $name) {
             $parse->addParameter($name);
         }
-        $parse->addBody("\$c_key = \"key_" . strtolower($class->getName()) . "_\"." . implode('."_".', $table->getPrimaryColumns("php")) . ";");
+        $parse->addBody("\$c_key = \$this->getCacheName();");
         $parse->addBody("\$row = unserialize(Cache::getHandler()->get(\$c_key));");
         $parse->addBody("if(\$row === false){");
         $parse->addBody("\$sql = \"SELECT * FROM `$table->name` WHERE " . implode(' AND ', $table->getPrimaryColumns("sql_cond")) . (isset($table->columns["trash"]) ? " AND `trash`=0 " : "") . "\";");
@@ -111,6 +111,7 @@ class ClassesGenerator extends BaseGenerator {
         $parse->addBody("if(is_array(\$row) && count(\$row) > 0){");
         $parse->addBody("\$this->parse(\$row);");
         $parse->addBody("}");
+        $parse->addBody("\$this->generateResource();");
     }
 
     public function generateUpdate(ClassType $class, Table $table) {
@@ -124,7 +125,7 @@ class ClassesGenerator extends BaseGenerator {
         $parse->addBody("$this->prepare;");
 
         foreach ($table->columns as $col_name => $col) {
-            if (StringUtils::endsWith($col_name, "_i18n") && $col->auto == 0 && !StringUtils::startsWith($table->name, "i18n")) {
+            if (str_ends_with($col_name, "_i18n") && $col->auto == 0 && !str_starts_with($table->name, "i18n")) {
                 //TODO Rajouter les conditions de test pour la creation d'une trad
                 $parse->addBody("foreach(\$this->" . str_replace("_i18n", "", $col_name) . " as \$lang=>\$datas){");
                 $parse->addBody("\$ti18n = I18nTranslate::getTranslation(" . $col->getAsVar("this") . ",\$lang);");
@@ -133,32 +134,40 @@ class ClassesGenerator extends BaseGenerator {
                 $parse->addBody("}");
             }
         }
-
+        $parse->addBody('Cache::getHandler()->delete($this->getCacheName());');
         $parse->addBody("return " . sprintf($this->execute, "array(" . implode(",", $table->getColumns("bind_this", true))) . ");");
     }
 
     public function generateDelete(ClassType $class, Table $table) {
         $parse = $class->addMethod('delete');
         $parse->setVisibility('public');
+        $parse->addBody('Cache::getHandler()->delete($this->getCacheName());');
         if (isset($table->columns["trash"])) {
             $parse->addBody("\$this->trash=true;");
             $parse->addBody("return \$this->update();");
         } else {
+
             $parse->addBody("\$sql = \"DELETE FROM `$table->name` WHERE " . implode(' AND ', $table->getPrimaryColumns("sql_cond")) . "\";");
             $parse->addBody("$this->prepare;");
             $parse->addBody(sprintf($this->execute, "array(" . implode(",", $table->getPrimaryColumns("bind_this")) . ")") . ";");
         }
     }
 
+    public function generateCacheName(ClassType $class, Table $table) {
+        $parse = $class->addMethod('getCacheName')->setReturnType('string');
+        $parse->setVisibility('public');
+        $parse->addBody("return \"key_" . strtolower($class->getName()) . "_\"." . implode('."_".', $table->getPrimaryColumns('this')) . ";");
+    }
+
     public function generateProperties(ClassType $class, Table $table) {
         foreach ($table->columns as $col_name => $col) {
-            if (StringUtils::endsWith($col_name, "i18n") && $col->auto == 0 && !StringUtils::startsWith($table->name, "i18n")) {
+            if (str_ends_with($col_name, "i18n") && $col->auto == 0 && !str_starts_with($table->name, "i18n")) {
                 $propertyName = str_replace("_i18n", "", $col_name);
                 $property     = $class->addProperty($propertyName)
                         ->setValue([])
                         ->setVisibility('public');
             }
-            if (StringUtils::endsWith($col_name, "_id_picture")) {
+            if (str_ends_with($col_name, "_id_picture")) {
                 $propertyName = str_replace("_id_picture", "", $col_name);
                 $property     = $class->addProperty($propertyName)
                         ->setVisibility('public');
@@ -214,7 +223,7 @@ class ClassesGenerator extends BaseGenerator {
         $parse->addBody("}");
         $parse->addBody("}");
         foreach ($table->columns as $col_name => $col) {
-            if (StringUtils::endsWith($col_name, "_i18n") && $col->auto == 0 && !StringUtils::startsWith($table->name, "i18n")) {
+            if (str_ends_with($col_name, "_i18n") && $col->auto == 0 && !str_starts_with($table->name, "i18n")) {
                 $parse->addBody("if(\$this->" . str_replace("_i18n", "", $col_name) . " == null){");
                 $parse->addBody("\$ti18ns = I18nTranslate::getTranslationFromId(" . $col->getAsVar("this") . ",null,null);");
                 $parse->addBody("foreach(\$ti18ns as \$i18n){");
@@ -222,7 +231,7 @@ class ClassesGenerator extends BaseGenerator {
                 $parse->addBody("}");
                 $parse->addBody("}");
             }
-            if (StringUtils::endsWith($col_name, "_id_picture")) {
+            if (str_ends_with($col_name, "_id_picture")) {
                 $parse->addBody("if(\$this->" . $col_name . " > 0 && \$this->" . str_replace("_id_picture", "", $col_name) . " == null){");
                 $parse->addBody("\$this->" . str_replace("_id_picture", "", $col_name) . " = Picture::getPicture(" . $col->getAsVar("this") . ");");
                 $parse->addBody("}");

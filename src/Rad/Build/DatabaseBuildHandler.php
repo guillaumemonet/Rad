@@ -74,12 +74,13 @@ class DatabaseBuildHandler implements BuildInterface {
             $this->classesGenerator->generateUpdate($class, $table);
             $this->classesGenerator->generateDelete($class, $table);
             $this->classesGenerator->generateGetId($class, $table);
+            $this->classesGenerator->generateCacheName($class, $table);
             $this->classesGenerator->generateParse($class, $table);
             $this->classesGenerator->generateOneToManys($class, $table);
             $this->classesGenerator->generateIndexesGetter($class, $table);
             $this->classesGenerator->generateGetAll($class, $table);
             $filename = $this->classesGenerator->path . $className . '.php';
-            echo $filename;
+            echo $filename . "<br />";
             file_put_contents($filename, "<?php\n\n" . StringUtils::reindent((string) $namespace));
             $this->generateController($class);
         }
@@ -104,7 +105,7 @@ class DatabaseBuildHandler implements BuildInterface {
         $this->controllersGenerator->generateControllerPutOne($mainClass, $class);
         $this->controllersGenerator->generateControllerPatchOne($mainClass, $class);
         $filename = $this->controllersGenerator->path . $className . '.php';
-        echo $filename;
+        echo $filename . "<br />";
         file_put_contents($filename, "<?php\n\n" . StringUtils::reindent((string) $namespace));
     }
 

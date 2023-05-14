@@ -24,8 +24,7 @@ class GeneratorTools {
 
     public static function setType($row, $column) {
 
-        $type = strtolower($row["Type"]);
-
+        $type  = preg_replace('/\s*\([^)]*\)/', '', strtolower($row["Type"]));
         $types = [
             "char"    => ["\\PDO::PARAM_STR", "string"],
             "text"    => ["\\PDO::PARAM_STR", "string"],
