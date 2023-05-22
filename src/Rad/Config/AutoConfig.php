@@ -71,7 +71,7 @@ abstract class AutoConfig {
         try {
             $clname    = $namespaces[1] . '\\' . $classnames[1];
             $reflector = new ReflectionClass($clname);
-            if ($reflector->isSubclassOf('Rad\\Controller\\Controller')) {
+            if (!$reflector->isAbstract() && $reflector->isSubclassOf('Rad\\Controller\\Controller')) {
                 return $clname;
             } else {
                 return null;
