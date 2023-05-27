@@ -69,6 +69,7 @@ class DatabaseBuildHandler implements BuildInterface {
 
             $this->classesGenerator->generateProperties($class, $table);
             $this->classesGenerator->generateTableFormat($class, $table);
+            $this->classesGenerator->generateConstruct($class, $table);
             $this->classesGenerator->generateCreate($class, $table);
             $this->classesGenerator->generateRead($class, $table);
             $this->classesGenerator->generateUpdate($class, $table);
@@ -105,8 +106,14 @@ class DatabaseBuildHandler implements BuildInterface {
         $this->controllersGenerator->generateControllerPutOne($mainClass, $class);
         $this->controllersGenerator->generateControllerPatchOne($mainClass, $class);
         $filename = $this->controllersGenerator->path . $className . '.php';
-        echo $filename . "<br />";
-        file_put_contents($filename, "<?php\n\n" . StringUtils::reindent((string) $namespace));
+        echo $filename . ' : ';
+        if (!file_exists($filename)) {
+            file_put_contents($filename, "<?php\n\n" . StringUtils::reindent((string) $namespace));
+            echo " Generated";
+        } else {
+            echo " Exists";
+        }
+        echo '<br />';
     }
 
 }

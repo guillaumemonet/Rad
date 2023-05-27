@@ -35,6 +35,17 @@ class ClassesGenerator extends BaseGenerator {
         "Rad\\Encryption\\Encryption"
     ];
 
+    public function generateConstruct(ClassType $class, Table $table) {
+        $parse = $class->addMethod('__construct');
+        $parse->setVisibility('public');
+        foreach ($table->getPrimaryColumns("name") as $name) {
+            $parse->addParameter($name)->setDefaultValue(null);
+        }
+        foreach ($table->getPrimaryColumns("name") as $name) {
+            $parse->addBody('$this->' . $name . ' = $' . $name . ';');
+        }
+    }
+
     public function generateCreate(ClassType $class, Table $table) {
         $parse = $class->addMethod('create');
         $parse->setVisibility('public');
@@ -96,15 +107,12 @@ class ClassesGenerator extends BaseGenerator {
 
         $parse = $class->addMethod('read');
         $parse->setVisibility('public');
-        foreach ($table->getPrimaryColumns("name") as $name) {
-            $parse->addParameter($name);
-        }
         $parse->addBody("\$c_key = \$this->getCacheName();");
         $parse->addBody("\$row = unserialize(Cache::getHandler()->get(\$c_key));");
         $parse->addBody("if(\$row === false){");
         $parse->addBody("\$sql = \"SELECT * FROM `$table->name` WHERE " . implode(' AND ', $table->getPrimaryColumns("sql_cond")) . (isset($table->columns["trash"]) ? " AND `trash`=0 " : "") . "\";");
         $parse->addBody("$this->prepare;");
-        $parse->addBody(sprintf($this->execute, "array(" . implode(",", $table->getPrimaryColumns("bind"))) . ")" . ";");
+        $parse->addBody(sprintf($this->execute, "array(" . implode(",", $table->getPrimaryColumns("bind_this"))) . ")" . ";");
         $parse->addBody("\$row = \$result->fetch(\PDO::FETCH_ASSOC);");
         $parse->addBody('Cache::getHandler()->set($c_key,serialize($row));');
         $parse->addBody("}");
@@ -146,7 +154,6 @@ class ClassesGenerator extends BaseGenerator {
             $parse->addBody("\$this->trash=true;");
             $parse->addBody("return \$this->update();");
         } else {
-
             $parse->addBody("\$sql = \"DELETE FROM `$table->name` WHERE " . implode(' AND ', $table->getPrimaryColumns("sql_cond")) . "\";");
             $parse->addBody("$this->prepare;");
             $parse->addBody(sprintf($this->execute, "array(" . implode(",", $table->getPrimaryColumns("bind_this")) . ")") . ";");

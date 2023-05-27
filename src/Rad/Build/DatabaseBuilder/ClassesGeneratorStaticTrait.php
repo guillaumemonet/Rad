@@ -40,8 +40,8 @@ trait ClassesGeneratorStaticTrait {
             $parse->addParameter($param);
         }
 
-        $parse->addBody('$c = new ' . $class->getName() . '();');
-        $parse->addBody('$c->read(' . implode(",", $i->getColumns("php")) . ');');
+        $parse->addBody('$c = new ' . $class->getName() . '(' . implode(",", $i->getColumns("php")) . ');');
+        $parse->addBody('$c->read();');
         $parse->addBody('return $c;');
     }
 
@@ -76,14 +76,16 @@ trait ClassesGeneratorStaticTrait {
         foreach ($i->getColumns("name") as $param) {
             $parse->addParameter($param);
         }
+        $parse->addParameter('filters');
         $parse->addParameter("offset")->setDefaultValue(null);
         $parse->addParameter("limit")->setDefaultValue(null);
-        $parse->addBody("\$c_key = \"cache_" . $k . "_\"." . implode('."_".', $i->getColumns("php")) . ".\$limit.\"_\".\$offset;");
+        $parse->addBody(' $infos_filters = static::getSQLFilters($filters);');
+        $parse->addBody("\$c_key = \"cache_" . $k . "_\"." . implode('."_".', $i->getColumns("php")) . ".\$limit.\"_\".\$offset. \"_\" . \$infos_filters['md5'];");
         $parse->addBody("\$ret = unserialize(Cache::getHandler()->get(\$c_key));");
         $parse->addBody("if(\$ret === false){");
-        $parse->addBody("\$sql = \"SELECT * FROM " . $table->name . " WHERE " . implode(" AND ", $i->getColumns("sql_cond")) . (isset($table->columns["trash"]) ? " AND `trash`=0 " : "") . "\".(\$offset !==null && \$limit !== null?\" LIMIT \$offset,\$limit\":\"\").\"\";");
+        $parse->addBody("\$sql = \"SELECT * FROM " . $table->name . " WHERE " . implode(" AND ", $i->getColumns("sql_cond")) . "\" . \$infos_filters['sql'] . (\$offset !==null && \$limit !== null?\" LIMIT \$offset,\$limit\":\"\").\"\";");
         $parse->addBody("\$result = Database::getHandler()->prepare(\$sql);");
-        $parse->addBody("\$result->execute(array(" . implode(",", $i->getColumns("bind")) . "));");
+        $parse->addBody("\$result->execute(array(" . implode(",", $i->getColumns("bind")) . ")+\$infos_filters['bind']);");
         $parse->addBody("\$ret = [];");
         $parse->addBody("while(\$row = \$result->fetch(\PDO::FETCH_ASSOC)){");
         $parse->addBody("\$" . $table->name . " = new " . $class->getName() . "();");
@@ -99,15 +101,16 @@ trait ClassesGeneratorStaticTrait {
 
         $parse = $class->addMethod('getAll')->setStatic();
         $parse->setVisibility('public');
-
+        $parse->addParameter('filters');
         $parse->addParameter('offset');
         $parse->addParameter('limit');
-        $parse->addBody("\$c_key = \"key_" . $class->getName() . "_all_" . $table->name . "_\".\$limit.\"_\".\$offset;");
+        $parse->addBody(' $infos_filters = static::getSQLFilters($filters);');
+        $parse->addBody("\$c_key = \"key_" . $class->getName() . "_all_" . $table->name . "_\".\$limit.\"_\".\$offset. \"_\" . \$infos_filters['md5'];");
         $parse->addBody("\$ret = unserialize(Cache::getHandler()->get(\$c_key));");
         $parse->addBody("if(\$ret === false){");
-        $parse->addBody("\$sql = \"SELECT * FROM " . $table->name . " WHERE 1 " . (isset($table->columns["trash"]) ? " AND trash=0 " : "") . " \".(\$offset !==null && \$limit !== null ?\" LIMIT \$offset,\$limit\":\"\").\"\";");
+        $parse->addBody("\$sql = \"SELECT * FROM " . $table->name . " WHERE 1 \" . \$infos_filters['sql'] . (\$offset !==null && \$limit !== null ?\" LIMIT \$offset,\$limit\":\"\").\"\";");
         $parse->addBody("\$result = Database::getHandler()->prepare(\$sql);");
-        $parse->addBody("\$result->execute();");
+        $parse->addBody("\$result->execute(\$infos_filters['bind']);");
         $parse->addBody("\$ret = [];");
         $parse->addBody("while(\$row = \$result->fetch(\PDO::FETCH_ASSOC)){");
         $parse->addBody("\$$table->name = new " . $class->getName() . ";");

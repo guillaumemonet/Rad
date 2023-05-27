@@ -40,7 +40,10 @@ class ControllersGenerator extends BaseGenerator {
         $parse->addBody('
                 $offset = isset($_GET[\'offset\']) ? sprintf(\'%d\',$_GET[\'offset\']) : null;
                 $limit = isset($_GET[\'limit\']) ? sprintf(\'%d\',$_GET[\'limit\']) : null;
-                $datas = ' . $mainClass->getName() . '::getAll($offset,$limit);
+                unset($_GET[\'limit\']);
+                unset($_GET[\'offset\']);
+                $filters = $_GET;
+                $datas = ' . $mainClass->getName() . '::getAll($filters,$offset,$limit);
                $response->getBody()->write(json_encode($datas));
         return $response;');
     }
