@@ -45,7 +45,7 @@ class Column {
             "php_prefix" => '' . $this->type_php . ' $' . $this->name,
             "sql_cond"   => $this->name == 'password' ? '`' . $this->name . '` = PASSWORD(:' . $this->name . ')' : '`' . $this->name . '` = :' . $this->name,
             "sql_param"  => $this->name == 'password' ? 'PASSWORD(:' . $this->name . ')' : ':' . $this->name,
-            "bind"       => '":' . $this->name . '"' . ' => ' . ($this->type_php == 'bool' ? 'intval(' . $this->name . ')' : '$' . $this->name),
+            "bind"       => '":' . $this->name . '"' . ' => ' . ($this->type_php == 'bool' ? 'intval($' . $this->name . ')' : '$' . $this->name),
             "bind_this"  => '":' . $this->name . '"' . ' => ' . ($this->type_php == 'bool' ? 'intval($this->' . $this->name . ')' : '$this->' . $this->name),
             "this"       => '$this->' . $this->name
         ];
