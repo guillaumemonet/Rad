@@ -211,6 +211,21 @@
                     }
                 }
             }
+        },
+
+        "clientapi": {
+            "default": "rad",
+            "classname": "Rad\\ClientApi\\ClientApiInterface",
+            "handlers": {
+                "rad": {
+                    "classname": "Rad\\ClientApi\\ClientApiHandler",
+                    "config": {
+                        "cache_enabled": true,
+                        "url": "",
+                        "token": ""
+                    }
+                }
+            }
         }
     }
 }
