@@ -16,5 +16,5 @@ namespace Rad\ClientApi;
  */
 interface ClientApiInterface {
 
-    public function call(string $endpoint);
+    public function call(string $endpoint, array $get = null, array $post = null, array $header = null);
 }
