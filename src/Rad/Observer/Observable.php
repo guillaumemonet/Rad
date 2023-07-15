@@ -35,4 +35,8 @@ abstract class Observable {
         }, $this->observers);
     }
 
+    public function dumpObservers() {
+        return $this->observers;
+    }
+
 }
