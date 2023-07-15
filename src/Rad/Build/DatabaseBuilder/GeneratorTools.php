@@ -95,7 +95,9 @@ class GeneratorTools {
             if (isset($row["Extra"]) && $row["Extra"] == "auto_increment") {
                 $column->auto = 1;
             }
-            $columns[$column->name] = $column;
+            if (!in_array($column->name, ['date_rec', 'date_update'])) {
+                $columns[$column->name] = $column;
+            }
         }
         return $columns;
     }
