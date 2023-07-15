@@ -31,9 +31,10 @@ abstract class HttpClient {
      * @param string $url
      * @param array $get_array
      * @param array $post_array
-     * @return type
+     * @param array $headers_array
+     * @return string|bool
      */
-    public static function doRequest($url, array $get_array = null, array $post_array = null, array $headers_array = null) {
+    public static function doRequest($url, array $get_array = null, array $post_array = null, array $headers_array = null): string|bool {
         $post_params            = null;
         $get_params             = null;
         $opts                   = [];
@@ -49,7 +50,7 @@ abstract class HttpClient {
             $url .= (str_contains('?', $url) ? '&' : '?') . http_build_query($get_params);
         }
 
-        if ($post_array !== null && count($post_params) > 0) {
+        if ($post_array !== null && count($post_array) > 0) {
             $post_params = array_filter($post_array, function ($value) {
                 return $value !== null;
             });
