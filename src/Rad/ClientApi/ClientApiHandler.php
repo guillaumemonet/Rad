@@ -20,11 +20,20 @@ use Rad\Http\HttpClient;
  */
 class ClientApiHandler implements ClientApiInterface {
 
-    public function call(string $endpoint, array $get = null, array $post = null, array $headers = []) {
+    /**
+     * 
+     * @param string $endpoint
+     * @param array $get
+     * @param array $post
+     * @param array $headers
+     * @param bool $caching
+     * @return type
+     */
+    public function call(string $endpoint, array $get = null, array $post = null, array $headers = [], bool $caching = true) {
         $cfg     = Config::getServiceConfig('clientapi', 'rad')->config;
         $url     = $cfg->url;
         $token   = $cfg->token;
-        $cache   = boolval($cfg->cache_enabled);
+        $cache   = boolval($cfg->cache_enabled) && $caching;
         $fullUrl = $url . $endpoint;
 
         $c_key = "cache_clientapi_" . md5($fullUrl . $token);
