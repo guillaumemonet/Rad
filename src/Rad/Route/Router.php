@@ -106,6 +106,10 @@ class Router implements RouterInterface {
         return $this;
     }
 
+    public function getRoutes(): TreeNodeRoute {
+        return $this->treeRoutes;
+    }
+
     /**
      * 
      * @param string $method

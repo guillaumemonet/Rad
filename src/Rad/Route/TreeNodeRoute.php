@@ -120,7 +120,7 @@ class TreeNodeRoute {
         }
         if (count($this->children) > 0) {
             foreach ($this->children as $child) {
-                $str .= $child->__toString();
+                $str .= $child;
             }
         }
 
