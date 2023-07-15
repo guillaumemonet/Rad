@@ -218,4 +218,86 @@ class Image {
         return $newimage;
     }
 
+    public static function addImageWithFade($imagePath, $position, $step = 30) {
+        // Créer une image vide blanche de dimensions 1200x500
+        $canvas          = imagecreatetruecolor(1200, 500);
+        $backgroundColor = imagecolorallocate($canvas, 255, 255, 255);
+        imagefill($canvas, 0, 0, $backgroundColor);
+
+        // Charger l'image à redimensionner
+        $sourceImage = imagecreatefromstring(file_get_contents($imagePath));
+
+        // Obtenir les dimensions de l'image source
+        $sourceWidth  = imagesx($sourceImage);
+        $sourceHeight = imagesy($sourceImage);
+
+        // Calculer la hauteur maximale pour l'image redimensionnée
+        $maxHeight = 500;
+
+        // Calculer la nouvelle hauteur et largeur de l'image
+        $newHeight = $maxHeight;
+        $newWidth  = ($newHeight / $sourceHeight) * $sourceWidth;
+
+        // Redimensionner l'image source à la nouvelle taille
+        $resizedImage = imagecreatetruecolor($newWidth, $newHeight);
+        imagecopyresampled($resizedImage, $sourceImage, 0, 0, 0, 0, $newWidth, $newHeight, $sourceWidth, $sourceHeight);
+
+        // Positionner l'image redimensionnée à gauche ou à droite
+        if ($position === "left") {
+            imagecopy($canvas, $resizedImage, 0, 0, 0, 0, $newWidth, $newHeight);
+            for ($i = 0; $i < $step; $i++) {
+                $alpha = intval(($i / $step) * 127); // Valeur d'opacité progressive
+                $color = imagecolorallocatealpha($canvas, 255, 255, 255, $alpha);
+                imageline($canvas, $newWidth - $i, 0, $newWidth - $i, 500, $color);
+            }
+        } elseif ($position === "right") {
+            $x = 1200 - $newWidth;
+            imagecopy($canvas, $resizedImage, $x + 1, 0, 0, 0, $newWidth, $newHeight);
+            for ($i = 0; $i < $step; $i++) {
+                $alpha = intval(($i / $step) * 127); // Valeur d'opacité progressive
+                $color = imagecolorallocatealpha($canvas, 255, 255, 255, $alpha);
+                imageline($canvas, 1200 - $newWidth + $i, 0, 1200 - $newWidth + $i, 500, $color);
+            }
+        }
+
+
+
+        // Afficher l'image finale
+        // Libérer la mémoire
+
+        imagedestroy($sourceImage);
+        imagedestroy($resizedImage);
+        return $canvas;
+    }
+
+    public static function generateResponsiveImages($imagePath,$destinationFolder) {
+        // Obtenir les informations sur le fichier d'origine
+        $imageInfo      = pathinfo($imagePath);
+        $imageExtension = $imageInfo['extension'];
+        $imageFilename  = $imageInfo['filename'];
+
+        // Liste des largeurs d'images responsives à générer
+        $responsiveWidths = [320, 480, 768, 1024, 1280];
+
+        // Générer les images redimensionnées
+        $srcset = '';
+        foreach ($responsiveWidths as $width) {
+            // Nom du fichier redimensionné
+            $resizedFilename  = $imageFilename . '_' . $width . 'w.' . $imageExtension;
+            $resizedImagePath = $destinationFolder . '/' . $resizedFilename;
+
+            // Redimensionner l'image
+            resize($imagePath, $resizedImagePath, $width);
+
+            // Ajouter le chemin de l'image redimensionnée à l'attribut srcset
+            $srcset .= $resizedImagePath . ' ' . $width . 'w, ';
+        }
+
+        // Retirer la virgule finale et l'espace
+        $srcset = rtrim($srcset, ', ');
+
+        // Afficher la balise img avec srcset
+        echo '<img src="' . $resizedImagePath . '" srcset="' . $srcset . '">';
+    }
+
 }
