@@ -35,6 +35,10 @@ switch ($actionName) {
         break;
     case 'clearCache':
         fireClearCache($arv);
+        break;
+    case 'printRoute':
+        print_r($app->getRouter()->getRoutes());
+        break;
 }
 
 function fireBuild($argv) {
