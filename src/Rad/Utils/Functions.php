@@ -20,5 +20,5 @@ function qd($var) {
  * @param mixed $var
  */
 function qdh($var) {
-    print_f('<pre>%s</pre>', print_r($var, true));
+    printf('<pre>%s</pre>', print_r($var, true));
 }
