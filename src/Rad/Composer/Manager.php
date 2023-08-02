@@ -26,5 +26,5 @@ abstract class Manager {
     public static function clean() {
         Cache::getHandler()->clear();
     }
-
+    
 }
