@@ -45,7 +45,7 @@ class SFTPConnection {
      * @throws ErrorException
      */
     public function uploadFile(string $local_file, string $remote_file) {
-        $stream       = fopen("ssh2.sftp://" . intval($this->sftp) . "/./in/$remote_file", 'w') || $this->throwError("Could not open file: $remote_file");
+        $stream       = fopen("ssh2.sftp://" . intval($this->sftp) . "/$remote_file", 'w') || $this->throwError("Could not open file: $remote_file");
         $data_to_send = file_get_contents($local_file) || $this->throwError("Could not open local file: $local_file.");
         fwrite($stream, $data_to_send) || $this->throwError("Could not send data from file: $local_file.");
         fflush($stream);
@@ -59,7 +59,7 @@ class SFTPConnection {
      * @throws ErrorException
      */
     public function downloadFile(string $local_file, string $remote_file) {
-        $stream   = fopen("ssh2.sftp://" . intval($this->sftp) . "/./$remote_file", 'r') || $this->throwError("Could not open file: $remote_file");
+        $stream   = fopen("ssh2.sftp://" . intval($this->sftp) . "/$remote_file", 'r') || $this->throwError("Could not open file: $remote_file");
         $local    = fopen($local_file, 'w') || $this->throwError("Could not open local file: $local_file.");
         $read     = 0;
         $filesize = filesize("ssh2.sftp://" . intval($this->sftp) . "/./$remote_file");
