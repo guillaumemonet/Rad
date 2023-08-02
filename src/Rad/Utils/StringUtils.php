@@ -115,13 +115,14 @@ abstract class StringUtils {
      */
     public static function parseComments(string $comments): array {
         $ret            = [];
-        //trim(str_replace(array('/', '*', '**'), '', substr($comments, 0, strpos($comments, '@'))));
-        $comments       = str_replace(array('/*', '*', '**'), '', $comments);
-        $array_comments = explode("\n", $comments);
+        $array_comments = preg_split("/\R/", $comments);
+        // Supprimer les balises de commentaires
+        array_shift($array_comments);
+        array_pop($array_comments);
         foreach ($array_comments as $k => $line) {
-            $line = trim($line);
+            $line = ltrim($line, " \t*");
             if (str_starts_with($line, '@')) {
-                $params  = explode(" ", $line);
+                $params  = explode(' ', $line);
                 $c       = trim(str_replace('@', '', array_shift($params)));
                 $ret[$c] = $params;
             }
@@ -184,6 +185,15 @@ abstract class StringUtils {
             strpos($trimmedLine, '{') !== false ? $indentLevel++ : '';
         }
         return $newCode;
+    }
+
+    /**
+     * 
+     * @param string $string
+     * @return string
+     */
+    public static function quote(string $string): string {
+        return "`$string`";
     }
 
 }
