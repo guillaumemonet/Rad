@@ -45,6 +45,9 @@ class ModelDatabase {
         $existing_indexes      = self::getTableIndexes($table_name);
         $existing_foreign_keys = self::getTableForeignKeys($table_name);
 
+        qdh($columns);
+        qdh($existing_columns);
+
         // Mettre à jour la structure de la table
         self::updateTableColumns($table_name, $columns, $existing_columns);
         self::updateTableIndexes($table_name, $indexes, $existing_indexes);
@@ -67,6 +70,25 @@ class ModelDatabase {
                 // Utiliser StringUtils::parseComments pour analyser les annotations du commentaire
                 $attributes  = StringUtils::parseComments($docComment);
                 $column_name = $property->getName();
+
+                //Avec un fallback si type n'est pas setter on met
+                if (isset($attributes['var'])) {
+                    $php_type                                          = $attributes['var'][0];
+                    // Utiliser mapPhpTypeToSqlType pour obtenir le type SQL correspondant au type PHP
+                    $sql_type                                          = self::mapPhpTypeToSqlType($php_type);
+                    $class_attributes['columns'][$column_name]['var']  = $php_type;
+                    $class_attributes['columns'][$column_name]['type'] = $sql_type;
+                } else {
+                    $php_type                                          = $property->getType()->getName();
+                    $sql_type                                          = self::mapPhpTypeToSqlType($php_type);
+                    $class_attributes['columns'][$column_name]['var']  = $php_type;
+                    $class_attributes['columns'][$column_name]['type'] = $sql_type;
+                }
+
+                if (isset($attributes['type'])) {
+                    $sql_type                                          = $attributes['type'][0];
+                    $class_attributes['columns'][$column_name]['type'] = $sql_type;
+                }
 
                 // Vérifier si l'attribut fait partie de la clé primaire
                 if (isset($attributes['pkey'])) {
@@ -97,10 +119,6 @@ class ModelDatabase {
 
                 // Récupérer les autres informations spécifiées dans les commentaires
                 // comme @var, @length, @autoinc, @notnull, @default, etc.
-                if (isset($attributes['sql'])) {
-                    $sql_type                                          = $attributes['sql'][0];
-                    $class_attributes['columns'][$column_name]['type'] = $sql_type;
-                }
 
                 if (isset($attributes['length'])) {
                     $length                                              = $attributes['length'][0];
@@ -113,14 +131,6 @@ class ModelDatabase {
 
                 if (isset($attributes['notnull'])) {
                     $class_attributes['columns'][$column_name]['notnull'] = true;
-                }
-
-                if (isset($attributes['var'])) {
-                    $php_type                                          = $attributes['var'][0];
-                    // Utiliser mapPhpTypeToSqlType pour obtenir le type SQL correspondant au type PHP
-                    $sql_type                                          = self::mapPhpTypeToSqlType($php_type);
-                    $class_attributes['columns'][$column_name]['var']  = $php_type;
-                    $class_attributes['columns'][$column_name]['type'] = $sql_type;
                 }
             }
         }
@@ -234,7 +244,7 @@ class ModelDatabase {
     }
 
     private static function compareColumns(array $existing_column, array $modified_column): bool {
-        $attributes_to_check = ['type', 'notnull', 'default', 'autoinc'];
+        $attributes_to_check = ['type', 'notnull', 'default', 'autoinc', 'length', 'var'];
 
         foreach ($attributes_to_check as $attribute) {
             $existing_value = array_key_exists($attribute, $existing_column) ? $existing_column[$attribute] : null;
@@ -256,8 +266,8 @@ class ModelDatabase {
         $existing_unique_indexes = $existing_indexes['unique'];
         $new_unique_indexes      = $indexes['unique'];
 
-        $indexes_to_add_unique    = array_diff($new_unique_indexes, $existing_unique_indexes);
-        $indexes_to_remove_unique = array_diff($existing_unique_indexes, $new_unique_indexes);
+        $indexes_to_add_unique    = array_diff_key($new_unique_indexes, $existing_unique_indexes);
+        $indexes_to_remove_unique = array_diff_key($existing_unique_indexes, $new_unique_indexes);
 
         foreach ($indexes_to_add_unique as $index_name => $columns) {
             $sql = "ALTER TABLE $table_name ADD UNIQUE INDEX $index_name (" . implode(", ", $columns) . ")";
@@ -273,8 +283,8 @@ class ModelDatabase {
         $existing_key_indexes = $existing_indexes['key'];
         $new_key_indexes      = $indexes['key'];
 
-        $indexes_to_add_key    = array_diff($new_key_indexes, $existing_key_indexes);
-        $indexes_to_remove_key = array_diff($existing_key_indexes, $new_key_indexes);
+        $indexes_to_add_key    = array_diff_key($new_key_indexes, $existing_key_indexes);
+        $indexes_to_remove_key = array_diff_key($existing_key_indexes, $new_key_indexes);
 
         foreach ($indexes_to_add_key as $index_name) {
             $columns = implode(', ', $indexes[$index_name]);
@@ -350,9 +360,9 @@ class ModelDatabase {
             $auto_increment = (strpos($row['Extra'], 'auto_increment') !== false);
 
             // Analyser le type SQL pour extraire la taille (pour les colonnes de type chaîne, double ou decimal)
-            $length = 0;
+            $length = "";
             if (preg_match('/\((\d+)(,\d+)?\)/', $row['Type'], $matches)) {
-                $length = intval($matches[1]);
+                $length = $matches[1] . (isset($matches[2]) ? $matches[2] : "");
             }
 
             $columns[$column_name] = [
@@ -438,10 +448,10 @@ class ModelDatabase {
     }
 
     private static function getColumnDefinition(string $column_name, array $column_info): string {
-        $column_definition = $column_name . ' ' . self::mapPhpTypeToSqlType($column_info['type']);
+        $column_definition = $column_name . ' ' . $column_info['type'];
 
         // Ajouter la taille si spécifiée dans les commentaires
-        if (isset($column_info['length']) && is_numeric($column_info['length'])) {
+        if (isset($column_info['length'])) {
             $column_definition .= '(' . $column_info['length'] . ')';
         }
 
@@ -482,7 +492,7 @@ class ModelDatabase {
                     $attributes['var']     = $params[0];
                     break;
                 case 'length':
-                    $attributes['length']  = intval($params[0]);
+                    $attributes['length']  = $params[0];
                     break;
                 case 'pkey':
                     $attributes['pkey']    = true;
@@ -544,7 +554,7 @@ class ModelDatabase {
             $property->addComment('@var ' . $php_type);
 
             // Ajouter le type SQL
-            $property->addComment('@sql ' . $column_info['type']);
+            $property->addComment('@type ' . $column_info['type']);
 
             if (in_array($column_name, $indexes['primary'])) {
                 $property->addComment('@pkey');
@@ -586,7 +596,7 @@ class ModelDatabase {
     private static function mapSqlTypeToPhpType(string $sql_type): string {
         $type_map = [
             'int'        => 'int',
-            'tinyint'    => 'int',
+            'tinyint'    => 'bool',
             'smallint'   => 'int',
             'mediumint'  => 'int',
             'bigint'     => 'int',
@@ -627,7 +637,8 @@ class ModelDatabase {
             'float'         => 'float',
             'double'        => 'float',
             'string'        => 'varchar',
-            'boolean'       => 'tinyint(1)',
+            'bool'          => 'tinyint',
+            'boolean'       => 'tinyint',
             'array'         => 'json',
             'object'        => 'json',
             'json'          => 'json',
