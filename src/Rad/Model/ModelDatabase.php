@@ -45,9 +45,6 @@ class ModelDatabase {
         $existing_indexes      = self::getTableIndexes($table_name);
         $existing_foreign_keys = self::getTableForeignKeys($table_name);
 
-        qdh($columns);
-        qdh($existing_columns);
-
         // Mettre à jour la structure de la table
         self::updateTableColumns($table_name, $columns, $existing_columns);
         self::updateTableIndexes($table_name, $indexes, $existing_indexes);
@@ -269,16 +266,6 @@ class ModelDatabase {
         $indexes_to_add_unique    = array_diff_key($new_unique_indexes, $existing_unique_indexes);
         $indexes_to_remove_unique = array_diff_key($existing_unique_indexes, $new_unique_indexes);
 
-        foreach ($indexes_to_add_unique as $index_name => $columns) {
-            $sql = "ALTER TABLE $table_name ADD UNIQUE INDEX $index_name (" . implode(", ", $columns) . ")";
-            $pdo->exec($sql);
-        }
-
-        foreach ($indexes_to_remove_unique as $index_name) {
-            $sql = "ALTER TABLE $table_name DROP INDEX $index_name";
-            $pdo->exec($sql);
-        }
-
         // Mettre à jour les indexes non uniques (clés)
         $existing_key_indexes = $existing_indexes['key'];
         $new_key_indexes      = $indexes['key'];
@@ -286,14 +273,23 @@ class ModelDatabase {
         $indexes_to_add_key    = array_diff_key($new_key_indexes, $existing_key_indexes);
         $indexes_to_remove_key = array_diff_key($existing_key_indexes, $new_key_indexes);
 
-        foreach ($indexes_to_add_key as $index_name) {
-            $columns = implode(', ', $indexes[$index_name]);
-            $sql     = "ALTER TABLE $table_name ADD INDEX $index_name ($columns)";
+        foreach ($indexes_to_remove_unique as $index_name => $columns) {
+            $sql = "ALTER TABLE $table_name DROP INDEX $index_name";
             $pdo->exec($sql);
         }
 
-        foreach ($indexes_to_remove_key as $index_name) {
+        foreach ($indexes_to_remove_key as $index_name => $columns) {
             $sql = "ALTER TABLE $table_name DROP INDEX $index_name";
+            $pdo->exec($sql);
+        }
+
+        foreach ($indexes_to_add_unique as $index_name => $columns) {
+            $sql = "ALTER TABLE $table_name ADD UNIQUE INDEX $index_name (" . implode(", ", $columns) . ")";
+            $pdo->exec($sql);
+        }
+
+        foreach ($indexes_to_add_key as $index_name => $columns) {
+            $sql = "ALTER TABLE $table_name ADD INDEX $index_name (" . implode(',', $columns) . ")";
             $pdo->exec($sql);
         }
 
