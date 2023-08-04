@@ -45,6 +45,9 @@ class ModelDatabase {
         $existing_indexes      = self::getTableIndexes($table_name);
         $existing_foreign_keys = self::getTableForeignKeys($table_name);
 
+        qdh($existing_columns);
+        qdh($columns);
+
         // Mettre à jour la structure de la table
         self::updateTableColumns($table_name, $columns, $existing_columns);
         self::updateTableIndexes($table_name, $indexes, $existing_indexes);
@@ -128,6 +131,10 @@ class ModelDatabase {
 
                 if (isset($attributes['notnull'])) {
                     $class_attributes['columns'][$column_name]['notnull'] = true;
+                }
+
+                if ($property->hasDefaultValue()) {
+                    $class_attributes['columns'][$column_name]['default'] = $property->getDefaultValue();
                 }
             }
         }
@@ -355,17 +362,15 @@ class ModelDatabase {
             $default        = $row['Default'];
             $auto_increment = (strpos($row['Extra'], 'auto_increment') !== false);
 
-            // Analyser le type SQL pour extraire la taille (pour les colonnes de type chaîne, double ou decimal)
-            $length = "";
-            if (preg_match('/\((\d+)(,\d+)?\)/', $row['Type'], $matches)) {
-                $length = $matches[1] . (isset($matches[2]) ? $matches[2] : "");
-            }
-
             $columns[$column_name] = [
-                'var'    => self::mapSqlTypeToPhpType($type),
-                'type'   => $type,
-                'length' => $length,
+                'var'  => self::mapSqlTypeToPhpType($type),
+                'type' => $type
             ];
+
+            // Analyser le type SQL pour extraire la taille (pour les colonnes de type chaîne, double ou decimal)
+            if (preg_match('/\((\d+)(,\d+)?\)/', $row['Type'], $matches)) {
+                $columns[$column_name]['length'] = $matches[1] . (isset($matches[2]) ? $matches[2] : "");
+            }
 
             // Ajouter les champs 'notnull', 'default' et 'autoinc' seulement si nécessaire
             if ($notnull) {
@@ -445,7 +450,7 @@ class ModelDatabase {
 
     private static function getColumnDefinition(string $column_name, array $column_info): string {
         $column_definition = $column_name . ' ' . $column_info['type'];
-
+        $nodefault = false;
         // Ajouter la taille si spécifiée dans les commentaires
         if (isset($column_info['length'])) {
             $column_definition .= '(' . $column_info['length'] . ')';
@@ -454,6 +459,7 @@ class ModelDatabase {
         // Vérifier si la colonne est auto-incrémentée
         if (isset($column_info['autoinc']) && $column_info['autoinc'] === true) {
             $column_definition .= ' AUTO_INCREMENT';
+            $nodefault = true;
         }
 
         // Vérifier si la colonne doit être non null
@@ -462,7 +468,7 @@ class ModelDatabase {
         }
 
         // Ajouter la valeur par défaut si spécifiée
-        if (isset($column_info['default'])) {
+        if (!$nodefault && isset($column_info['default'])) {
             $default_value = $column_info['default'];
 
             // Vérifier si la valeur par défaut doit être entourée de guillemets
