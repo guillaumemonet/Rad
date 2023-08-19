@@ -81,24 +81,15 @@ class ControllersGenerator extends BaseGenerator {
     }
 
     public function generateControllerPutOne(ClassType $mainClass, ClassType $class) {
-        $parse = $class->addMethod('put');
-        $parse->setVisibility('public');
-        $parse->addParameter('request')->setType('\\Psr\\Http\\Message\\ServerRequestInterface');
-        $parse->addParameter('response')->setType('\\Psr\\Http\\Message\\ResponseInterface');
-        $parse->addParameter('args')->setType('array');
-        $parse->setReturnType('\\Psr\\Http\\Message\\ResponseInterface');
-        $parse->addComment('@put /' . $this->prefix . strtolower($mainClass->getName()) . '/(?<id>[0-9]*)/');
-        $parse->addComment('@produce json');
-        $parse->addComment('@consume json');
-        $parse->addBody('$' . strtolower($mainClass->getName()) . ' = ' . $mainClass->getName() . '::get' . $mainClass->getName() . '($args[\'id\']);
-                $' . strtolower($mainClass->getName()) . '->hydrate(json_decode($request->getBody()->getContents()));
-                $' . strtolower($mainClass->getName()) . '->update();
-                $response->getBody()->write(json_encode($' . strtolower($mainClass->getName()) . '));
-                return $response;');
+        $this->updateController('put', $mainClass, $class);
     }
 
     public function generateControllerPatchOne(ClassType $mainClass, ClassType $class) {
-        $parse = $class->addMethod('patch');
+        $this->updateController('patch', $mainClass, $class);
+    }
+
+    private function updateController(string $type, ClassType $mainClass, ClassType $class) {
+        $parse = $class->addMethod($type);
         $parse->setVisibility('public');
         $parse->addParameter('request')->setType('\\Psr\\Http\\Message\\ServerRequestInterface');
         $parse->addParameter('response')->setType('\\Psr\\Http\\Message\\ResponseInterface');

@@ -27,13 +27,15 @@ class GeneratorTools {
         $type  = preg_replace('/\s*\([^)]*\)/', '', strtolower($row["Type"]));
         $types = [
             "char"    => ["\\PDO::PARAM_STR", "string"],
+            "varchar" => ["\\PDO::PARAM_STR", "string"],
             "text"    => ["\\PDO::PARAM_STR", "string"],
             "tinyint" => ["\\PDO::PARAM_INT", "bool"],
             "blob"    => ["\\PDO::PARAM_BLOB", "binary"],
             "int"     => ["\\PDO::PARAM_INT", "int"],
             "float"   => ["\\PDO::PARAM_STR", "float"],
             "long"    => ["\\PDO::PARAM_STR", "float"],
-            "double"  => ["\\PDO::PARAM_STR", "float"]
+            "double"  => ["\\PDO::PARAM_STR", "float"],
+            "decimal" => ["\\PDO::PARAM_STR", "float"]
         ];
 
         if (array_key_exists($type, $types)) {
