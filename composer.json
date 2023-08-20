@@ -13,7 +13,10 @@
     "autoload": {
         "psr-4": {
             "Rad\\": "src/Rad/"
-        }
+        },
+        "files": [
+            "src/Helpers/Functions.php"
+        ]
     },
     "repositories": [
         {
@@ -29,7 +32,10 @@
                 "autoload": {
                     "psr-4": {
                         "Rad\\": "src/Rad/"
-                    }
+                    },
+                    "files": [
+                        "src/Helpers/Functions.php"
+                    ]
                 }
             }
         }

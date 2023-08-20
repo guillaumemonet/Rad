@@ -143,5 +143,3 @@ class Rad {
     }
 
 }
-
-include_once(__DIR__ . '/Utils/Functions.php');
