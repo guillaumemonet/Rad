@@ -18,6 +18,10 @@
             "src/Helpers/Functions.php"
         ]
     },
+    "config": {
+        "optimize-autoloader": true,
+        "classmap-authoritative": true
+    },
     "repositories": [
         {
             "type": "package",
@@ -51,6 +55,7 @@
         "psr/http-server-middleware": "^1",
         "psr/http-server-handler": "^1",
         "psr/http-factory": "^1",
+        "psr/event-dispatcher": "^1",
         "guzzlehttp/psr7": "^2.6",
         "smarty/smarty": "^v4.3",
         "nette/php-generator": "^v4.0"
