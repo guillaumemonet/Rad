@@ -144,23 +144,21 @@ class Router implements RouterInterface {
     public function route(ServerRequestInterface $request): ResponseInterface {
         $method    = $request->getMethod();
         $path      = $request->getUri()->getPath();
-        $route     = unserialize(Cache::getHandler()->get($method . "rt_cache_" . $path));
+        $cacheKey  = $method . "rt_cache_" . $path;
+        $route     = unserialize(Cache::getHandler()->get($cacheKey));
         $nodeRoute = $this->treeRoutes[strtoupper($method)];
         if ($nodeRoute != null && $route === false) { //
             $route = $nodeRoute->getRoute(explode('/', trim($path, '/')));
-            Cache::getHandler()->set($method . "rt_cache_" . $path, serialize($route));
+            Cache::getHandler()->set($cacheKey, serialize($route));
         }
         if ($route !== null && $route !== false) {
             $route->setFullPath($path);
             Log::getHandler()->debug($method . " : " . $path . " Matching " . $route->getPath());
-            $middleware       = new Middleware($route->getMiddlewares());
-            $classController  = $route->getClassName();
-            $methodController = $route->getMethodName();
-            $response         = $middleware->call($request, new Response(200), $route,
-                    function ($request, $response, $route) use ($classController, $methodController) {
-                        $controller = new $classController($route);
-                        $route->applyObservers($controller);
-                        return $controller->{$methodController}($request, $response, $route->getArgs());
+            $middleware = new Middleware($route->getMiddlewares());
+            $response   = $middleware->call($request, new Response(200), $route,
+                    function ($request, $response, $route) {
+                        $controller = new ($route->getClassName())($route);
+                        return $controller->{$route->getMethodName()}($request, $response, $route->getArgs());
                     }
             );
             return $response;
@@ -191,5 +189,4 @@ class Router implements RouterInterface {
         }
         return $this;
     }
-
 }
