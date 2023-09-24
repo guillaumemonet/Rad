@@ -22,13 +22,13 @@ class TreeNodeRoute {
      * RegExp of the current left
      * @var string 
      */
-    protected $path_chunk;
+    protected string $path_chunk;
 
     /**
      *
      * @var Route 
      */
-    protected $route = null;
+    protected ?Route $route = null;
 
     /**
      *
@@ -126,5 +126,4 @@ class TreeNodeRoute {
 
         return $str;
     }
-
 }
