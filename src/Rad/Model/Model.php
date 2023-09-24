@@ -86,4 +86,20 @@ class Model implements JsonSerializable {
         return ['md5' => $md5, 'bind' => $bind_array, 'sql' => $chaine];
     }
 
+    public function getAttributes() {
+        $class      = new ReflectionClass($this);
+        $attributes = [];
+
+        foreach ($class->getProperties() as $property) {
+            if (!$property->isPrivate() && !$this->isTraitProperty($property)) {
+                $attributes[] = $property->getName();
+            }
+        }
+        return $attributes;
+    }
+
+    private function isTraitProperty(ReflectionProperty $property) {
+        $declaringClass = $property->getDeclaringClass();
+        return $declaringClass->isTrait();
+    }
 }

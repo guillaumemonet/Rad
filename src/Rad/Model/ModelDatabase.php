@@ -13,8 +13,10 @@ use Exception;
 use Nette\PhpGenerator\PhpNamespace;
 use PDO;
 use Rad\Database\Database;
+use Rad\Utils\SQLUtils;
 use Rad\Utils\StringUtils;
 use ReflectionClass;
+use function qdh;
 
 /**
  * Description of ModelDatabase
@@ -39,7 +41,7 @@ class ModelDatabase {
         $indexes      = $class_attributes['indexes'];
         $foreign_keys = $class_attributes['foreign_keys'];
 
-        self::createTableIfNotExists($table_name, $columns, $indexes['primary'], $indexes);
+        self::createTableIfNotExists($table_name, $columns, $indexes);
         // Récupérer les informations actuelles sur la table depuis la base de données
         $existing_columns      = self::getTableColumns($table_name);
         $existing_indexes      = self::getTableIndexes($table_name);
@@ -75,12 +77,12 @@ class ModelDatabase {
                 if (isset($attributes['var'])) {
                     $php_type                                          = $attributes['var'][0];
                     // Utiliser mapPhpTypeToSqlType pour obtenir le type SQL correspondant au type PHP
-                    $sql_type                                          = self::mapPhpTypeToSqlType($php_type);
+                    $sql_type                                          = SQLUtils::mapPhpTypeToSqlType($php_type);
                     $class_attributes['columns'][$column_name]['var']  = $php_type;
                     $class_attributes['columns'][$column_name]['type'] = $sql_type;
                 } else {
                     $php_type                                          = $property->getType()->getName();
-                    $sql_type                                          = self::mapPhpTypeToSqlType($php_type);
+                    $sql_type                                          = SQLUtils::mapPhpTypeToSqlType($php_type);
                     $class_attributes['columns'][$column_name]['var']  = $php_type;
                     $class_attributes['columns'][$column_name]['type'] = $sql_type;
                 }
@@ -168,7 +170,7 @@ class ModelDatabase {
         return $fk_info;
     }
 
-    private static function createTableIfNotExists(string $table_name, array $columns, array $primary_key, array $indexes) {
+    private static function createTableIfNotExists(string $table_name, array $columns, array $indexes) {
         $pdo = Database::getHandler();
 
         // Vérifier si la table existe déjà dans la base de données
@@ -189,8 +191,8 @@ class ModelDatabase {
             }
 
             // Ajout de la clé primaire si définie
-            if (!empty($primary_key)) {
-                $primary_key_columns  = implode(',', $primary_key);
+            if (!empty($indexes['primary'])) {
+                $primary_key_columns  = implode(',', $indexes['primary']);
                 $column_definitions[] = "PRIMARY KEY ($primary_key_columns)";
             }
 
@@ -349,7 +351,9 @@ class ModelDatabase {
         }
     }
 
-    // Méthode pour récupérer les informations actuelles sur les colonnes de la table depuis la base de données
+    /**
+     * Méthode pour récupérer les informations actuelles sur les colonnes de la table depuis la base de données
+     */
     private static function getTableColumns(string $table_name): array {
         $columns = [];
         // Récupérer les informations sur les colonnes depuis la base de données
@@ -363,10 +367,10 @@ class ModelDatabase {
             $auto_increment = (strpos($row['Extra'], 'auto_increment') !== false);
 
             $columns[$column_name] = [
-                'var'  => self::mapSqlTypeToPhpType($type),
+                'var'  => SQLUtils::mapSqlTypeToPhpType($type),
                 'type' => $type
             ];
-
+            $matches               = [];
             // Analyser le type SQL pour extraire la taille (pour les colonnes de type chaîne, double ou decimal)
             if (preg_match('/\((\d+)(,\d+)?\)/', $row['Type'], $matches)) {
                 $columns[$column_name]['length'] = $matches[1] . (isset($matches[2]) ? $matches[2] : "");
@@ -450,7 +454,7 @@ class ModelDatabase {
 
     private static function getColumnDefinition(string $column_name, array $column_info): string {
         $column_definition = $column_name . ' ' . $column_info['type'];
-        $nodefault = false;
+        $nodefault         = false;
         // Ajouter la taille si spécifiée dans les commentaires
         if (isset($column_info['length'])) {
             $column_definition .= '(' . $column_info['length'] . ')';
@@ -459,7 +463,7 @@ class ModelDatabase {
         // Vérifier si la colonne est auto-incrémentée
         if (isset($column_info['autoinc']) && $column_info['autoinc'] === true) {
             $column_definition .= ' AUTO_INCREMENT';
-            $nodefault = true;
+            $nodefault         = true;
         }
 
         // Vérifier si la colonne doit être non null
@@ -523,8 +527,12 @@ class ModelDatabase {
         return $attributes;
     }
 
-// Méthode pour générer une classe PHP à partir de la structure d'une table de la base de données
-    public static function loadStructure(string $table_name): string {
+    /**
+     * Méthode pour générer une classe PHP à partir de la structure d'une table de la base de données
+     * @param string $table_name
+     * @return string
+     */
+    public static function loadStructure(string $table_name, string $file_name): string {
         // Récupérer les informations sur la structure de la table depuis la base de données
         $columns      = self::getTableColumns($table_name);
         $indexes      = self::getTableIndexes($table_name);
@@ -536,7 +544,7 @@ class ModelDatabase {
 
         // Générer les attributs de la classe en fonction des colonnes de la table
         foreach ($columns as $column_name => $column_info) {
-            $type     = self::mapSqlTypeToPhpType($column_info['type']);
+            $type     = SQLUtils::mapSqlTypeToPhpType($column_info['type']);
             $property = $class->addProperty($column_name)->setType($type);
 
             if (isset($column_info['notnull']) && $column_info['notnull']) {
@@ -552,7 +560,7 @@ class ModelDatabase {
             }
 
             // Ajouter le type PHP
-            $php_type = self::mapSqlTypeToPhpType($column_info['type']);
+            $php_type = SQLUtils::mapSqlTypeToPhpType($column_info['type']);
             $property->addComment('@var ' . $php_type);
 
             // Ajouter le type SQL
@@ -594,68 +602,4 @@ class ModelDatabase {
         }
         return $namespace;
     }
-
-    private static function mapSqlTypeToPhpType(string $sql_type): string {
-        $type_map = [
-            'int'        => 'int',
-            'tinyint'    => 'bool',
-            'smallint'   => 'int',
-            'mediumint'  => 'int',
-            'bigint'     => 'int',
-            'float'      => 'float',
-            'double'     => 'float',
-            'decimal'    => 'float',
-            'date'       => '\DateTime',
-            'time'       => '\DateTime',
-            'datetime'   => '\DateTime',
-            'timestamp'  => '\DateTime',
-            'year'       => 'int',
-            'char'       => 'string',
-            'varchar'    => 'string',
-            'text'       => 'string',
-            'tinytext'   => 'string',
-            'mediumtext' => 'string',
-            'longtext'   => 'string',
-            'enum'       => 'string',
-            'set'        => 'string',
-            'binary'     => 'string',
-            'varbinary'  => 'string',
-            'blob'       => 'string',
-            'tinyblob'   => 'string',
-            'mediumblob' => 'string',
-            'longblob'   => 'string',
-            'json'       => 'array',
-            'jsonb'      => 'array',
-        ];
-
-        $sql_type = strtolower($sql_type);
-        return $type_map[$sql_type] ?? 'mixed';
-    }
-
-    private static function mapPhpTypeToSqlType(string $php_type): string {
-        $type_map = [
-            'int'           => 'int',
-            'integer'       => 'int',
-            'float'         => 'float',
-            'double'        => 'float',
-            'string'        => 'varchar',
-            'bool'          => 'tinyint',
-            'boolean'       => 'tinyint',
-            'array'         => 'json',
-            'object'        => 'json',
-            'json'          => 'json',
-            'null'          => 'varchar',
-            'resource'      => 'varchar',
-            'callable'      => 'varchar',
-            'iterable'      => 'json',
-            'void'          => 'varchar',
-            'mixed'         => 'varchar',
-            'unknown'       => 'varchar',
-            '\DateTime'     => 'datetime',
-            '\DateInterval' => 'varchar',
-        ];
-        $php_type = strtolower($php_type);
-        return $type_map[$php_type] ?? 'varchar';
-    }
-
 }
