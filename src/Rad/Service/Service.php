@@ -69,7 +69,7 @@ abstract class Service implements ServiceInterface {
      * @return static
      */
     final public static function getInstance(): static {
-        $calledClass = get_called_class();
+        $calledClass = static::class;
         if (!isset(static::$instances[$calledClass])) {
             static::$instances[$calledClass] = new $calledClass();
         }
@@ -139,21 +139,21 @@ abstract class Service implements ServiceInterface {
      * @throws ConfigurationException
      */
     private function loadConfig(): void {
-        $config = Config::getServiceConfig($this->serviceType);
-
-        $this->default = $config->default;
+        $config        = Config::getServiceConfig($this->serviceType);
+        $this->default = $config->default ?? null;
         if ($this->default === null) {
             throw new ConfigurationException('No default handler defined ' . $this->serviceType);
         }
-        $this->providedClassName = $config->classname;
+        $this->providedClassName = $config->classname ?? null;
         if ($this->providedClassName === null) {
             throw new ConfigurationException('No Provided Class defined ' . $this->serviceType);
         }
         $this->services = (array) $config->handlers;
 
-        array_walk($this->services, function (&$value, $key) {
-            $value = $value->classname;
-        });
+        $this->services = array_map(
+                fn($value) => $value->classname,
+                (array) ($config->handlers ?? [])
+        );
     }
 
     protected abstract function getServiceType(): string;
