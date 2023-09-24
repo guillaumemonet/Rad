@@ -31,6 +31,11 @@ abstract class AutoConfig {
         
     }
 
+    /**
+     * 
+     * @param bool $caching
+     * @return array
+     */
     public static function loadControllers($caching = true): array {
 
         $controllers = unserialize(Cache::getHandler()->get('controllers'));
@@ -42,6 +47,10 @@ abstract class AutoConfig {
         return $controllers;
     }
 
+    /**
+     * 
+     * @return array
+     */
     private static function findControllers(): array {
         $controllers = [];
         $installPath = Config::getApiConfig()->install_path . Config::getApiConfig()->controllers_path;
@@ -57,6 +66,11 @@ abstract class AutoConfig {
         return $controllers;
     }
 
+    /**
+     * 
+     * @param type $file
+     * @return string|null
+     */
     private static function parseFile($file): ?string {
         $content    = file_get_contents($file);
         $namespaces = [];
@@ -80,5 +94,4 @@ abstract class AutoConfig {
             return null;
         }
     }
-
 }
