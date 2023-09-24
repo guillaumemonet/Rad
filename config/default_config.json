@@ -16,6 +16,25 @@
         }
     },
     "services": {
+        "language": {
+            "default": "language",
+            "classname": "Rad\\Language\\LanguageInterface",
+            "default_locale": "fr_FR",
+            "available_locales": [
+                "fr_FR",
+                "en_US"
+            ],
+            "handlers": {
+                "language": {
+                    "classname": "Rad\\Language\\LanguageHandler",
+                    "config": {
+                        "locales_path": "locales/locales.json",
+                        "cache_type": "file"
+                    }
+                }
+            }
+        },
+
         "build": {
             "default": "databasebuilder",
             "classname": "Rad\\Build\\BuildInterface",
