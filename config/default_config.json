@@ -85,7 +85,7 @@
         },
         "cache": {
             "default": "nocache",
-            "classname": "Psr\\SimpleCache\\CacheInterface",
+            "classname": "Rad\\Cache\\CacheInterface",
             "handlers": {
                 "nocache": {
                     "classname": "Rad\\Cache\\NoCacheHandler",

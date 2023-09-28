@@ -9,7 +9,7 @@
 
 namespace Rad\Cache;
 
-use Psr\SimpleCache\CacheInterface;
+use DirectoryIterator;
 use Rad\Config\Config;
 use Rad\Encryption\Encryption;
 
@@ -60,8 +60,10 @@ class FileCacheHandler implements CacheInterface {
      * @return type
      */
     public function get($key, $default = null) {
-        $md5 = Encryption::hashMd5($key);
-        if (file_exists($this->path . $md5) && ($tmp = file_get_contents($this->path . $md5)) !== false) {
+        $md5      = Encryption::hashMd5($key);
+        $filePath = $this->path . $md5;
+
+        if (file_exists($filePath) && ($tmp = file_get_contents($filePath)) !== false) {
             return $tmp;
         } else {
             return $default;
@@ -120,14 +122,16 @@ class FileCacheHandler implements CacheInterface {
      * 
      * @return bool
      */
-    public function clear(): bool {
-        $t      = time();
-        $handle = opendir($this->path);
-        while ($handle !== false && false !== ($file   = readdir($handle))) {
-            if ($file != ".." && $file != "." && @filectime($this->path . $file) < ($t - (int) $this->defaultTTL)) {
-                @unlink($this->path . $file);
+    public function purge(): bool {
+        $t        = time();
+        $iterator = new DirectoryIterator($this->path);
+
+        foreach ($iterator as $fileInfo) {
+            if ($fileInfo->isFile() && !$fileInfo->isDot() && $fileInfo->getCTime() < ($t - (int) $this->defaultTTL)) {
+                unlink($fileInfo->getPathname());
             }
         }
+
         return true;
     }
 
@@ -135,15 +139,15 @@ class FileCacheHandler implements CacheInterface {
      * 
      * @return bool
      */
-    public function purge(): bool {
-        $ret    = false;
-        $handle = opendir($this->path);
-        while ($handle !== false && false !== ($file   = readdir($handle))) {
-            if ($file != ".." && $file != ".") {
-                $ret &= unlink($this->path . $file);
+    public function clear(): bool {
+        $iterator = new DirectoryIterator($this->path);
+
+        foreach ($iterator as $fileInfo) {
+            if ($fileInfo->isFile() && !$fileInfo->isDot()) {
+                unlink($fileInfo->getPathname());
             }
         }
-        return $ret;
-    }
 
+        return true;
+    }
 }

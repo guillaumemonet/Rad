@@ -10,7 +10,6 @@
 namespace Rad\Cache;
 
 use PDO;
-use Psr\SimpleCache\CacheInterface;
 use Rad\Config\Config;
 use Rad\Database\Database;
 use Rad\Encryption\Encryption;
@@ -32,6 +31,7 @@ class DatabaseCacheHandler implements CacheInterface {
     private $read   = "SELECT id,content FROM output_cache WHERE id IN(%s)";
     private $write  = "INSERT INTO output_cache (id,modified,content) VALUES (\"%s\",%d,\"%s\") ON DUPLICATE KEY UPDATE content=\"%s\",modified=%d";
     private $purge  = "DELETE FROM output_cache WHERE modified < %d";
+    private $clear  = "TRUNCATE output_cache";
     private $delete = "DELETE FROM output_cache WHERE id IN (\"%s\")";
     private $type   = null;
 
@@ -43,8 +43,12 @@ class DatabaseCacheHandler implements CacheInterface {
         Database::getHandler($this->type)->exec(sprintf($this->delete, Encryption::hashMd5($key)));
     }
 
-    public function clear(): bool {
+    public function purge(): bool {
         return Database::getHandler($this->type)->exec(sprintf($this->purge, time())) !== false;
+    }
+
+    public function clear(): bool {
+        return Database::getHandler($this->type)->exec($this->clear) !== false;
     }
 
     public function deleteMultiple($keys): bool {
@@ -96,5 +100,4 @@ class DatabaseCacheHandler implements CacheInterface {
         }
         return $ret;
     }
-
 }

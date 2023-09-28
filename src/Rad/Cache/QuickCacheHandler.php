@@ -9,8 +9,6 @@
 
 namespace Rad\Cache;
 
-use Psr\SimpleCache\CacheInterface;
-
 /**
  * Volatile Cache 
  * To Share Var Between Function
@@ -25,6 +23,10 @@ class QuickCacheHandler implements CacheInterface {
 
     public function clear(): bool {
         $this->datas = [];
+    }
+
+    public function purge(): bool {
+        return true;
     }
 
     public function delete($key): bool {
@@ -72,5 +74,4 @@ class QuickCacheHandler implements CacheInterface {
         }
         return true;
     }
-
 }

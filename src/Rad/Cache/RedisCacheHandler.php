@@ -9,7 +9,6 @@
 
 namespace Rad\Cache;
 
-use Psr\SimpleCache\CacheInterface;
 use Rad\Config\Config;
 use Rad\Encryption\Encryption;
 use Redis;
@@ -34,6 +33,10 @@ final class RedisCacheHandler implements CacheInterface {
 
     public function clear(): bool {
         $this->redis->flushDB();
+        return true;
+    }
+
+    public function purge(): bool {
         return true;
     }
 
@@ -80,5 +83,4 @@ final class RedisCacheHandler implements CacheInterface {
         }
         return $ret;
     }
-
 }

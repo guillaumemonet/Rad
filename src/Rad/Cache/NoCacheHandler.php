@@ -9,8 +9,6 @@
 
 namespace Rad\Cache;
 
-use Psr\SimpleCache\CacheInterface;
-
 /**
  * Description of No_CacheHandler
  *
@@ -19,6 +17,10 @@ use Psr\SimpleCache\CacheInterface;
 class NoCacheHandler implements CacheInterface {
 
     public function clear(): bool {
+        return true;
+    }
+
+    public function purge(): bool {
         return true;
     }
 
@@ -49,5 +51,4 @@ class NoCacheHandler implements CacheInterface {
     public function setMultiple($values, $ttl = null): bool {
         return false;
     }
-
 }

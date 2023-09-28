@@ -9,7 +9,6 @@
 
 namespace Rad\Cache;
 
-use Psr\SimpleCache\CacheInterface;
 use Rad\Service\Service;
 
 /*
@@ -31,5 +30,4 @@ final class Cache extends Service {
     protected function getServiceType(): string {
         return 'cache';
     }
-
 }

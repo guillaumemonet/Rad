@@ -10,7 +10,6 @@
 namespace Rad\Cache;
 
 use Memcached;
-use Psr\SimpleCache\CacheInterface;
 use Rad\Config\Config;
 use Rad\Encryption\Encryption;
 
@@ -41,6 +40,14 @@ final class MemcacheCacheHandler implements CacheInterface {
      */
     public function clear(): bool {
         return $this->memcache->flush();
+    }
+
+    /**
+     * 
+     * @return bool
+     */
+    public function purge(): bool {
+        
     }
 
     /**
@@ -127,5 +134,4 @@ final class MemcacheCacheHandler implements CacheInterface {
         $nvalues = array_combine($keys, $values);
         return $this->memcache->setMulti($nvalues, $ttl);
     }
-
 }
