@@ -42,7 +42,7 @@ switch ($actionName) {
 }
 
 function fireBuild($argv) {
-    Manager::build();
+    Manager::build($argv);
 }
 
 function fireClearCache($argv) {
