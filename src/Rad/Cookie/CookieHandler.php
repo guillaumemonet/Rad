@@ -23,11 +23,17 @@ class CookieHandler implements CookieInterface {
      * 
      * @var array
      */
-    private $datas = null;
-    private $name  = null;
+    private $datas    = null;
+    private $name     = null;
+    private $sameSite = null;
+    private $domaine  = null;
+    private $secure   = false;
 
     public function __construct() {
-        $this->name = Config::getServiceConfig('cookie', 'php')->config->name;
+        $this->name     = Config::getServiceConfig('cookie', 'php')->config->name;
+        $this->sameSite = Config::getServiceConfig('cookie', 'php')->config->sameSite;
+        $this->domaine  = Config::getServiceConfig('cookie', 'php')->config->domaine;
+        $this->secure   = (bool) Config::getServiceConfig('cookie', 'php')->config->secure;
         if (isset($_COOKIE[$this->name])) {
             $this->datas = unserialize(Encryption::getHandler()->decrypt($_COOKIE[$this->name]));
         }
@@ -49,7 +55,20 @@ class CookieHandler implements CookieInterface {
     }
 
     public function save(): bool {
-        return setcookie($this->name, Encryption::getHandler()->encrypt(serialize($this->datas)));
-    }
+        $options = [
+            "samesite" => $this->sameSite
+        ];
 
+        if ($this->sameSite !== "None") {
+            $options["secure"] = true;
+        } else {
+            $options["secure"] = $this->secure;
+        }
+
+        return setcookie(
+                $this->name,
+                Encryption::getHandler()->encrypt(serialize($this->datas)),
+                $options
+        );
+    }
 }
