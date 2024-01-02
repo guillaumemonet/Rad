@@ -41,8 +41,7 @@ class Response extends GResponse {
 
     public function __construct(int $statusCode = 200, array $headers = [], StreamInterface $body = null) {
         $baseHeaders  = [
-            "Application-Nonce" => [time()],
-            'X-Powered-By'      => ['Rad Framework']
+            "Application-Nonce" => [time()]
         ];
         $mergedHeader = array_merge($headers, $baseHeaders);
         parent::__construct($statusCode, $mergedHeader, $body);
@@ -86,5 +85,4 @@ class Response extends GResponse {
             }
         }
     }
-
 }
