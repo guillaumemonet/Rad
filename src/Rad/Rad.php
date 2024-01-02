@@ -14,7 +14,9 @@ use ErrorException;
 use Psr\Http\Message\ServerRequestInterface;
 use Rad\Config\Config;
 use Rad\Error\Http\NotFoundException;
+use Rad\Http\Response;
 use Rad\Http\ServerRequest;
+use Rad\Log\Log;
 use Rad\Route\Router;
 use Rad\Route\RouterInterface;
 
@@ -65,8 +67,13 @@ class Rad {
                     ->route($this->request)
                     ->send();
         } catch (ErrorException $ex) {
+            Log::getHandler()->error($ex->getMessage());
             if ($errorClosure !== null) {
                 call_user_func_array($errorClosure, [$ex]);
+            } else {
+                $response = new Response($ex->getCode());
+                $response->getBody()->write($ex->getCode() . ' ' . $ex->getMessage());
+                $response->send();
             }
         } finally {
             if ($finalClosure != null) {
@@ -141,5 +148,4 @@ class Rad {
     public function getControllers(): array {
         return $this->controllers;
     }
-
 }
