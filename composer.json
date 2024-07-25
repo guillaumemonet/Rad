@@ -56,9 +56,9 @@
         "psr/http-server-handler": "^1",
         "psr/http-factory": "^1",
         "psr/event-dispatcher": "^1",
-        "guzzlehttp/psr7": "^2.6",
-        "smarty/smarty": "^v4.3",
-        "nette/php-generator": "^v4.0"
+        "guzzlehttp/psr7": "^2",
+        "smarty/smarty": "*",
+        "nette/php-generator": "^v4"
     },
     "bin": ["bin/rad"]
 }
