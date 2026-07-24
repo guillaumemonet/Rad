@@ -15,6 +15,12 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Rad\Route\Route;
 
+/**
+ * Legacy onion middleware runner.
+ *
+ * @deprecated Superseded by the PSR-15 {@see Dispatcher}. Kept for backward
+ * compatibility with code instantiating it directly.
+ */
 class Middleware {
 
     protected array $layers = [];

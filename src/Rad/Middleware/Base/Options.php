@@ -11,34 +11,24 @@ namespace Rad\Middleware\Base;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use Rad\Config\Config;
-use Rad\Middleware\MiddlewareBefore;
-use Rad\Route\Route;
+use Rad\Http\Response;
 
 /**
- * Description of Options
- *
- * @author guillaume
+ * Short-circuits pre-flight OPTIONS requests with a 200 response carrying the
+ * configured CORS headers; passes everything else through.
  */
-class Options extends MiddlewareBefore {
+class Options extends AbstractMiddleware {
 
-    /**
-     * 
-     * @param ServerRequestInterface $request
-     * @param ResponseInterface $response
-     * @param Route $route
-     */
-    public function middle(ServerRequestInterface $request, ResponseInterface $response, Route $route): ResponseInterface {
-        if (strtoupper($request->getMethod()) == 'OPTIONS') {
-            $headers = (array) Config::getApiConfig('cors');
-            array_walk($headers, function (&$value, $header) use (&$response) {
-                $response = $response->withAddedHeader($header, $value);
-            });
-            $response->withStatus(200)->send();
-            exit;
-        } else {
-            return $response;
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface {
+        if (strtoupper($request->getMethod()) !== 'OPTIONS') {
+            return $handler->handle($request);
         }
+        $response = new Response(200);
+        foreach ((array) Config::getApiConfig('cors') as $header => $value) {
+            $response = $response->withAddedHeader($header, $value);
+        }
+        return $response;
     }
-
 }

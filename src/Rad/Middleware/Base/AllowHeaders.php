@@ -11,24 +11,20 @@ namespace Rad\Middleware\Base;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Rad\Middleware\MiddlewareBefore;
-use Rad\Route\Route;
+use Psr\Http\Server\RequestHandlerInterface;
 
 /**
- * Description of Expose
- *
- * @author guillaume
+ * Advertises the route's allowed request headers via
+ * Access-Control-Allow-Headers.
  */
-class AllowHeaders extends MiddlewareBefore {
+class AllowHeaders extends AbstractMiddleware {
 
-    /**
-     * @param ServerRequestInterface $request
-     * @param ResponseInterface $response
-     * @param Route $route
-     * @return ResponseInterface
-     */
-    public function middle(ServerRequestInterface $request, ResponseInterface $response, Route $route): ResponseInterface {
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface {
+        $response = $handler->handle($request);
+        $route    = $this->route($request);
+        if ($route === null) {
+            return $response;
+        }
         return $response->withAddedHeader('Access-Control-Allow-Headers', $route->getAllowedHeaders());
     }
-
 }

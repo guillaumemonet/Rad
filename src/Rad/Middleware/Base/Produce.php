@@ -11,31 +11,20 @@ namespace Rad\Middleware\Base;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Rad\Middleware\MiddlewareAfter;
-use Rad\Route\Route;
+use Psr\Http\Server\RequestHandlerInterface;
 use Rad\Utils\Mime;
 
 /**
- * Description of Post_SetProduce
- *
- * @author guillaume
+ * Adds the Content-Type header matching the route's produced mime type
+ * (defaults to json) to the downstream response.
  */
-class Produce extends MiddlewareAfter {
+class Produce extends AbstractMiddleware {
 
-    /**
-     * 
-     * @param ServerRequestInterface $request
-     * @param ResponseInterface $response
-     * @param Route $route
-     * @return ResponseInterface
-     */
-    public function middle(ServerRequestInterface $request, ResponseInterface $response, Route $route): ResponseInterface {
-        if (!empty($route->getProcucedMimeType())) {
-            $response = $response->withAddedHeader('Content-Type', Mime::getMimeTypesFromShort(current($route->getProcucedMimeType()))[0]);
-        } else {
-            $response = $response->withAddedHeader('Content-Type', Mime::getMimeTypesFromShort('json')[0]);
-        }
-        return $response;
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface {
+        $response = $handler->handle($request);
+        $route    = $this->route($request);
+        $produced = $route?->getProcucedMimeType() ?? [];
+        $short    = !empty($produced) ? current($produced) : 'json';
+        return $response->withAddedHeader('Content-Type', Mime::getMimeTypesFromShort($short)[0]);
     }
-
 }

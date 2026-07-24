@@ -11,26 +11,16 @@ namespace Rad\Middleware\Base;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use Rad\Error\Http\ForbiddenException;
-use Rad\Middleware\MiddlewareBefore;
-use Rad\Route\Route;
 
 /**
- * Description of Security
- *
- * @author guillaume
+ * Denies access by default: extend and override process() with the actual
+ * authorization logic (call $handler->handle($request) when allowed).
  */
-class Security extends MiddlewareBefore {
+class Security extends AbstractMiddleware {
 
-    /**
-     * By default forbidden all must be overridden
-     * @param ServerRequestInterface $request
-     * @param ResponseInterface $response
-     * @param Route $route
-     * @throws ForbiddenException
-     */
-    public function middle(ServerRequestInterface $request, ResponseInterface $response, Route $route): ResponseInterface {
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface {
         throw new ForbiddenException();
     }
-
 }

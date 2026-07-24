@@ -11,34 +11,24 @@ namespace Rad\Middleware\Base;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use Rad\Config\Config;
-use Rad\Middleware\MiddlewareAfter;
-use Rad\Route\Route;
 
 /**
- * Description of Cors
- *
- * @author guillaume
+ * Adds the configured CORS headers (and the route's allowed origin) to the
+ * downstream response.
  */
-class Cors extends MiddlewareAfter {
+class Cors extends AbstractMiddleware {
 
-    /**
-     * 
-     * @param ServerRequestInterface $request
-     * @param ResponseInterface $response
-     * @param Route $route
-     * @return ResponseInterface
-     */
-    public function middle(ServerRequestInterface $request, ResponseInterface $response, Route $route): ResponseInterface {
-        $headers = (array) Config::getApiConfig('cors');
-        array_walk($headers, function (&$value, $header) use (&$response) {
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface {
+        $response = $handler->handle($request);
+        foreach ((array) Config::getApiConfig('cors') as $header => $value) {
             $response = $response->withAddedHeader($header, $value);
-        });
-        if (!empty($route->getCorsDomain())) {
-            return $response->withAddedHeader('Access-Control-Allow-Origin', $route->getCorsDomain());
-        } else {
-            return $response;
         }
+        $route = $this->route($request);
+        if ($route !== null && !empty($route->getCorsDomain())) {
+            $response = $response->withAddedHeader('Access-Control-Allow-Origin', $route->getCorsDomain());
+        }
+        return $response;
     }
-
 }

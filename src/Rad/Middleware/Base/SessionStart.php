@@ -11,28 +11,18 @@ namespace Rad\Middleware\Base;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Rad\Middleware\MiddlewareBefore;
-use Rad\Route\Route;
+use Psr\Http\Server\RequestHandlerInterface;
 use Rad\Session\Session;
 
 /**
- * Description of Expose
- *
- * @author guillaume
+ * Starts the session before handling the request.
  */
-class SessionStart extends MiddlewareBefore {
+class SessionStart extends AbstractMiddleware {
 
-    public static $priority = 9;
+    public static int $priority = 9;
 
-    /**
-     * @param ServerRequestInterface $request
-     * @param ResponseInterface $response
-     * @param Route $route
-     * @return ResponseInterface
-     */
-    public function middle(ServerRequestInterface $request, ResponseInterface $response, Route $route): ResponseInterface {
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface {
         Session::getHandler()->start();
-        return $response;
+        return $handler->handle($request);
     }
-
 }
