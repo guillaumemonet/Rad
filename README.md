@@ -34,7 +34,7 @@ Here is an overview of the PSRs followed by the RAD framework:
 - **PSR-7 Http Message:** RAD leverages the PSR-7 standard, powered by Guzzle HTTP, for handling HTTP messages, providing a consistent interface for interacting with HTTP requests and responses.
 - **PSR-11 Container:** The framework employs PSR-11 for dependency injection, enabling the management and retrieval of dependencies through a container.
 - **PSR-14 EventDispatcher:** RAD utilizes PSR-14 for event dispatching, facilitating the decoupling of components and promoting the observer pattern.
-- **PSR-15 Middleware (Work in Progress):** The framework is in the process of implementing PSR-15, which defines a middleware interface for handling HTTP requests and responses.
+- **PSR-15 Middleware:** Requests flow through a PSR-15 pipeline (`Rad\Middleware\Dispatcher`) of `Psr\Http\Server\MiddlewareInterface` layers ending in the controller dispatcher. Legacy Rad middlewares are adapted transparently.
 - **PSR-16 Caching:** RAD adheres to PSR-16 for caching, allowing developers to implement caching mechanisms efficiently.
 - **PSR-17 Http Factory:** The framework incorporates PSR-17, powered by Guzzle HTTP, for creating HTTP request and response objects in a standardized manner.
 
@@ -84,6 +84,41 @@ Composer will fetch the appropriate version of RAD Framework based on the versio
 
 With RAD Framework successfully installed, you can now start building your web applications with ease and speed, thanks to its streamlined features and flexible architecture. 
 
+## Development / QA
+
+Install the dev dependencies then use the Composer scripts:
+
+```bash
+composer install
+
+composer test        # PHPUnit
+composer phpstan     # Static analysis
+composer cs-check    # Coding standards (dry-run)
+composer cs-fix      # Coding standards (apply)
+composer qa          # cs-check + phpstan + test
+```
+
+No local PHP? A Docker dev stack is provided:
+
+```bash
+docker compose build
+docker compose run --rm php composer install
+docker compose run --rm php composer qa     # phpstan + phpunit
+```
+
+CI (GitHub Actions) runs the same checks on PHP 8.2, 8.3 and 8.4.
+
+PHPStan runs at level 5; existing legacy findings are frozen in
+`phpstan-baseline.neon` so only new issues fail the build. Coding-standards
+(`composer cs-fix`) are not yet applied to the legacy code, so that CI step is
+informational for now.
+
+For an existing project with legacy type debt, generate a PHPStan baseline first:
+
+```bash
+vendor/bin/phpstan analyse --generate-baseline
+```
+
 ## TODO
 
 * Improve Documentation
@@ -106,16 +141,20 @@ $app = new \Rad\Rad(__DIR__ . "/config/");
 
 Create new Controller :
 
+Routes are declared with PHP 8 attributes (namespace `Rad\Route\Attribute`) :
+
 ```php
 
 <?php
 
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Rad\Route\Attribute\Get;
+use Rad\Route\Attribute\Produce;
+
 class Exemple extends \Rad\Controller\Controller {
-    
-    /**
-     * @get /
-     * @produce html
-     */
+
+    #[Get('/'), Produce('html')]
     public function html(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
         $response->getBody()->write("<b>Hello World</b>");
         return $response;
@@ -123,6 +162,21 @@ class Exemple extends \Rad\Controller\Controller {
 
 }
 ```
+
+Available attributes :
+
+| Attribute | Target | Example |
+|-----------|--------|---------|
+| `#[Get]` `#[Post]` `#[Put]` `#[Patch]` `#[Delete]` `#[Options]` | method (repeatable) | `#[Get('/users/(?<id>\d+)/')]` |
+| `#[Produce]` / `#[Consume]` | method / class | `#[Produce('json', 'html')]` |
+| `#[Middleware]` / `#[Security]` | method / class (repeatable) | `#[Middleware(MyMiddleware::class)]` |
+| `#[Version]` | method / class | `#[Version(1)]` |
+| `#[Session]` `#[Xhr]` `#[Cacheable]` `#[EnableOptions]` | method / class | `#[Session]` |
+| `#[Cors]` | method / class | `#[Cors('https://example.com')]` |
+| `#[Observer]` | method / class | `#[Observer(MyObserver::class)]` |
+| `#[AllowHeaders]` / `#[ExposeHeaders]` | method / class | `#[AllowHeaders('X-Total-Count')]` |
+
+> Legacy `@get` / `@produce` docblock annotations are still parsed automatically for controllers that have not been migrated yet.
 
 Add controller to the Rad API :
 
@@ -150,6 +204,103 @@ $app->run(function(){
 ```
 
 
+## Dependency Injection
+
+RAD ships a lightweight PSR-11 container with constructor autowiring
+(`Rad\Container\Container`). Controllers are resolved through it, so you can
+type-hint services directly in a controller constructor:
+
+```php
+use Rad\Container\Container;
+
+class UserController extends \Rad\Controller\Controller {
+
+    public function __construct(\Rad\Route\Route $route = null, private ?UserRepository $users = null) {
+        parent::__construct($route);
+    }
+}
+```
+
+Register bindings on the application container:
+
+```php
+$app = new \Rad\Rad(__DIR__ . '/config/');
+
+$container = $app->getContainer();
+$container->bind(UserRepositoryInterface::class, MysqlUserRepository::class);
+$container->singleton(Clock::class, fn() => new SystemClock());
+$container->instance(SomeService::class, $alreadyBuilt);
+```
+
+- `get($id)` resolves with singleton semantics (built once, then cached).
+- `make($id, ['param' => $value])` returns a fresh instance, overriding
+  constructor arguments by name (this is how the current `Route` is injected
+  into controllers).
+- `call($callable, $params)` invokes any callable with autowired arguments.
+
+The current request (`ServerRequestInterface`), router (`RouterInterface`) and
+the container itself are pre-registered and injectable out of the box.
+
+The legacy service facades are also bridged into the container, so their
+interfaces can be type-hinted directly (each resolves to the handler configured
+for that service, exactly like calling the facade):
+
+```php
+class ReportController extends \Rad\Controller\Controller {
+
+    public function __construct(
+        \Rad\Route\Route $route = null,
+        private ?\Psr\Log\LoggerInterface $log = null,          // Log::getHandler()
+        private ?\Rad\Cache\CacheInterface $cache = null,       // Cache::getHandler()
+        private ?\Rad\Database\DatabaseAdapter $db = null       // Database::getHandler()
+    ) {
+        parent::__construct($route);
+    }
+}
+```
+
+Bridged interfaces: `Psr\Log\LoggerInterface`, `Rad\Cache\CacheInterface`,
+`Rad\Database\DatabaseAdapter`, `Rad\Session\SessionInterface`,
+`Rad\Cookie\CookieInterface`, `Rad\Encryption\EncryptionInterface`,
+`Rad\Template\TemplateInterface`, `Rad\Language\LanguageInterface`,
+`Rad\Codec\CodecInterface`, `Rad\Build\BuildInterface`,
+`Rad\ClientApi\ClientApiInterface`, `Rad\Mail\MailInterface` and
+`Psr\EventDispatcher\EventDispatcherInterface` (when configured).
+
+## Middleware (PSR-15)
+
+Write a standard PSR-15 middleware and attach it to a route/controller with the
+`#[Middleware(...)]` attribute:
+
+```php
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
+
+final class Timing implements MiddlewareInterface {
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface {
+        $start = microtime(true);
+        return $handler->handle($request)
+            ->withHeader('X-Elapsed-Ms', (string) round((microtime(true) - $start) * 1000, 2));
+    }
+}
+```
+
+```php
+use Rad\Route\Attribute\Get;
+use Rad\Route\Attribute\Middleware;
+
+#[Get('/'), Middleware(Timing::class)]
+public function index(...): ResponseInterface { /* ... */ }
+```
+
+The matched `Route` is available on the request as an attribute
+(`$request->getAttribute(\Rad\Route\Route::class)`). Middlewares can be ordered
+by declaring `public static int $priority` (lower runs first). Middlewares still
+written against the old `Rad\Middleware\MiddlewareInterface` keep working through
+an adapter.
+
 ## How is works
 
 * **Config**
@@ -167,6 +318,6 @@ $app->run(function(){
 * [psr-7](http://www.php-fig.org/psr/psr-7/) Http Message (Thanks to Guzzle Http)
 * [psr-11](http://www.php-fig.org/psr/psr-11/) Container
 * [psr-14](http://www.php-fig.org/psr/psr-14/) EventDispatcher (WIP Remplace Observer Pattern)
-* [psr-15](http://www.php-fig.org/psr/psr-15/) Middleware (WIP)
+* [psr-15](http://www.php-fig.org/psr/psr-15/) Middleware (Dispatcher + RequestHandler)
 * [psr-16](http://www.php-fig.org/psr/psr-16/) Caching
 * [psr-17](http://www.php-fig.org/psr/psr-17/) Http Factory (Thanks to Guzzle Http)
