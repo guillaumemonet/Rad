@@ -11,8 +11,12 @@ namespace Rad;
 
 use Closure;
 use ErrorException;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Rad\Config\Config;
+use Rad\Container\Container;
+use Rad\Container\ContainerAwareInterface;
+use Rad\Container\ServiceProvider;
 use Rad\Error\Http\NotFoundException;
 use Rad\Http\Response;
 use Rad\Http\ServerRequest;
@@ -21,11 +25,17 @@ use Rad\Route\Router;
 use Rad\Route\RouterInterface;
 
 /**
- * 
+ *
  */
 class Rad {
 
     const VERSION = '1.0';
+
+    /**
+     *
+     * @var Container
+     */
+    protected Container $container;
 
     /**
      *
@@ -54,6 +64,31 @@ class Rad {
         $serverRequestClass = Config::getApiConfig('serverrequest');
         $this->router       = $routerClass !== null ? new $routerClass : new Router();
         $this->request      = $serverRequestClass !== null ? $serverRequestClass::fromGlobals() : ServerRequest::fromGlobals();
+        $this->container    = $this->bootContainer();
+    }
+
+    /**
+     * Build the application container and register the core services.
+     */
+    protected function bootContainer(): Container {
+        $container = new Container();
+        $container->instance(Container::class, $container);
+        $container->instance(ContainerInterface::class, $container);
+        $container->instance(ServerRequestInterface::class, $this->request);
+        $container->instance(RouterInterface::class, $this->router);
+        // Bridge the legacy service facades (Log, Cache, Database, ...).
+        ServiceProvider::register($container);
+        if ($this->router instanceof ContainerAwareInterface) {
+            $this->router->setContainer($container);
+        }
+        return $container;
+    }
+
+    /**
+     * @return ContainerInterface
+     */
+    public function getContainer(): ContainerInterface {
+        return $this->container;
     }
 
     /**
@@ -62,10 +97,12 @@ class Rad {
      */
     public final function run(Closure $finalClosure = null, Closure $errorClosure = null): void {
         try {
-            $this->getRouter()
+            $response = $this->getRouter()
                     ->load($this->controllers)
-                    ->route($this->request)
-                    ->send();
+                    ->route($this->request);
+            if ($response instanceof Response) {
+                $response->send();
+            }
         } catch (ErrorException $ex) {
             Log::getHandler()->error($ex->getMessage());
             if ($errorClosure !== null) {
@@ -99,7 +136,11 @@ class Rad {
      * @param RouterInterface $routeur
      */
     public function setRouter(RouterInterface $routeur): self {
-        $this->routeur = $routeur;
+        $this->router = $routeur;
+        $this->container->instance(RouterInterface::class, $routeur);
+        if ($routeur instanceof ContainerAwareInterface) {
+            $routeur->setContainer($this->container);
+        }
         return $this;
     }
 

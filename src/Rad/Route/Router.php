@@ -9,23 +9,29 @@
 
 namespace Rad\Route;
 
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface as PsrMiddlewareInterface;
 use Rad\Cache\Cache;
+use Rad\Container\ContainerAwareInterface;
+use Rad\Error\Http\InternalErrorException;
 use Rad\Error\Http\NotFoundException;
-use Rad\Http\Response;
 use Rad\Log\Log;
-use Rad\Middleware\Middleware;
+use Rad\Middleware\ControllerHandler;
+use Rad\Middleware\Dispatcher;
+use Rad\Middleware\LegacyMiddlewareAdapter;
+use Rad\Middleware\MiddlewareInterface as LegacyMiddlewareInterface;
 
 /**
  * Description of Route
  *
  * @author Guillaume Monet
  */
-class Router implements RouterInterface {
+class Router implements RouterInterface, ContainerAwareInterface {
 
     /**
-     * 
+     *
      * @var string
      */
     private $cacheName = "RadRoute";
@@ -35,14 +41,19 @@ class Router implements RouterInterface {
      */
     private $treeRoutes = [];
 
+    private ?ContainerInterface $container = null;
+
     public function __construct() {
-        
+
+    }
+
+    public function setContainer(ContainerInterface $container): void {
+        $this->container = $container;
     }
 
     /**
      * 
      * @param Route $route
-     * @return \self
      */
     public function addGetRoute(Route $route): self {
         return $this->mapRoute('GET', $route);
@@ -51,7 +62,6 @@ class Router implements RouterInterface {
     /**
      * 
      * @param Route $route
-     * @return \self
      */
     public function addPostRoute(Route $route): self {
         return $this->mapRoute('POST', $route);
@@ -60,7 +70,6 @@ class Router implements RouterInterface {
     /**
      * 
      * @param Route $route
-     * @return \self
      */
     public function addPutRoute(Route $route): self {
         return $this->mapRoute('PUT', $route);
@@ -69,7 +78,6 @@ class Router implements RouterInterface {
     /**
      * 
      * @param Route $route
-     * @return \self
      */
     public function addPatchRoute(Route $route): self {
         return $this->mapRoute('PATCH', $route);
@@ -78,7 +86,6 @@ class Router implements RouterInterface {
     /**
      * 
      * @param Route $route
-     * @return \self
      */
     public function addDeleteRoute(Route $route): self {
         return $this->mapRoute('DELETE', $route);
@@ -87,7 +94,6 @@ class Router implements RouterInterface {
     /**
      * 
      * @param Route $route
-     * @return \self
      */
     public function addOptionsRoute(Route $route): self {
         return $this->mapRoute('OPTIONS', $route);
@@ -96,7 +102,6 @@ class Router implements RouterInterface {
     /**
      * 
      * @param array $routes
-     * @return \self
      */
     public function setRoutes(array $routes): self {
         foreach ($routes as $route) {
@@ -106,16 +111,17 @@ class Router implements RouterInterface {
         return $this;
     }
 
-    public function getRoutes(): TreeNodeRoute {
+    /**
+     * @return TreeNodeRoute[]
+     */
+    public function getRoutes(): array {
         return $this->treeRoutes;
     }
 
     /**
      * 
      * @param string $method
-     * @param string $path
      * @param Route $route
-     * @param int $version
      * @return $this
      */
     public function mapRoute(string $method, Route $route): self {
@@ -131,8 +137,8 @@ class Router implements RouterInterface {
      * 
      * @return string
      */
-    public function __toString() {
-        return print_r($this->path_array, true);
+    public function __toString(): string {
+        return print_r($this->treeRoutes, true);
     }
 
     /**
@@ -142,11 +148,12 @@ class Router implements RouterInterface {
      * @throws NotFoundException
      */
     public function route(ServerRequestInterface $request): ResponseInterface {
-        $method    = $request->getMethod();
+        $method    = strtoupper($request->getMethod());
         $path      = $request->getUri()->getPath();
         $cacheKey  = $method . "rt_cache_" . $path;
-        $route     = unserialize(Cache::getHandler()->get($cacheKey));
-        $nodeRoute = $this->treeRoutes[strtoupper($method)];
+        $cached    = Cache::getHandler()->get($cacheKey);
+        $route     = is_string($cached) && $cached !== '' ? unserialize($cached) : false;
+        $nodeRoute = $this->treeRoutes[$method] ?? null;
         if ($nodeRoute != null && $route === false) { //
             $route = $nodeRoute->getRoute(explode('/', trim($path, '/')));
             Cache::getHandler()->set($cacheKey, serialize($route));
@@ -154,21 +161,44 @@ class Router implements RouterInterface {
         if ($route !== null && $route !== false) {
             $route->setFullPath($path);
             Log::getHandler()->debug($method . " : " . $path . " Matching " . $route->getPath());
-            $middleware = new Middleware($route->getMiddlewares());
-            $response   = $middleware->call($request, new Response(200), $route,
-                    function ($request, $response, $route) {
-                        $controller = new ($route->getClassName())($route);
-                        return $controller->{$route->getMethodName()}($request, $response, $route->getArgs());
-                    }
+            // Expose the matched route to the PSR-15 pipeline via a request attribute.
+            $request     = $request->withAttribute(Route::class, $route);
+            $dispatcher  = new Dispatcher(
+                    $this->normalizeMiddlewares($route->getMiddlewares()),
+                    new ControllerHandler($this->container)
             );
-            return $response;
+            return $dispatcher->handle($request);
         } else {
             throw new NotFoundException("No Method " . $method . " found for " . $path);
         }
     }
 
     /**
-     * 
+     * Sort middlewares by priority and adapt any legacy middleware to PSR-15.
+     *
+     * @param object[] $middlewares
+     * @return PsrMiddlewareInterface[]
+     * @throws InternalErrorException
+     */
+    private function normalizeMiddlewares(array $middlewares): array {
+        usort($middlewares, static function ($a, $b) {
+            $pa = property_exists($a, 'priority') ? $a::$priority : 1;
+            $pb = property_exists($b, 'priority') ? $b::$priority : 1;
+            return $pa <=> $pb;
+        });
+        return array_map(static function ($middleware) {
+            if ($middleware instanceof PsrMiddlewareInterface) {
+                return $middleware;
+            }
+            if ($middleware instanceof LegacyMiddlewareInterface) {
+                return new LegacyMiddlewareAdapter($middleware);
+            }
+            throw new InternalErrorException(get_class($middleware) . ' is not a valid middleware');
+        }, $middlewares);
+    }
+
+    /**
+     *
      * @return self
      */
     public function save(): self {
@@ -177,11 +207,12 @@ class Router implements RouterInterface {
     }
 
     /**
-     * 
-     * @return bool
+     * @param string[] $controllers
+     * @return self
      */
     public function load(array $controllers): self {
-        $this->treeRoutes = unserialize(Cache::getHandler()->get($this->cacheName));
+        $cached           = Cache::getHandler()->get($this->cacheName);
+        $this->treeRoutes = is_string($cached) && $cached !== '' ? unserialize($cached) : [];
         if (empty($this->treeRoutes)) {
             Log::getHandler()->debug('Generate Tree Route');
             $this->setRoutes(RouteParser::parseRoutes($controllers))
