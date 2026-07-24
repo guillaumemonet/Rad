@@ -28,14 +28,15 @@ class EventHandler implements EventDispatcherInterface, ListenerProviderInterfac
         $this->listeners[$eventName][] = $listener;
     }
 
-    public function dispatch(object $event) {
+    public function dispatch(object $event): object {
         $eventName = get_class($event);
         $listeners = $this->listeners[$eventName] ?? [];
 
         array_walk($listeners, static fn(EventListenerInterface $listener) => $listener->handle($event));
+        return $event;
     }
 
-    public function getListenersForEvent(AbstractEvent $event): iterable {
+    public function getListenersForEvent(object $event): iterable {
         $eventName = get_class($event);
         return $this->listeners[$eventName] ?? [];
     }

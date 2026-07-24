@@ -29,8 +29,6 @@ class Sort {
 
     /**
      * 
-     * @param type $a
-     * @param type $b
      * @return int
      */
     public function sort($a, $b) {
@@ -44,8 +42,6 @@ class Sort {
     /**
      * 
      * @param array $array
-     * @param type $order_by
-     * @param type $order
      * @return bool
      */
     public static function sortBy(array &$array, $order_by, $order = Sort::ASC): bool {

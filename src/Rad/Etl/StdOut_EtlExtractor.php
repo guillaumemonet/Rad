@@ -24,7 +24,7 @@ class StdOut_EtlExtractor implements EtlLoader{
     }
 
     public function loadDatas(array $datas) {
-        error_log(print_r($datas));
+        error_log(print_r($datas, true));
     }
 
 }

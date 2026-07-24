@@ -26,7 +26,7 @@ class HttpException extends RadException {
         parent::__construct($message, $code);
     }
 
-    public function jsonSerialize() {
+    public function jsonSerialize(): mixed {
         return array("error" => array(
                 "code"      => $this->code,
                 "message"   => $this->message,

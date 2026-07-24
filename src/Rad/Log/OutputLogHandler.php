@@ -11,6 +11,7 @@ namespace Rad\Log;
 
 use Psr\Log\AbstractLogger;
 use Rad\Config\Config;
+use Stringable;
 
 /**
  * Default File Logger
@@ -19,17 +20,14 @@ use Rad\Config\Config;
  */
 class OutputLogHandler extends AbstractLogger {
 
-    public function log($level, $message, array $context = []) {
+    public function log($level, string|Stringable $message, array $context = []): void {
         $config = Config::getServiceConfig('log', 'output')->config;
         if ($config->enabled == 1 && $config->{$level} == 1) {
-            if (is_array($message)) {
-                $message = print_r($message, true);
-            }
-            error_log($this->logFormat(strtoupper($level), $message));
+            error_log($this->logFormat(strtoupper((string) $level), (string) $message));
         }
     }
 
-    private function logFormat(string $type, string $message) {
+    private function logFormat(string $type, string $message): string {
         return sprintf('[%-9s] %s', $type, $message);
     }
 

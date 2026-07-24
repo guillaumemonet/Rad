@@ -18,11 +18,7 @@ use Rad\Cache\Cache;
  */
 abstract class Time {
 
-    /**
-     * 
-     * @var float
-     */
-    private static $counter = null;
+    private static ?float $counter = null;
 
     private function __construct() {
         
@@ -64,13 +60,13 @@ abstract class Time {
      */
     public static function isFrenchHoliday(int $unixTimeStamp = null): bool {
         $date     = strtotime(date('m/d/Y', $unixTimeStamp == null ? time() : $unixTimeStamp));
-        $year     = date('Y', $date);
+        $year     = (int) date('Y', $date);
         $holidays = Cache::getHandler('quick')->get('holiday' . $year);
         if ($holidays == null) {
             $easterDate  = easter_date($year) + 3 * 3600;
-            $easterDay   = date('j', $easterDate);
-            $easterMonth = date('n', $easterDate);
-            $easterYear  = date('Y', $easterDate);
+            $easterDay   = (int) date('j', $easterDate);
+            $easterMonth = (int) date('n', $easterDate);
+            $easterYear  = (int) date('Y', $easterDate);
             $holidays    = array(
                 // Dates fixes
                 mktime(0, 0, 0, 1, 1, $year), // 1er janvier

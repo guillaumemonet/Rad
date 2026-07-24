@@ -45,9 +45,6 @@ abstract class Controller extends Observable {
 
     /**
      * Call For an asynchronous order
-     * @param type $queue
-     * @param type $messageType
-     * @param type $message
      */
     protected function makeOrder($queue, $messageType, $message) {
         Orderer::sendMessage($queue, $messageType, $message);

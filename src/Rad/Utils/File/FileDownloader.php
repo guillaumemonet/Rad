@@ -69,9 +69,6 @@ class FileDownloader {
 
     /**
      * 
-     * @param type $multi
-     * @param type $originFile
-     * @return type
      */
     private function buildCurl($multi, $originFile) {
         Log::getHandler()->debug($originFile);
@@ -89,7 +86,6 @@ class FileDownloader {
 
     /**
      * 
-     * @param type $multi
      */
     private function waitForExec($multi) {
         $active = null;

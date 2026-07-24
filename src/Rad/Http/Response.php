@@ -41,7 +41,7 @@ class Response extends GResponse {
 
     public function __construct(int $statusCode = 200, array $headers = [], StreamInterface $body = null) {
         $baseHeaders  = [
-            "Application-Nonce" => [time()]
+            "Application-Nonce" => [(string) time()]
         ];
         $mergedHeader = array_merge($headers, $baseHeaders);
         parent::__construct($statusCode, $mergedHeader, $body);
@@ -73,7 +73,6 @@ class Response extends GResponse {
 
     /**
      * @param int  $statusCode
-     * @param type $redirect_url
      */
     public static function headerStatus($statusCode, $redirect_url = null) {
         if (StatusCode::httpHeaderFor($statusCode) !== null) {

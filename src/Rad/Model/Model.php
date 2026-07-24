@@ -12,6 +12,7 @@ namespace Rad\Model;
 use JsonSerializable;
 use Rad\Utils\StringUtils;
 use ReflectionClass;
+use ReflectionProperty;
 
 /**
  * Description of IObject.
@@ -46,7 +47,7 @@ class Model implements JsonSerializable {
         return $this->resource_uri;
     }
 
-    public function jsonSerialize() {
+    public function jsonSerialize(): mixed {
         $this->generateResource();
         return $this;
     }

@@ -28,13 +28,12 @@ class Collection implements CollectionInterface {
      * @param array $items
      */
     public function __construct(array $items = []) {
-        $this->data = clone $items;
+        $this->data = $items;
     }
 
     /**
      * 
      * @param string $key
-     * @param type $value
      */
     public function set(string $key, $value) {
         $this->data[$key] = $value;
@@ -43,8 +42,6 @@ class Collection implements CollectionInterface {
     /**
      * 
      * @param string $key
-     * @param type $default
-     * @return type
      */
     public function get(string $key, $default = null) {
         return $this->has($key) ? $this->data[$key] : $default;
@@ -128,26 +125,25 @@ class Collection implements CollectionInterface {
     /**
      * 
      * @param string $key
-     * @return type
      */
-    public function offsetGet($key) {
+    public function offsetGet($key): mixed {
         return $this->get($key);
     }
 
     /**
-     * 
+     *
      * @param string $key
-     * @param type $value
+     * @param mixed $value
      */
-    public function offsetSet($key, $value) {
+    public function offsetSet($key, $value): void {
         $this->set($key, $value);
     }
 
     /**
-     * 
+     *
      * @param string $key
      */
-    public function offsetUnset($key) {
+    public function offsetUnset($key): void {
         $this->remove($key);
     }
 

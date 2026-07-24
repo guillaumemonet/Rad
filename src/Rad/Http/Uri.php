@@ -32,7 +32,7 @@ class Uri extends GUri {
      * @return bool
      */
     public static function isURL(string $url): bool {
-        return (boolean) !(filter_var($url, FILTER_SANITIZE_URL | FILTER_VALIDATE_URL) === false);
+        return filter_var($url, FILTER_VALIDATE_URL) !== false;
     }
 
 }

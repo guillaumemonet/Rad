@@ -9,6 +9,8 @@
 
 namespace Rad\Codec;
 
+use Rad\Encryption\Encryption;
+
 /**
  * Description of DefaultCodec
  *

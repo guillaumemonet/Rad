@@ -39,10 +39,10 @@ abstract class RadException extends ErrorException implements JsonSerializable {
     /**
      * Constructor
      *
-     * @param string $message Service execption
-     * @param string $code Status code, defaults to 500
+     * @param string $message Service exception
+     * @param int $code Status code, defaults to 500
      */
-    public function __construct(string $message = null, $code = 500) {
+    public function __construct(?string $message = null, int $code = 500) {
         if (empty($message)) {
             $message = 'RAD Exception';
         }
@@ -53,7 +53,7 @@ abstract class RadException extends ErrorException implements JsonSerializable {
         return $this->message;
     }
 
-    public function jsonSerialize() {
+    public function jsonSerialize(): mixed {
         return json_encode((array) $this);
     }
 

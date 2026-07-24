@@ -27,7 +27,6 @@ class ClientApiHandler implements ClientApiInterface {
      * @param array $post
      * @param array $headers
      * @param bool $caching
-     * @return type
      */
     public function call(string $endpoint, array $get = null, array $post = null, array $headers = [], bool $caching = true) {
         $cfg     = Config::getServiceConfig('clientapi', 'rad')->config;

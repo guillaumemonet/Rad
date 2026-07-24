@@ -33,7 +33,7 @@ class CSV_EtlExtractor implements EtlExtractor {
     }
 
     public function getDatas(): array {
-        
+        return $this->datas ?? [];
     }
 
     public function transform(array $mapper) {

@@ -40,7 +40,6 @@ abstract class Service implements ServiceInterface {
 
     /**
      * 
-     * @var type
      */
     protected $default = null;
 
@@ -58,7 +57,7 @@ abstract class Service implements ServiceInterface {
 
     protected function __construct() {
         $this->serviceType = $this->getServiceType();
-        if ($this->serviceType === null) {
+        if ($this->serviceType === '') {
             throw new ConfigurationException('No Handler Type returned');
         }
         $this->loadConfig();
@@ -88,7 +87,7 @@ abstract class Service implements ServiceInterface {
      * @throws ServiceException
      */
     protected function addServiceHandler(string $shortName, object $handler): void {
-        if ($handler instanceof $this->providedClassName) {
+        if ($this->providedClassName !== null && $handler instanceof $this->providedClassName) {
             $this->handlers[$shortName] = $handler;
         } else {
             throw new ServiceException('Can\'t add ' . $shortName . ' handler, doesn\'t inherit from ' . $this->providedClassName);
@@ -102,15 +101,15 @@ abstract class Service implements ServiceInterface {
      * @throws ServiceException
      */
     protected function getServiceHandler(?string $handlerType = null): ?object {
-        if ($handlerType === null || $handlerType === '' || !isset($handlerType)) {
+        if ($handlerType === null || $handlerType === '') {
             $handlerType = $this->default;
         }
-        if (!static::hasHandler($handlerType)) {
-            if (!static::hasService($handlerType)) {
+        if (!$this->hasHandler($handlerType)) {
+            if (!$this->hasService($handlerType)) {
                 throw new ServiceException('Service ' . $handlerType . ' Not Found');
             }
             $instance                     = new $this->services[$handlerType];
-            $this->handlers[$handlerType] = $instance instanceof $this->providedClassName ? $instance : null;
+            $this->handlers[$handlerType] = $this->providedClassName !== null && $instance instanceof $this->providedClassName ? $instance : null;
         }
         return $this->handlers[$handlerType];
     }

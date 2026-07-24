@@ -21,7 +21,8 @@ trait RequestTrait {
     }
 
     public function isCache() {
-        return ($this->getHeader('Cache-Control') !== null) ? (!current($this->getHeader('Cache-Control')) == 'no-cache') : true;
+        $header = $this->getHeader('Cache-Control');
+        return empty($header) ? true : current($header) !== 'no-cache';
     }
 
     /**

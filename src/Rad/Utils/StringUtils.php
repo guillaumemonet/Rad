@@ -54,7 +54,6 @@ abstract class StringUtils {
      *
      * @param string $str
      *
-     * @return type
      */
     public static function removeSpecialChars(string $str): string {
         return preg_replace('#[^A-Za-z0-9_-]+#', ' ', $str);
@@ -143,9 +142,6 @@ abstract class StringUtils {
 
     /**
      * 
-     * @param type $line
-     * @param type $tab
-     * @return type
      */
     public static function printLn($line = "", $tab = 0) {
         $c = "";
@@ -157,8 +153,6 @@ abstract class StringUtils {
 
     /**
      * 
-     * @param type $name
-     * @return type
      */
     public static function camelCase(string $name): string {
         return str_replace("_", "", ucwords($name, '_'));

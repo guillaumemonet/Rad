@@ -68,7 +68,6 @@ abstract class AutoConfig {
 
     /**
      * 
-     * @param type $file
      * @return string|null
      */
     private static function parseFile($file): ?string {
