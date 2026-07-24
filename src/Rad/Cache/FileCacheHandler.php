@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @license http://www.opensource.org/licenses/mit-license.php MIT (see the LICENSE file)
  * @author Guillaume Monet
@@ -9,6 +11,7 @@
 
 namespace Rad\Cache;
 
+use DateInterval;
 use DirectoryIterator;
 use Rad\Config\Config;
 use Rad\Encryption\Encryption;
@@ -19,64 +22,39 @@ use Rad\Encryption\Encryption;
  *
  * @author Guillaume Monet
  */
-class FileCacheHandler implements CacheInterface {
+class FileCacheHandler extends AbstractCacheHandler {
 
-    private $path       = null;
-    private $defaultTTL = null;
+    private string $path;
+    private int $defaultTTL;
 
     public function __construct() {
         $config           = Config::getServiceConfig('cache', 'file')->config;
         $this->path       = Config::getApiConfig()->install_path . $config->path;
-        $this->defaultTTL = $config->lifetime;
+        $this->defaultTTL = (int) $config->lifetime;
     }
 
-    /**
-     * 
-     * @param type $key
-     * @return bool
-     */
-    public function delete($key): bool {
-        $md5 = Encryption::hashMd5($key);
-        return unlink($this->path . $md5);
+    public function delete(string $key): bool {
+        $file = $this->path . Encryption::hashMd5($key);
+        return !file_exists($file) || unlink($file);
     }
 
-    /**
-     * 
-     * @param type $keys
-     * @return bool
-     */
-    public function deleteMultiple($keys): bool {
-        $ret = false;
+    public function deleteMultiple(iterable $keys): bool {
+        $ret = true;
         foreach ($keys as $k) {
-            $ret &= $this->delete($k);
+            $ret = $this->delete($k) && $ret;
         }
         return $ret;
     }
 
-    /**
-     * 
-     * @param type $key
-     * @param type $default
-     * @return type
-     */
-    public function get($key, $default = null) {
-        $md5      = Encryption::hashMd5($key);
-        $filePath = $this->path . $md5;
-
+    public function get(string $key, mixed $default = null): mixed {
+        $filePath = $this->path . Encryption::hashMd5($key);
         if (file_exists($filePath) && ($tmp = file_get_contents($filePath)) !== false) {
             return $tmp;
-        } else {
-            return $default;
         }
+        return $default;
     }
 
-    /**
-     * 
-     * @param type $keys
-     * @param type $default
-     * @return array
-     */
-    public function getMultiple($keys, $default = null): array {
+    public function getMultiple(iterable $keys, mixed $default = null): iterable {
         $ret = [];
         foreach ($keys as $k) {
             $ret[$k] = $this->get($k, $default);
@@ -84,70 +62,40 @@ class FileCacheHandler implements CacheInterface {
         return $ret;
     }
 
-    /**
-     * 
-     * @param type $key
-     * @return bool
-     */
-    public function has($key): bool {
+    public function has(string $key): bool {
         return file_exists($this->path . Encryption::hashMd5($key));
     }
 
-    /**
-     * 
-     * @param type $key
-     * @param type $value
-     * @param type $ttl
-     * @return bool
-     */
-    public function set($key, $value, $ttl = null): bool {
-        return file_put_contents($this->path . Encryption::hashMd5($key), $value, LOCK_EX);
+    public function set(string $key, mixed $value, null|int|DateInterval $ttl = null): bool {
+        return file_put_contents($this->path . Encryption::hashMd5($key), $value, LOCK_EX) !== false;
     }
 
-    /**
-     * 
-     * @param type $values
-     * @param type $ttl
-     * @return bool
-     */
-    public function setMultiple($values, $ttl = null): bool {
-        $ret = false;
+    public function setMultiple(iterable $values, null|int|DateInterval $ttl = null): bool {
+        $ret = true;
         foreach ($values as $k => $v) {
-            $ret &= $this->set($k, $v, $ttl);
+            $ret = $this->set($k, $v, $ttl) && $ret;
         }
         return $ret;
     }
 
-    /**
-     * 
-     * @return bool
-     */
     public function purge(): bool {
         $t        = time();
         $iterator = new DirectoryIterator($this->path);
-
         foreach ($iterator as $fileInfo) {
-            if ($fileInfo->isFile() && !$fileInfo->isDot() && $fileInfo->getCTime() < ($t - (int) $this->defaultTTL)) {
+            if ($fileInfo->isFile() && !$fileInfo->isDot() && $fileInfo->getCTime() < ($t - $this->defaultTTL)) {
                 unlink($fileInfo->getPathname());
             }
         }
-
         return true;
     }
 
-    /**
-     * 
-     * @return bool
-     */
     public function clear(): bool {
         $iterator = new DirectoryIterator($this->path);
-
         foreach ($iterator as $fileInfo) {
             if ($fileInfo->isFile() && !$fileInfo->isDot()) {
                 unlink($fileInfo->getPathname());
             }
         }
-
         return true;
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @license http://www.opensource.org/licenses/mit-license.php MIT (see the LICENSE file)
  * @author Guillaume Monet
@@ -9,12 +11,14 @@
 
 namespace Rad\Cache;
 
+use DateInterval;
+
 /**
  * Description of No_CacheHandler
  *
  * @author guillaume
  */
-class NoCacheHandler implements CacheInterface {
+class NoCacheHandler extends AbstractCacheHandler {
 
     public function clear(): bool {
         return true;
@@ -24,31 +28,35 @@ class NoCacheHandler implements CacheInterface {
         return true;
     }
 
-    public function delete($key): bool {
+    public function delete(string $key): bool {
         return false;
     }
 
-    public function deleteMultiple($keys): bool {
+    public function deleteMultiple(iterable $keys): bool {
         return false;
     }
 
-    public function get($key, $default = null) {
+    public function get(string $key, mixed $default = null): mixed {
         return $default;
     }
 
-    public function getMultiple($keys, $default = null) {
-        return $default;
+    public function getMultiple(iterable $keys, mixed $default = null): iterable {
+        $result = [];
+        foreach ($keys as $key) {
+            $result[$key] = $default;
+        }
+        return $result;
     }
 
-    public function has($key): bool {
+    public function has(string $key): bool {
         return false;
     }
 
-    public function set($key, $value, $ttl = null): bool {
+    public function set(string $key, mixed $value, null|int|DateInterval $ttl = null): bool {
         return false;
     }
 
-    public function setMultiple($values, $ttl = null): bool {
+    public function setMultiple(iterable $values, null|int|DateInterval $ttl = null): bool {
         return false;
     }
 }
