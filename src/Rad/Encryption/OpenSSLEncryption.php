@@ -36,7 +36,9 @@ use Rad\Config\Config;
  */
 class OpenSSLEncryption implements EncryptionInterface {
 
-    private $method = 'aes-256-ctr';
+    private const TAG_LENGTH = 16;
+
+    private string $method = 'aes-256-gcm';
 
     public function __construct() {
         if (isset(Config::getServiceConfig("encrypt", "openssl")->config->method)) {
@@ -44,39 +46,50 @@ class OpenSSLEncryption implements EncryptionInterface {
         }
     }
 
-    public function encrypt($datas): string {
-        $key       = Config::getConfig()->api->token;
-        $nonceSize = openssl_cipher_iv_length($this->method);
-        $nonce     = openssl_random_pseudo_bytes($nonceSize);
+    private function isAead(): bool {
+        return str_ends_with(strtolower($this->method), '-gcm') || str_ends_with(strtolower($this->method), '-ccm');
+    }
 
-        $ciphertext = openssl_encrypt(
-                $datas,
-                $this->method,
-                $key,
-                OPENSSL_RAW_DATA,
-                $nonce
-        );
+    private function key(): string {
+        return Config::getConfig()->api->token;
+    }
+
+    public function encrypt(string $data): string {
+        $nonce = openssl_random_pseudo_bytes(openssl_cipher_iv_length($this->method));
+
+        if ($this->isAead()) {
+            $tag        = '';
+            $ciphertext = openssl_encrypt($data, $this->method, $this->key(), OPENSSL_RAW_DATA, $nonce, $tag, '', self::TAG_LENGTH);
+            if ($ciphertext === false) {
+                throw new Exception('Encryption failure');
+            }
+            // layout: nonce . tag . ciphertext
+            return base64_encode($nonce . $tag . $ciphertext);
+        }
+
+        $ciphertext = openssl_encrypt($data, $this->method, $this->key(), OPENSSL_RAW_DATA, $nonce);
+        if ($ciphertext === false) {
+            throw new Exception('Encryption failure');
+        }
         return base64_encode($nonce . $ciphertext);
     }
 
-    public function decrypt($datas): ?string {
-        $datas = base64_decode($datas, true);
-        if ($datas === false) {
+    public function decrypt(string $data): ?string {
+        $raw = base64_decode($data, true);
+        if ($raw === false) {
             throw new Exception('Encryption failure');
         }
-        $key = Config::getConfig()->api->token;
+        $nonceSize = openssl_cipher_iv_length($this->method);
+        $nonce     = mb_substr($raw, 0, $nonceSize, '8bit');
 
-        $nonceSize  = openssl_cipher_iv_length($this->method);
-        $nonce      = mb_substr($datas, 0, $nonceSize, '8bit');
-        $ciphertext = mb_substr($datas, $nonceSize, null, '8bit');
-
-        $plaintext = openssl_decrypt(
-                $ciphertext,
-                $this->method,
-                $key,
-                OPENSSL_RAW_DATA,
-                $nonce
-        );
+        if ($this->isAead()) {
+            $tag        = mb_substr($raw, $nonceSize, self::TAG_LENGTH, '8bit');
+            $ciphertext = mb_substr($raw, $nonceSize + self::TAG_LENGTH, null, '8bit');
+            $plaintext  = openssl_decrypt($ciphertext, $this->method, $this->key(), OPENSSL_RAW_DATA, $nonce, $tag);
+        } else {
+            $ciphertext = mb_substr($raw, $nonceSize, null, '8bit');
+            $plaintext  = openssl_decrypt($ciphertext, $this->method, $this->key(), OPENSSL_RAW_DATA, $nonce);
+        }
 
         return $plaintext !== false ? $plaintext : null;
     }
