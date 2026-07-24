@@ -17,14 +17,14 @@ namespace Rad\Worker;
 class Orderer {
 
     /**
-     * 
      * @param int $queue
-     * @param int $messageType
+     * @param int|MessageType $messageType
      * @param mixed $message
      */
-    public static function sendMessage(int $queue, int $messageType, $message): bool {
-        $ip = msg_get_queue($queue);
-        return msg_send($ip, $messageType, $message, true);
+    public static function sendMessage(int $queue, int|MessageType $messageType, mixed $message): bool {
+        $type = $messageType instanceof MessageType ? $messageType->value : $messageType;
+        $ip   = msg_get_queue($queue);
+        return msg_send($ip, $type, $message, true);
     }
 
 }
