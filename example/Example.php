@@ -15,7 +15,14 @@ use Rad\Controller\Controller;
 use Rad\Cookie\Cookie;
 use Rad\Log\Log;
 use Rad\Rad;
-use Rad\Session\Session;
+use Rad\Route\Attribute\Consume;
+use Rad\Route\Attribute\Get;
+use Rad\Route\Attribute\Observer;
+use Rad\Route\Attribute\Options;
+use Rad\Route\Attribute\Produce;
+use Rad\Route\Attribute\Session;
+use Rad\Route\Attribute\Version;
+use Rad\Session\Session as SessionService;
 use Rad\Template\Template;
 use Rad\Utils\File;
 use Rad\Utils\Time;
@@ -24,45 +31,31 @@ use Rad\Utils\Time;
  * Simple example for testing purpose
  *
  * @author guillaume
- * @Controller
  */
 class Example extends Controller {
 
     public $state = 1;
 
-    /**
-     * @get /
-     * @produce html
-     */
+    #[Get('/'), Produce('html')]
     public function html(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
         $response->getBody()->write("<b>Hello World</b>");
         return $response;
     }
 
-    /**
-     * @get /build
-     * @produce html
-     */
+    #[Get('/build'), Produce('html')]
     public function build(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
         $ret = Build::getHandler()->build();
         $response->getBody()->write($ret);
         return $response;
     }
 
-    /**
-     * @get /info
-     * @produce html
-     */
+    #[Get('/info'), Produce('html')]
     public function info(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
         phpinfo();
         exit;
     }
 
-    /**
-     * @get /json/
-     * @options /json/
-     * @produce json
-     */
+    #[Get('/json/'), Options('/json/'), Produce('json')]
     public function json(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
         $std       = new stdClass();
         $std->toto = "toto/fdsf   sdf://";
@@ -71,56 +64,34 @@ class Example extends Controller {
         return $response;
     }
 
-    /**
-     * @api 1
-     * @get /helloworld/(?<name>[aA-zZ]*)/display/(?<welcome>.*)/
-     * @produce html
-     */
+    #[Version(1), Get('/helloworld/(?<name>[aA-zZ]*)/display/(?<welcome>.*)/'), Produce('html')]
     public function htmlWithArgs(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
         $response->getBody()->write('<b>Hello World</b> ' . $args['name'] . " to " . $args['welcome']);
         return $response;
     }
 
-    /**
-     * @api 1
-     * @get /server/
-     * @opts
-     * @produce json
-     */
+    #[Version(1), Get('/server/'), Produce('json')]
     public function serverRequest(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
         $response->getBody()->write(json_encode($request->getHeaders()));
         return $response;
     }
 
-    /**
-     * @api 1
-     * @get /consume/
-     * @consume html
-     * @produce json
-     */
+    #[Version(1), Get('/consume/'), Consume('html'), Produce('json')]
     public function testConsume(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
         $response->getBody()->write(json_encode($request->getHeaders()));
         return $response;
     }
 
-    /**
-     * @api 1
-     * @get /session/
-     * @session
-     * @produce html
-     */
+    #[Version(1), Get('/session/'), Session, Produce('html')]
     public function testSession(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
-        $ret = "OLD " . Session::getHandler()->get('time') . "<br />";
-        Session::getHandler()->set('time', time());
-        $ret .= "New " . Session::getHandler()->get('time') . "<br />";
+        $ret = "OLD " . SessionService::getHandler()->get('time') . "<br />";
+        SessionService::getHandler()->set('time', time());
+        $ret .= "New " . SessionService::getHandler()->get('time') . "<br />";
         $response->getBody()->write($ret);
         return $response;
     }
 
-    /**
-     * @get /template/
-     * @produce html
-     */
+    #[Get('/template/'), Produce('html')]
     public function template(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
         $response = $response->withAddedHeader('Hello', 'Moto');
         if (!Template::getHandler()->isCached("index.tpl", "cached", "compiled")) {
@@ -135,11 +106,7 @@ class Example extends Controller {
         return $response;
     }
 
-    /**
-     * @get /observer/
-     * @produce html
-     * @observer \TestObserver
-     */
+    #[Get('/observer/'), Produce('html'), Observer(\TestObserver::class)]
     public function observer(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
         $response->getBody()->write("State Change");
         $this->state = 2;
@@ -147,28 +114,19 @@ class Example extends Controller {
         return $response;
     }
 
-    /**
-     * @get /test/large/(?<name>[aA-zZ]*)/one/
-     * @produce html
-     */
+    #[Get('/test/large/(?<name>[aA-zZ]*)/one/'), Produce('html')]
     public function pathOne(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
         $response->getBody()->write("Path One");
         return $response;
     }
 
-    /**
-     * @get /test/large/(?<name>[aA-zZ]*)/two/
-     * @produce html
-     */
+    #[Get('/test/large/(?<name>[aA-zZ]*)/two/'), Produce('html')]
     public function pathTwo(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
         $response->getBody()->write("Path Two");
         return $response;
     }
 
-    /**
-     * @get /cookie/
-     * @produce html
-     */
+    #[Get('/cookie/'), Produce('html')]
     public function cookie(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
         $datas = Cookie::getHandler()->get('time');
         $response->getBody()->write($datas ? (string) $datas : "");

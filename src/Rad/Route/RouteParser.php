@@ -13,11 +13,18 @@ use Psr\Http\Message\ResponseInterface;
 use Rad\Annotation\Annotation;
 use Rad\Controller\Controller;
 use Rad\Log\Log;
+use Rad\Route\Attribute\HttpMethod;
+use Rad\Route\Attribute\RouteAttribute;
+use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionMethod;
 
 /**
- * Description of RouteParser
+ * Turns controller classes into Route objects.
+ *
+ * Routes are declared with PHP 8 attributes (see Rad\Route\Attribute\*).
+ * Controllers still using the legacy `@get`/`@produce` docblock annotations
+ * are supported transparently through {@see self::generateRoutesFromDocblock()}.
  *
  * @author guillaume
  */
@@ -41,18 +48,18 @@ abstract class RouteParser {
     ];
 
     private function __construct() {
-        
+
     }
 
     private function __clone() {
-        
+
     }
 
     /**
-     * 
-     * @param array $classes
+     * @param string[] $classes
+     * @return Route[]
      */
-    public static function parseRoutes(array $classes) {
+    public static function parseRoutes(array $classes): array {
         Log::getHandler()->debug('Generating Routes');
         $routes = [];
         array_map(function ($class) use (&$routes) {
@@ -66,16 +73,77 @@ abstract class RouteParser {
         return $routes;
     }
 
-    public static function generateRoutes($class) {
+    /**
+     * @param class-string $class
+     * @return Route[]
+     */
+    public static function generateRoutes(string $class): array {
+        $reflection     = new ReflectionClass($class);
+        $classModifiers = self::modifierAttributes($reflection);
+
+        $routes    = [];
+        $hasVerbs  = false;
+        foreach ($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
+            $verbs = $method->getAttributes(HttpMethod::class, ReflectionAttribute::IS_INSTANCEOF);
+            if (empty($verbs)) {
+                continue;
+            }
+            $hasVerbs        = true;
+            $methodModifiers = self::modifierAttributes($method);
+            foreach ($verbs as $verbAttribute) {
+                $verb  = $verbAttribute->newInstance();
+                $route = new Route();
+                $route->setClassName($class)->setMethodName($method->getName());
+                $verb->apply($route);
+                // Method-level modifiers first, then class-level (mirrors legacy order).
+                foreach ($methodModifiers as $modifier) {
+                    $modifier->apply($route);
+                }
+                foreach ($classModifiers as $modifier) {
+                    $modifier->apply($route);
+                }
+                Log::getHandler()->debug('Mapped ' . $route);
+                $routes[] = $route;
+            }
+        }
+
+        // No attributes on this controller: fall back to legacy docblock parsing.
+        return $hasVerbs ? $routes : self::generateRoutesFromDocblock($class);
+    }
+
+    /**
+     * Collect every route-modifier attribute instance declared on a class or method.
+     *
+     * @return RouteAttribute[]
+     */
+    private static function modifierAttributes(ReflectionClass|ReflectionMethod $reflection): array {
+        $modifiers = [];
+        foreach ($reflection->getAttributes(RouteAttribute::class, ReflectionAttribute::IS_INSTANCEOF) as $attribute) {
+            $modifiers[] = $attribute->newInstance();
+        }
+        return $modifiers;
+    }
+
+    /* ---------------------------------------------------------------------
+     * Legacy docblock parsing (kept for backward compatibility).
+     * ------------------------------------------------------------------- */
+
+    /**
+     * @param class-string $class
+     * @return Route[]
+     */
+    private static function generateRoutesFromDocblock(string $class): array {
         $routes        = [];
-        $classComments = self::parseClassAnnotations($class);
+        $classComments = self::getAnnotationsArray($class);
         //Cleaning non controller methods
         $methods       = array_filter(get_class_methods($class), function ($method) use ($class) {
-            Log::getHandler()->debug('Loading Method ' . $method . ' ' . (new ReflectionMethod($class, $method))->getReturnType());
-            return ((new ReflectionMethod($class, $method))->getReturnType() == ResponseInterface::class);
+            $returnType = (new ReflectionMethod($class, $method))->getReturnType();
+            Log::getHandler()->debug('Loading Method ' . $method . ' ' . $returnType);
+            return $returnType instanceof \ReflectionNamedType
+                    && ltrim($returnType->getName(), '\\') === ltrim(ResponseInterface::class, '\\');
         });
         array_walk($methods, function ($method) use (&$routes, $class, $classComments) {
-            $methodComments = self::parseMethodAnnotations($class, $method);
+            $methodComments = self::getAnnotationsArray($class, $method);
             $paths          = self::getPathsFromComment($methodComments);
             array_walk($paths, function ($array, $action) use (&$routes, $class, $classComments, $method, $methodComments) {
                 array_walk($array, function ($path) use (&$routes, $action, $class, $classComments, $method, $methodComments) {
@@ -120,33 +188,14 @@ abstract class RouteParser {
     }
 
     /**
-     *
-     * @param type $class
-     * @param type $route
-     */
-    private static function parseClassAnnotations($class) {
-        return self::getAnnotationsArray($class);
-    }
-
-    /**
-     *
-     * @param type $class
-     * @param type $method
-     * @param type $route
-     */
-    private static function parseMethodAnnotations($class, $method) {
-        return self::getAnnotationsArray($class, $method);
-    }
-
-    /**
-     * 
-     * @param type $class
-     * @return type
+     * @param class-string $class
+     * @param string|null $method
+     * @return array
      */
     private static function getAnnotationsArray($class, $method = null) {
         $reflexion = $method !== null ? new ReflectionMethod($class, $method) : new ReflectionClass($class);
         $comments  = $reflexion->getDocComment();
-        return Annotation::getAnnotations($comments);
+        return $comments === false ? [] : Annotation::getAnnotations($comments);
     }
 
 }

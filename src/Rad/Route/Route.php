@@ -20,22 +20,29 @@ class Route {
     use RouteSetterTrait;
     use RouteGetterTrait;
 
-    protected $version         = 1;
-    protected $className       = null;
-    protected $methodName      = null;
-    protected $method          = null;
-    protected $path            = null;
-    protected $middlewares     = [];
-    protected $produce         = [];
-    protected $consume         = [];
-    protected $observers       = [];
-    protected $args            = [];
-    protected $sessionEnabled  = false;
-    protected $cacheEnabled    = false;
-    protected $fullPath        = null;
-    protected $allowedHeaders  = [];
-    protected $exposeddHeaders = [];
-    protected $corsDomain      = '*';
+    protected int|string $version = 1;
+    protected ?string $className  = null;
+    protected ?string $methodName = null;
+    protected ?string $method     = null;
+    protected ?string $path       = null;
+    /** @var array<int, class-string> */
+    protected array $middlewares  = [];
+    /** @var string[] */
+    protected array $produce      = [];
+    /** @var string[] */
+    protected array $consume      = [];
+    /** @var array<int, class-string> */
+    protected array $observers    = [];
+    /** @var array<string, string> */
+    protected array $args         = [];
+    protected bool $sessionEnabled = false;
+    protected bool $cacheEnabled   = false;
+    protected ?string $fullPath    = null;
+    /** @var string[] */
+    protected array $allowedHeaders = [];
+    /** @var string[] */
+    protected array $exposedHeaders = [];
+    protected string $corsDomain    = '*';
 
     /**
      * 
