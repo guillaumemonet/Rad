@@ -34,5 +34,4 @@ use Psr\Container\ContainerExceptionInterface;
  * @author guillaume
  */
 class ContainerException extends RadException implements ContainerExceptionInterface {
-    
 }

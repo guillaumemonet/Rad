@@ -14,7 +14,6 @@ namespace Rad\Etl;
  * @author guillaume
  */
 interface EtlLoader {
-
     public function connect();
 
     public function close();

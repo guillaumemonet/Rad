@@ -18,9 +18,8 @@ use Rad\Encryption\Encryption;
  * @author guillaume
  */
 class CookieHandler implements CookieInterface {
-
     /**
-     * 
+     *
      * @var array
      */
     private $datas    = null;
@@ -56,19 +55,19 @@ class CookieHandler implements CookieInterface {
 
     public function save(): bool {
         $options = [
-            "samesite" => $this->sameSite
+            'samesite' => $this->sameSite
         ];
 
-        if ($this->sameSite !== "None") {
-            $options["secure"] = true;
+        if ($this->sameSite !== 'None') {
+            $options['secure'] = true;
         } else {
-            $options["secure"] = $this->secure;
+            $options['secure'] = $this->secure;
         }
 
         return setcookie(
-                $this->name,
-                Encryption::getHandler()->encrypt(serialize($this->datas)),
-                $options
+            $this->name,
+            Encryption::getHandler()->encrypt(serialize($this->datas)),
+            $options
         );
     }
 }

@@ -17,7 +17,6 @@ use Rad\Service\Service;
  * @author Guillaume Monet
  */
 class Language extends Service {
-
     public static function addHandler(string $handlerType, $handler) {
         static::getInstance()->addServiceHandler($handlerType, $handler);
     }

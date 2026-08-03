@@ -19,7 +19,6 @@ use IteratorAggregate;
  * @author guillaume
  */
 interface CollectionInterface extends ArrayAccess, Countable, IteratorAggregate {
-
     public function set(string $key, $value);
 
     public function get(string $key, $default = null);

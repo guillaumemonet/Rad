@@ -19,7 +19,6 @@ use Rad\Utils\Mime;
  * @author guillaume
  */
 final class Codec extends Service {
-
     public static function addHandler(string $handlerType, $handler) {
         static::getInstance()->addServiceHandler($handlerType, $handler);
     }

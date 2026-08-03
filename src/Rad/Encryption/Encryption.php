@@ -18,7 +18,6 @@ use Rad\Service\Service;
  * @author Guillaume Monet
  */
 final class Encryption extends Service {
-
     public static function addHandler(string $handlerType, $handler) {
         static::getInstance()->addServiceHandler($handlerType, $handler);
     }
@@ -32,7 +31,7 @@ final class Encryption extends Service {
     }
 
     /**
-     * 
+     *
      * @param string $data
      * @return string
      */

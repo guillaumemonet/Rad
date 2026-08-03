@@ -14,9 +14,8 @@ namespace Rad\Error\Http;
  *
  */
 class BadRequestException extends HttpException {
-
     /**
-     * 
+     *
      * @param string $message
      * @param int $code
      */

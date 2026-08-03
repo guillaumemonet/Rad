@@ -31,6 +31,6 @@ namespace Rad\Error;
  *
  * @author guillaume
  */
-class ConfigurationException extends RadException{
+class ConfigurationException extends RadException {
     //put your code here
 }

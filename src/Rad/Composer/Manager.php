@@ -18,7 +18,6 @@ use Rad\Cache\Cache;
  * @author guillaume
  */
 abstract class Manager {
-
     public static function build() {
         Build::getHandler()->build();
     }
@@ -26,5 +25,5 @@ abstract class Manager {
     public static function clean() {
         Cache::getHandler()->clear();
     }
-    
+
 }

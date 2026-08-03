@@ -13,9 +13,8 @@ use Rad\Error\RadException;
 use Rad\Http\StatusCode;
 
 class HttpException extends RadException {
-
     /**
-     * 
+     *
      * @param string $message
      * @param int $code
      */
@@ -26,16 +25,16 @@ class HttpException extends RadException {
         parent::__construct($message, $code);
     }
 
-    public function jsonSerialize() {
-        return array("error" => array(
-                "code"      => $this->code,
-                "message"   => $this->message,
-                "timestamp" => time(),
-                "host"      => $_SERVER["SERVER_NAME"],
-                "method"    => $_SERVER["REQUEST_METHOD"],
-                "uri"       => $_SERVER["REQUEST_URI"]
-            )
-        );
+    public function jsonSerialize(): mixed {
+        return ['error' => [
+                'code'      => $this->code,
+                'message'   => $this->message,
+                'timestamp' => time(),
+                'host'      => $_SERVER['SERVER_NAME'],
+                'method'    => $_SERVER['REQUEST_METHOD'],
+                'uri'       => $_SERVER['REQUEST_URI']
+            ]
+        ];
     }
 
 }

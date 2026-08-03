@@ -17,7 +17,6 @@ use Rad\Error\CodecException;
  * @author guillaume
  */
 class XmlCodecHandler implements CodecInterface {
-
     public function __toString() {
         return 'XML encode/decode';
     }
@@ -41,7 +40,7 @@ class XmlCodecHandler implements CodecInterface {
     }
 
     public function sign($datas, $secret) {
-        
+
     }
 
 }

@@ -20,11 +20,10 @@ use Rad\Route\Route;
  * @author Guillaume Monet
  */
 abstract class MiddlewareAfter implements MiddlewareInterface {
-
     public static $priority = 1;
 
     /**
-     * 
+     *
      * @param ServerRequestInterface $request
      * @param ResponseInterface $response
      * @param Route $route

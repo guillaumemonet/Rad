@@ -11,24 +11,19 @@ namespace Rad\Middleware\Base;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Rad\Middleware\MiddlewareAfter;
-use Rad\Route\Route;
+use Psr\Http\Server\RequestHandlerInterface;
 
 /**
- * Description of Expose
- *
- * @author guillaume
+ * Advertises the route's exposed response headers via
+ * Access-Control-Expose-Headers.
  */
-class ExposeHeaders extends MiddlewareAfter {
-
-    /**
-     * @param ServerRequestInterface $request
-     * @param ResponseInterface $response
-     * @param Route $route
-     * @return ResponseInterface
-     */
-    public function middle(ServerRequestInterface $request, ResponseInterface $response, Route $route): ResponseInterface {
+class ExposeHeaders extends AbstractMiddleware {
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface {
+        $response = $handler->handle($request);
+        $route    = $this->route($request);
+        if ($route === null) {
+            return $response;
+        }
         return $response->withAddedHeader('Access-Control-Expose-Headers', $route->getExposedHeaders());
     }
-
 }

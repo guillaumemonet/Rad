@@ -15,9 +15,8 @@ namespace Rad\Utils\File;
  * @author Guillaume Monet
  */
 class FileCSV extends File {
-
     /**
-     * 
+     *
      * @return array
      */
     public function parseCSV(string $separator = ';', bool $hasHeader = false): array {

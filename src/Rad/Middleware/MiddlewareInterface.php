@@ -20,9 +20,8 @@ use Rad\Route\Route;
  * @author Guillaume Monet
  */
 interface MiddlewareInterface {
-
     /**
-     * 
+     *
      * @param ServerRequestInterface $request
      * @param ResponseInterface $response
      * @param Route $route
@@ -31,7 +30,7 @@ interface MiddlewareInterface {
     public function call(ServerRequestInterface $request, ResponseInterface $response, Route $route, Closure $next): ResponseInterface;
 
     /**
-     * 
+     *
      * @param ServerRequestInterface $request
      * @param ResponseInterface $response
      * @param Route $route

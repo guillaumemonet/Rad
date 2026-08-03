@@ -17,19 +17,14 @@ use Rad\Cache\Cache;
  * @author Guillaume
  */
 abstract class Time {
-
-    /**
-     * 
-     * @var float
-     */
-    private static $counter = null;
+    private static ?float $counter = null;
 
     private function __construct() {
-        
+
     }
 
     private function __clone() {
-        
+
     }
 
     /**
@@ -64,14 +59,14 @@ abstract class Time {
      */
     public static function isFrenchHoliday(int $unixTimeStamp = null): bool {
         $date     = strtotime(date('m/d/Y', $unixTimeStamp == null ? time() : $unixTimeStamp));
-        $year     = date('Y', $date);
+        $year     = (int) date('Y', $date);
         $holidays = Cache::getHandler('quick')->get('holiday' . $year);
         if ($holidays == null) {
             $easterDate  = easter_date($year) + 3 * 3600;
-            $easterDay   = date('j', $easterDate);
-            $easterMonth = date('n', $easterDate);
-            $easterYear  = date('Y', $easterDate);
-            $holidays    = array(
+            $easterDay   = (int) date('j', $easterDate);
+            $easterMonth = (int) date('n', $easterDate);
+            $easterYear  = (int) date('Y', $easterDate);
+            $holidays    = [
                 // Dates fixes
                 mktime(0, 0, 0, 1, 1, $year), // 1er janvier
                 mktime(0, 0, 0, 5, 1, $year), // Fête du travail
@@ -88,7 +83,7 @@ abstract class Time {
                 mktime(0, 0, 0, $easterMonth, $easterDay + 39, $easterYear),
                 //Lundi pentecote
                 mktime(0, 0, 0, $easterMonth, $easterDay + 50, $easterYear),
-            );
+            ];
             Cache::getHandler('quick')->set('holiday' . $year, $holidays);
         }
         return in_array($date, $holidays);

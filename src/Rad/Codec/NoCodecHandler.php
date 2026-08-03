@@ -9,23 +9,24 @@
 
 namespace Rad\Codec;
 
+use Rad\Encryption\Encryption;
+
 /**
  * Description of DefaultCodec
  *
  * @author guillaume
  */
 class NoCodecHandler implements CodecInterface {
-
     public function deserialize(string $string) {
         return $string;
     }
 
     public function getMimeTypes(): array {
-        return ["html", "txt", "plain"];
+        return ['html', 'txt', 'plain'];
     }
 
     public function serialize($object): string {
-        return "" . $object;
+        return '' . $object;
     }
 
     public function __toString() {

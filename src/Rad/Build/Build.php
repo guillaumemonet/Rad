@@ -12,7 +12,6 @@ namespace Rad\Build;
 use Rad\Service\Service;
 
 final class Build extends Service {
-
     public static function addHandler(string $handlerType, $handler) {
         static::getInstance()->addServiceHandler($handlerType, $handler);
     }

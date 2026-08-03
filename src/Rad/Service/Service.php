@@ -19,53 +19,51 @@ use Rad\Error\ServiceException;
  * @author guillaume
  */
 abstract class Service implements ServiceInterface {
-
     /**
-     * 
+     *
      * @var array
      */
     protected static array $instances = [];
 
     /**
-     * 
+     *
      * @var string|null
      */
     protected ?string $serviceType = null;
 
     /**
-     * 
+     *
      * @var string|null
      */
     protected ?string $providedClassName = null;
 
     /**
-     * 
-     * @var type
+     *
      */
     protected $default = null;
 
     /**
-     * 
+     *
      * @var array
      */
     protected array $services = [];
 
     /**
-     * 
+     *
      * @var array
      */
     protected array $handlers = [];
 
     protected function __construct() {
         $this->serviceType = $this->getServiceType();
-        if ($this->serviceType === null) {
+        if ($this->serviceType === '') {
             throw new ConfigurationException('No Handler Type returned');
         }
         $this->loadConfig();
     }
 
     /**
-     * 
+     *
      * @return static
      */
     final public static function getInstance(): static {
@@ -77,18 +75,18 @@ abstract class Service implements ServiceInterface {
     }
 
     private function __clone() {
-        
+
     }
 
     /**
-     * 
+     *
      * @param string $shortName
      * @param object $handler
      * @return void
      * @throws ServiceException
      */
     protected function addServiceHandler(string $shortName, object $handler): void {
-        if ($handler instanceof $this->providedClassName) {
+        if ($this->providedClassName !== null && $handler instanceof $this->providedClassName) {
             $this->handlers[$shortName] = $handler;
         } else {
             throw new ServiceException('Can\'t add ' . $shortName . ' handler, doesn\'t inherit from ' . $this->providedClassName);
@@ -96,27 +94,27 @@ abstract class Service implements ServiceInterface {
     }
 
     /**
-     * 
+     *
      * @param string|null $handlerType
      * @return object|null
      * @throws ServiceException
      */
     protected function getServiceHandler(?string $handlerType = null): ?object {
-        if ($handlerType === null || $handlerType === '' || !isset($handlerType)) {
+        if ($handlerType === null || $handlerType === '') {
             $handlerType = $this->default;
         }
-        if (!static::hasHandler($handlerType)) {
-            if (!static::hasService($handlerType)) {
+        if (!$this->hasHandler($handlerType)) {
+            if (!$this->hasService($handlerType)) {
                 throw new ServiceException('Service ' . $handlerType . ' Not Found');
             }
-            $instance                     = new $this->services[$handlerType];
-            $this->handlers[$handlerType] = $instance instanceof $this->providedClassName ? $instance : null;
+            $instance                     = new $this->services[$handlerType]();
+            $this->handlers[$handlerType] = $this->providedClassName !== null && $instance instanceof $this->providedClassName ? $instance : null;
         }
         return $this->handlers[$handlerType];
     }
 
     /**
-     * 
+     *
      * @param string $handlerType
      * @return bool
      */
@@ -125,7 +123,7 @@ abstract class Service implements ServiceInterface {
     }
 
     /**
-     * 
+     *
      * @param string $serviceName
      * @return bool
      */
@@ -134,7 +132,7 @@ abstract class Service implements ServiceInterface {
     }
 
     /**
-     * 
+     *
      * @return void
      * @throws ConfigurationException
      */
@@ -151,10 +149,10 @@ abstract class Service implements ServiceInterface {
         $this->services = (array) $config->handlers;
 
         $this->services = array_map(
-                fn($value) => $value->classname,
-                (array) ($config->handlers ?? [])
+            fn ($value) => $value->classname,
+            (array) ($config->handlers ?? [])
         );
     }
 
-    protected abstract function getServiceType(): string;
+    abstract protected function getServiceType(): string;
 }

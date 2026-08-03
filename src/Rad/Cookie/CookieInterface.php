@@ -15,7 +15,6 @@ namespace Rad\Cookie;
  * @author guillaume
  */
 interface CookieInterface {
-
     public function get(string $index);
 
     public function set(string $index, $value);

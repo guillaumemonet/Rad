@@ -27,6 +27,8 @@ require_once $autoloader;
 
 $app = new Rad($rootDir . "/config/");
 
+checkArg($argv, 1, "Usage: rad <build|clearCache|printRoute>");
+
 $actionName = $argv[1];
 
 switch ($actionName) {
@@ -34,11 +36,13 @@ switch ($actionName) {
         fireBuild($argv);
         break;
     case 'clearCache':
-        fireClearCache($arv);
+        fireClearCache($argv);
         break;
     case 'printRoute':
         print_r($app->getRouter()->getRoutes());
         break;
+    default:
+        throw new RuntimeException('Unknown action: ' . $actionName);
 }
 
 function fireBuild($argv) {

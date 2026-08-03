@@ -15,7 +15,6 @@ namespace Rad\Codec;
  * @author guillaume
  */
 class SerializeCodecHandler implements CodecInterface {
-
     public function deserialize(string $string) {
         return unserialize($string);
     }
@@ -33,7 +32,7 @@ class SerializeCodecHandler implements CodecInterface {
     }
 
     public function sign($datas, $secret) {
-        
+
     }
 
 }

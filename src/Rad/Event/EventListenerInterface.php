@@ -10,11 +10,10 @@
 namespace Rad\Event;
 
 /**
- * Description of EventListenerInterface
+ * A listener handling events dispatched through the PSR-14 dispatcher.
  *
  * @author Guillaume Monet
  */
 interface EventListenerInterface {
-
-    public function handle(AbstractEvent $event);
+    public function handle(object $event): void;
 }

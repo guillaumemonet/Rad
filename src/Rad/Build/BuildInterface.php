@@ -15,6 +15,5 @@ namespace Rad\Build;
  * @author guillaume
  */
 interface BuildInterface {
-
     public function build();
 }

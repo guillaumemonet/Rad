@@ -12,10 +12,9 @@ namespace Rad\Template;
 use Rad\Service\Service;
 
 /**
- * 
+ *
  */
 final class Template extends Service {
-
     public static function addHandler(string $handlerType, $handler) {
         static::getInstance()->addServiceHandler($handlerType, $handler);
     }

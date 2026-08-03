@@ -15,11 +15,10 @@ namespace Rad\Build\DatabaseBuilder\Elements;
  * @author guillaume
  */
 trait BaseElementTrait {
-
     public function getPrimaryColumns($type) {
         $ret = [];
         foreach ($this->columns as $col_name => $col) {
-            if ($col->key == "PRI") {
+            if ($col->key == 'PRI') {
                 $ret[] = $col->getAsVar($type);
             }
         }
@@ -29,7 +28,7 @@ trait BaseElementTrait {
     public function getAutoIncPrimaryColumns($type) {
         $ret = [];
         foreach ($this->columns as $col_name => $col) {
-            if ($col->key == "PRI" && $col->auto > 0) {
+            if ($col->key == 'PRI' && $col->auto > 0) {
                 $ret[] = $col->getAsVar($type);
             }
         }
@@ -39,7 +38,7 @@ trait BaseElementTrait {
     public function getNotPrimaryColumns($type, $ignoreSpecial = false) {
         $ret = [];
         foreach ($this->columns as $col_name => $col) {
-            if ($col->key !== "PRI" && (!$ignoreSpecial || !in_array($col_name, array("password", "token")))) {
+            if ($col->key !== 'PRI' && (!$ignoreSpecial || !in_array($col_name, ['password', 'token']))) {
                 $ret[] = $col->getAsVar($type);
             }
         }
@@ -59,7 +58,7 @@ trait BaseElementTrait {
     public function getColumns($type, $ignoreSpecial = false) {
         $ret = [];
         foreach ($this->columns as $col_name => $col) {
-            if (!$ignoreSpecial || (!in_array($col_name, array("password", "token")))) {
+            if (!$ignoreSpecial || (!in_array($col_name, ['password', 'token']))) {
                 $ret[] = $col->getAsVar($type);
             }
         }

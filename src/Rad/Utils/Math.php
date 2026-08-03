@@ -15,17 +15,16 @@ namespace Rad\Utils;
  * @author Guillaume Monet
  */
 abstract class Math {
-
     private function __construct() {
-        
+
     }
 
     private function __clone() {
-        
+
     }
 
     /**
-     * 
+     *
      * @param float $float
      * @param int $precision
      * @return float

@@ -14,14 +14,13 @@ namespace Rad\Etl;
  * @author guillaume
  */
 abstract class EtlCleaner {
-
     protected $datas;
 
     public function __construct($datas) {
         $this->datas = $datas;
     }
 
-    public function clean(){
-        
+    public function clean() {
+
     }
 }

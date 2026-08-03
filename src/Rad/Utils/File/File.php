@@ -15,20 +15,17 @@ namespace Rad\Utils\File;
  * @author Guillaume Monet
  */
 class File {
-
     /**
-     * 
-     * @var string
+     * @var string|null
      */
     public $source;
 
     /**
-     * 
      * @var string
      */
     public $content;
 
-    public function __construct(string $source = null) {
+    public function __construct(?string $source = null) {
         $this->source = $source;
     }
 
@@ -70,6 +67,6 @@ class File {
         return $copy;
     }
 
-   
+
 
 }

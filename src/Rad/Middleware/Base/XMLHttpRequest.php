@@ -11,31 +11,18 @@ namespace Rad\Middleware\Base;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use Rad\Error\Http\PreconditionFailedException;
-use Rad\Middleware\MiddlewareBefore;
-use Rad\Route\Route;
+use Rad\Http\ServerRequestHelper;
 
 /**
- * Description of Pre_XmlHttpRequest
- *
- * @author guillaume
+ * Enforces that the request is an XMLHttpRequest.
  */
-class XMLHttpRequest extends MiddlewareBefore {
-
-    /**
-     * 
-     * @param ServerRequestInterface $request
-     * @param ResponseInterface $response
-     * @param Route $route
-     * @return ResponseInterface
-     * @throws PreconditionFailedException
-     */
-    public function middle(ServerRequestInterface $request, ResponseInterface $response, Route $route): ResponseInterface {
-        if ($request->isXhr()) {
-            return $response;
-        } else {
-            throw new PreconditionFailedException('Must be an XmlHttpRequest');
+class XMLHttpRequest extends AbstractMiddleware {
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface {
+        if (ServerRequestHelper::isXhr($request)) {
+            return $handler->handle($request);
         }
+        throw new PreconditionFailedException('Must be an XmlHttpRequest');
     }
-
 }

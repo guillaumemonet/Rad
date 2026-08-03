@@ -18,19 +18,18 @@ use Rad\Error\ServiceException;
  * @author Guillaume Monet
  */
 class LanguageHandler implements LanguageInterface {
-
     private $default_locale;
     private $available_locales;
     private $config;
     private $trads;
 
     public function __construct() {
-        $this->default_locale    = Config::getServiceConfig("language")->default_locale;
-        $this->available_locales = Config::getServiceConfig("language")->available_locales;
+        $this->default_locale    = Config::getServiceConfig('language')->default_locale;
+        $this->available_locales = Config::getServiceConfig('language')->available_locales;
         $this->config            = Config::getServiceConfig('language', 'language')->config;
         $this->setLocale();
         $this->loadTrads();
-        register_shutdown_function(array($this, "saveTrads"));
+        register_shutdown_function([$this, 'saveTrads']);
     }
 
     public function loadTrads() {
@@ -38,12 +37,12 @@ class LanguageHandler implements LanguageInterface {
         if (file_exists($filePath)) {
             $fileContents = file_get_contents($filePath);
             if ($fileContents === false) {
-                throw new ServiceException("Erreur lors de la lecture du fichier de traduction.");
+                throw new ServiceException('Erreur lors de la lecture du fichier de traduction.');
             }
             $this->trads = json_decode($fileContents, true);
 
             if ($this->trads === null) {
-                throw new ServiceException("Erreur lors de la décodage JSON du fichier de traduction.");
+                throw new ServiceException('Erreur lors de la décodage JSON du fichier de traduction.');
             }
         } else {
             $this->trads = [];
@@ -57,7 +56,7 @@ class LanguageHandler implements LanguageInterface {
         $jsonData = json_encode((array) $this->trads, JSON_PRETTY_PRINT);
 
         if ($jsonData === false) {
-            throw new ServiceException("Erreur lors de la conversion des données en JSON.");
+            throw new ServiceException('Erreur lors de la conversion des données en JSON.');
         }
 
         // Tentative d'écriture dans le fichier.
@@ -68,7 +67,7 @@ class LanguageHandler implements LanguageInterface {
         }
     }
 
-    public function getText(string $value, $domaine = "default", $locale = null): ?string {
+    public function getText(string $value, $domaine = 'default', $locale = null): ?string {
         $locale = $locale ?? $this->default_locale;
 
         if (!isset($this->trads[$domaine][$value][$locale])) {
@@ -91,7 +90,7 @@ class LanguageHandler implements LanguageInterface {
     }
 
     public function setLocale() {
-        putenv("LC_ALL=" . $this->default_locale);
+        putenv('LC_ALL=' . $this->default_locale);
         setlocale(LC_ALL, $this->default_locale);
     }
 }

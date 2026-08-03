@@ -15,7 +15,6 @@ namespace Rad\Model;
  * @author Guillaume Monet
  */
 interface ModelInterface {
-
     public function create(bool $force = false);
 
     public function read();

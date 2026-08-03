@@ -19,11 +19,10 @@ use Rad\Config\Config;
 use Rad\Utils\StringUtils;
 
 /**
- * 
+ *
  */
 class DatabaseBuildHandler implements BuildInterface {
-
-    private ?ClassesGenerator $classesGenerator     = null;
+    private ?ClassesGenerator $classesGenerator         = null;
     private ?ControllersGenerator $controllersGenerator = null;
 
     public function __construct() {
@@ -50,12 +49,12 @@ class DatabaseBuildHandler implements BuildInterface {
         $this->generateClasses($tables);
 
         Cache::getHandler()->clear();
-        return "Generated";
+        return 'Generated';
     }
 
     private function generateClasses(array $tables) {
         foreach ($tables as $name => $table) {
-            if (strpos($name, "_has_") !== false) {
+            if (strpos($name, '_has_') !== false) {
                 continue;
             }
             $className = StringUtils::camelCase($name);
@@ -81,7 +80,7 @@ class DatabaseBuildHandler implements BuildInterface {
             $this->classesGenerator->generateIndexesGetter($class, $table);
             $this->classesGenerator->generateGetAll($class, $table);
             $filename = $this->classesGenerator->path . $className . '.php';
-            echo $filename . "<br />";
+            echo $filename . '<br />';
             file_put_contents($filename, "<?php\n\n" . StringUtils::reindent((string) $namespace));
             $this->generateController($class);
         }
@@ -109,9 +108,9 @@ class DatabaseBuildHandler implements BuildInterface {
         echo $filename . ' : ';
         if (!file_exists($filename)) {
             file_put_contents($filename, "<?php\n\n" . StringUtils::reindent((string) $namespace));
-            echo " Generated";
+            echo ' Generated';
         } else {
-            echo " Exists";
+            echo ' Exists';
         }
         echo '<br />';
     }

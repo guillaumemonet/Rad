@@ -18,7 +18,6 @@ use Rad\Service\Service;
  * @author Guillaume Monet
  */
 final class Log extends Service {
-
     public static function addHandler(string $handlerType, $handler) {
         static::getInstance()->addServiceHandler($handlerType, $handler);
     }

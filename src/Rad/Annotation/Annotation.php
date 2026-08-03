@@ -19,22 +19,21 @@ use ReflectionProperty;
  * @author Guillaume Monet
  */
 abstract class Annotation {
-
     private function __construct() {
-        
+
     }
 
     private function __clone() {
-        
+
     }
 
     /**
-     * 
+     *
      * @param string $docblock
      * @return array
      */
     public static function getAnnotations(string $docblock): array {
-        $matches     = [];
+        $matches = [];
         preg_match_all('/@(?<name>[A-Za-z_-]+)((?<args>.*))[\r\n]/m', $docblock, $matches, PREG_SET_ORDER);
         $annotations = [];
         array_map(function ($match) use (&$annotations) {
@@ -44,7 +43,7 @@ abstract class Annotation {
     }
 
     /**
-     * 
+     *
      * @param string $class
      * @return array
      */
@@ -59,7 +58,7 @@ abstract class Annotation {
     }
 
     /**
-     * 
+     *
      * @param string $class
      * @return array
      */
@@ -70,7 +69,7 @@ abstract class Annotation {
     }
 
     /**
-     * 
+     *
      * @param string $class
      * @param string $method
      * @return array

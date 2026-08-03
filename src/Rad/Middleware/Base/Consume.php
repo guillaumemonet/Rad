@@ -11,38 +11,27 @@ namespace Rad\Middleware\Base;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use Rad\Error\Http\NotAcceptableException;
 use Rad\Http\HttpHeaders;
-use Rad\Middleware\MiddlewareBefore;
-use Rad\Route\Route;
 use Rad\Utils\Mime;
 
 /**
- * Description of Consume
- *
- * @author guillaume
+ * Rejects the request (406) when the client's Accept header does not match one
+ * of the mime types the route consumes.
  */
-class Consume extends MiddlewareBefore {
+class Consume extends AbstractMiddleware {
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface {
+        $route = $this->route($request);
 
-    /**
-     * 
-     * @param ServerRequestInterface $request
-     * @param ResponseInterface $response
-     * @param Route $route
-     * @return ResponseInterface
-     * @throws NotAcceptableException
-     */
-    public function middle(ServerRequestInterface $request, ResponseInterface $response, Route $route): ResponseInterface {
         $consumeTypes = [];
-        foreach ($route->getConsumedMimeType() as $consume) {
+        foreach ($route?->getConsumedMimeType() ?? [] as $consume) {
             $consumeTypes += Mime::getMimeTypesFromShort($consume);
         }
-        $acceptTypes = HttpHeaders::parseAccepted(current($request->getHeader('Accept')));
-        if (isset($acceptTypes['*/*']) || sizeof(array_intersect($consumeTypes, array_keys($acceptTypes))) > 0) {
-            return $response;
-        } else {
-            throw new NotAcceptableException('Wrong Content Type ' . implode(',', $acceptTypes) . ' Require ' . implode(' ', $consumeTypes));
+        $acceptTypes = HttpHeaders::parseAccepted(current($request->getHeader('Accept')) ?: '');
+        if (isset($acceptTypes['*/*']) || count(array_intersect($consumeTypes, array_keys($acceptTypes))) > 0) {
+            return $handler->handle($request);
         }
+        throw new NotAcceptableException('Wrong Content Type ' . implode(',', array_keys($acceptTypes)) . ' Require ' . implode(' ', $consumeTypes));
     }
-
 }

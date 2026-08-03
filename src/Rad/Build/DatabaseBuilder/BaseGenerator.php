@@ -15,10 +15,9 @@ namespace Rad\Build\DatabaseBuilder;
  * @author Guillaume Monet
  */
 class BaseGenerator {
-
-    protected string $query   = "\$result = Database::getHandler()->query(\$sql)";
-    protected string $prepare = "\$result = Database::getHandler()->prepare(\$sql)";
-    protected string $execute = "\$result->execute(%s)";
+    protected string $query   = '$result = Database::getHandler()->query($sql)';
+    protected string $prepare = '$result = Database::getHandler()->prepare($sql)';
+    protected string $execute = '$result->execute(%s)';
     protected string $result  = "\$res = \$result->fetchAll(\PDO::FETCH_ASSOC)";
 
 }

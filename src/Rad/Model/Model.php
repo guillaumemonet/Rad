@@ -12,22 +12,22 @@ namespace Rad\Model;
 use JsonSerializable;
 use Rad\Utils\StringUtils;
 use ReflectionClass;
+use ReflectionProperty;
 
 /**
  * Description of IObject.
  *
  * @author Guillaume Monet
- * 
+ *
  */
 class Model implements JsonSerializable {
-
     public $resource_uri;
     public $resource_name;
     public $resource_namespace;
     public ?int $id;
 
     public function __construct() {
-        
+
     }
 
     public function getId() {
@@ -46,7 +46,7 @@ class Model implements JsonSerializable {
         return $this->resource_uri;
     }
 
-    public function jsonSerialize() {
+    public function jsonSerialize(): mixed {
         $this->generateResource();
         return $this;
     }
@@ -61,7 +61,7 @@ class Model implements JsonSerializable {
         $reflex                   = new ReflectionClass($this);
         $this->resource_name      = $reflex->getShortName();
         $this->resource_namespace = $reflex->getName();
-        $this->resource_uri       = '/' . StringUtils::slugify($this->resource_name) . '/' . $this->getId() ?? '';
+        $this->resource_uri       = '/' . StringUtils::slugify($this->resource_name) . '/' . ($this->getId() ?? '');
     }
 
     public static function getSQLFilters($filters) {
@@ -69,17 +69,17 @@ class Model implements JsonSerializable {
         $callingClass     = get_called_class();
         $res_filters      = array_intersect_key($filters, $callingClass::$tableFormat);
         ksort($res_filters); // Tri par clé
-        $md5              = md5(serialize($res_filters));
-        $bind_array       = [];
-        $conditions       = array_map(function ($cle, $valeur) use (&$bind_array) {
+        $md5        = md5(serialize($res_filters));
+        $bind_array = [];
+        $conditions = array_map(function ($cle, $valeur) use (&$bind_array) {
             if ($valeur == 'null') {
                 return '`' . $cle . '` is null';
             } else {
                 $bind_array[':' . $cle] = $valeur;
-                return '`' . $cle . "` = :" . $cle;
+                return '`' . $cle . '` = :' . $cle;
             }
         }, array_keys($res_filters), $res_filters);
-        $chaine = implode(" AND ", $conditions);
+        $chaine = implode(' AND ', $conditions);
         if (strlen($chaine) > 0) {
             $chaine = ' AND ' . $chaine;
         }

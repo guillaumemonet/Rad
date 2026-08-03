@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @license http://www.opensource.org/licenses/mit-license.php MIT (see the LICENSE file)
  * @author Guillaume Monet
@@ -10,10 +12,13 @@
 namespace Rad\Worker;
 
 /**
- * Description of MessageType
+ * Type of a System V message queue message (mtype, must be a positive integer).
  *
- * @author guillaume
+ * Extend the cases to model your application's message kinds; the backing value
+ * is what {@see Orderer} sends on the queue.
  */
-abstract class MessageType {
-    
+enum MessageType: int {
+    case DEFAULT = 1;
+    case COMMAND = 2;
+    case EVENT   = 3;
 }

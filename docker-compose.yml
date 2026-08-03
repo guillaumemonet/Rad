@@ -1,0 +1,47 @@
+services:
+  php:
+    build: .
+    image: rad-dev
+    working_dir: /app
+    volumes:
+      - .:/app
+      - composer-cache:/root/.composer/cache
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      MEMCACHED_HOST: memcached
+      MEMCACHED_PORT: "11211"
+      MYSQL_HOST: mysql
+      MYSQL_PORT: "3306"
+      MYSQL_DATABASE: rad
+      MYSQL_USER: rad
+      MYSQL_PASSWORD: rad
+    depends_on:
+      redis:
+        condition: service_started
+      memcached:
+        condition: service_started
+      mysql:
+        condition: service_healthy
+
+  redis:
+    image: redis:7-alpine
+
+  memcached:
+    image: memcached:1.6-alpine
+
+  mysql:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: rad
+      MYSQL_USER: rad
+      MYSQL_PASSWORD: rad
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  composer-cache:

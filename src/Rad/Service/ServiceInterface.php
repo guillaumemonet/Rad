@@ -15,8 +15,7 @@ namespace Rad\Service;
  * @author guillaume
  */
 interface ServiceInterface {
+    public static function getHandler(string $handlerType = null);
 
-    static function getHandler(string $handlerType = null);
-
-    static function addHandler(string $handlerType, $handler);
+    public static function addHandler(string $handlerType, $handler);
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @license http://www.opensource.org/licenses/mit-license.php MIT (see the LICENSE file)
  * @author Guillaume Monet
@@ -9,6 +11,7 @@
 
 namespace Rad\Cache;
 
+use DateInterval;
 use Memcached;
 use Rad\Config\Config;
 use Rad\Encryption\Encryption;
@@ -18,120 +21,71 @@ use Rad\Encryption\Encryption;
  *
  * @author Guillaume Monet
  */
-final class MemcacheCacheHandler implements CacheInterface {
-
-    /**
-     * 
-     * @var Memcached
-     */
-    private $memcache   = null;
-    private $defaultTTL = null;
+final class MemcacheCacheHandler extends AbstractCacheHandler {
+    private Memcached $memcache;
+    private int $defaultTTL;
 
     public function __construct() {
-        $config           = Config::getServiceConfig('cache', 'memcache')->config;
-        $this->memcache   = new Memcached();
+        $config         = Config::getServiceConfig('cache', 'memcache')->config;
+        $this->memcache = new Memcached();
         $this->memcache->addServer($config->host, (int) $config->port, 100);
-        $this->defaultTTL = isset($config->lifetime) ? $config->lifetime : 3600;
+        $this->defaultTTL = isset($config->lifetime) ? (int) $config->lifetime : 3600;
     }
 
-    /**
-     * 
-     * @return bool
-     */
     public function clear(): bool {
         return $this->memcache->flush();
     }
 
-    /**
-     * 
-     * @return bool
-     */
     public function purge(): bool {
-        
+        return true;
     }
 
-    /**
-     * 
-     * @param type $key
-     */
-    public function delete($key) {
-        $this->memcache->delete(Encryption::hashMd5($key));
+    public function delete(string $key): bool {
+        return $this->memcache->delete(Encryption::hashMd5($key));
     }
 
-    /**
-     * 
-     * @param type $keys
-     * @return bool
-     */
-    public function deleteMultiple($keys): bool {
-        $nkeys = array_map(function ($v) {
-            return Encryption::hashMd5($v);
-        }, $keys);
+    public function deleteMultiple(iterable $keys): bool {
+        $nkeys = array_map(static fn ($v) => Encryption::hashMd5($v), $this->toArray($keys));
         $this->memcache->deleteMulti($nkeys);
         return true;
     }
 
-    /**
-     * 
-     * @param type $key
-     * @param type $default
-     * @return type
-     */
-    public function get($key, $default = null) {
-        return $this->memcache->get(Encryption::hashMd5($key));
+    public function get(string $key, mixed $default = null): mixed {
+        $value = $this->memcache->get(Encryption::hashMd5($key));
+        return $this->memcache->getResultCode() === Memcached::RES_NOTFOUND ? $default : $value;
     }
 
-    /**
-     * 
-     * @param type $keys
-     * @param type $default
-     * @return type
-     */
-    public function getMultiple($keys, $default = null) {
-        $nkeys = array_map(function ($v) {
-            return Encryption::hashMd5($v);
-        }, $keys);
-        $values = $this->memcache->getMulti($nkeys, Memcached::GET_PRESERVE_ORDER);
-        return array_combine($keys, array_values($values));
-    }
-
-    /**
-     * 
-     * @param type $key
-     * @return bool
-     */
-    public function has($key): bool {
-        return !empty($this->get(Encryption::hashMd5($key)));
-    }
-
-    /**
-     * 
-     * @param type $key
-     * @param type $value
-     * @param type $ttl
-     * @return bool
-     */
-    public function set($key, $value, $ttl = null): bool {
-        if ($ttl == null) {
-            $ttl = (int) $this->defaultTTL;
+    public function getMultiple(iterable $keys, mixed $default = null): iterable {
+        $ret = [];
+        foreach ($keys as $k) {
+            $ret[$k] = $this->get($k, $default);
         }
-        return $this->memcache->set(Encryption::hashMd5($key), $value, $ttl);
+        return $ret;
+    }
+
+    public function has(string $key): bool {
+        $this->memcache->get(Encryption::hashMd5($key));
+        return $this->memcache->getResultCode() !== Memcached::RES_NOTFOUND;
+    }
+
+    public function set(string $key, mixed $value, null|int|DateInterval $ttl = null): bool {
+        $seconds = $this->ttlToSeconds($ttl) ?? $this->defaultTTL;
+        return $this->memcache->set(Encryption::hashMd5($key), $value, $seconds);
+    }
+
+    public function setMultiple(iterable $values, null|int|DateInterval $ttl = null): bool {
+        $seconds = $this->ttlToSeconds($ttl) ?? $this->defaultTTL;
+        $values  = $this->toArray($values);
+        $keys    = array_map(static fn ($v) => Encryption::hashMd5($v), array_keys($values));
+        $nvalues = array_combine($keys, array_values($values));
+        return $this->memcache->setMulti($nvalues, $seconds);
     }
 
     /**
-     * 
-     * @param type $values
-     * @param type $ttl
-     * @return bool
+     * @param iterable<mixed> $items
+     * @return array<mixed>
      */
-    public function setMultiple($values, $ttl = null): bool {
-        if ($ttl == null) {
-            $ttl = (int) $this->defaultTTL;
-        }
-        $keys = array_map(function ($v) {
-            return Encryption::hashMd5($v);
-        }, array_keys($values));
-        $nvalues = array_combine($keys, $values);
-        return $this->memcache->setMulti($nvalues, $ttl);
+    private function toArray(iterable $items): array {
+        return is_array($items) ? $items : iterator_to_array($items);
     }
 }

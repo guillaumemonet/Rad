@@ -15,9 +15,8 @@ namespace Rad\Route;
  * @author guillaume
  */
 trait RouteGetterTrait {
-
     /**
-     * 
+     *
      * @return array
      */
     public function getMiddlewares() {
@@ -56,10 +55,6 @@ trait RouteGetterTrait {
         return $this->version;
     }
 
-    public function getObservers(): array {
-        return $this->observers;
-    }
-
     public function isSessionEnabled() {
         return $this->sessionEnabled;
     }
@@ -85,7 +80,7 @@ trait RouteGetterTrait {
     }
 
     /**
-     * 
+     *
      * @return array
      */
     public function getArgs(): array {

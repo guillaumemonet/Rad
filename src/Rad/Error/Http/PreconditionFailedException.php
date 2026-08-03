@@ -13,9 +13,8 @@ namespace Rad\Error\Http;
  * Represents an HTTP 412 error.
  */
 class PreconditionFailedException extends HttpException {
-
     /**
-     * 
+     *
      * @param string $message
      * @param int $code
      */

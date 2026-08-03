@@ -15,8 +15,7 @@ namespace Rad\Mail;
  * @author guillaume
  */
 interface EmailInterface {
-
-    public function addAttachmentFromData($content, $filename, $contentType = "application/x-unknown-content-type"): self;
+    public function addAttachmentFromData($content, $filename, $contentType = 'application/x-unknown-content-type'): self;
 
     public function addAttachmentFromFile($filename, $forcedFilename = null): self;
 

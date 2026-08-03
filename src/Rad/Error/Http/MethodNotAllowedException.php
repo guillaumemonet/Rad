@@ -13,9 +13,8 @@ namespace Rad\Error\Http;
  * Represents an HTTP 405 error.
  */
 class MethodNotAllowedException extends HttpException {
-
     /**
-     * 
+     *
      * @param string $message
      * @param int $code
      */

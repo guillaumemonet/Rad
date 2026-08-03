@@ -15,9 +15,8 @@ namespace Rad\Collection;
  * @author Guillaume Monet
  */
 interface Comparable {
-
     /**
-     * 
+     *
      * @param object $other
      * @return int
      */

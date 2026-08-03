@@ -4,9 +4,6 @@
         "install_path": "/YOUR/PATH",
         "controllers_path": "src/",
         "router": "Rad\\Route\\Router",
-        "response": "Rad\\Http\\Response",
-        "request": "Rad\\Http\\Request",
-        "serverrequest": "Rad\\Http\\ServerRequest",
         "cors": {
             "Access-Control-Allow-Origin": "*",
             "Access-Control-Expose-Headers": "Content-Range, X-Total-Count",
@@ -243,6 +240,16 @@
                         "url": "",
                         "token": ""
                     }
+                }
+            }
+        },
+
+        "event": {
+            "default": "event",
+            "classname": "Psr\\EventDispatcher\\EventDispatcherInterface",
+            "handlers": {
+                "event": {
+                    "classname": "Rad\\Event\\EventHandler"
                 }
             }
         }

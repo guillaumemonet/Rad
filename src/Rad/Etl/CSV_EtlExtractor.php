@@ -8,7 +8,7 @@
 
 namespace Rad\Etl;
 
-use Rad\Utils\CSV;
+use Rad\Utils\File\FileCSV;
 
 /**
  * Description of CSV_EtlExtractor
@@ -16,24 +16,24 @@ use Rad\Utils\CSV;
  * @author guillaume
  */
 class CSV_EtlExtractor implements EtlExtractor {
-
     private $headers;
     private $datas;
     private $transformed_datas;
 
     public function close() {
-        
+
     }
 
     public function connect(array $params) {
-        $csv = new CSV($params["filename"],$params["separator"],$params["hasHeader"]);
-        $datas = $csv->read();
-        $this->headers = array_keys($datas);
-        $this->datas = $datas;
+        $csv = new FileCSV($params['filename']);
+        $csv->load();
+        $datas         = $csv->parseCSV($params['separator'] ?? ';', $params['hasHeader'] ?? false);
+        $this->headers = !empty($datas) ? array_keys($datas[0]) : [];
+        $this->datas   = $datas;
     }
 
     public function getDatas(): array {
-        
+        return $this->datas ?? [];
     }
 
     public function transform(array $mapper) {

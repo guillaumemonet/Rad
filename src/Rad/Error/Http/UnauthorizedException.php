@@ -13,9 +13,8 @@ namespace Rad\Error\Http;
  * Represents an HTTP 40error.
  */
 class UnauthorizedException extends HttpException {
-
     /**
-     * 
+     *
      * @param string $message
      * @param int $code
      */

@@ -15,7 +15,6 @@ namespace Rad\Session;
  * @author guillaume
  */
 class PHPSessionHandler implements SessionInterface {
-
     public function get(string $index) {
         return $this->has($index) ? $_SESSION[$index] : null;
     }

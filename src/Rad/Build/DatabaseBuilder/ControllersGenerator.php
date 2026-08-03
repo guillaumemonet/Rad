@@ -17,15 +17,14 @@ use Nette\PhpGenerator\ClassType;
  * @author Guillaume Monet
  */
 class ControllersGenerator extends BaseGenerator {
-
-    public ?string $namespace   = null;
-    public ?string $path        = null;
-    public ?string $prefix      = null;
-    public array $baseRequire = array(
+    public ?string $namespace = null;
+    public ?string $path      = null;
+    public ?string $prefix    = null;
+    public array $baseRequire = [
         '\Psr\Http\Message\ServerRequestInterface',
         '\Psr\Http\Message\ResponseInterface',
         'Rad\\Controller\\Controller'
-    );
+    ];
 
     public function generateControllerGetAll(ClassType $mainClass, ClassType $class) {
         $parse = $class->addMethod('getAll');
@@ -34,7 +33,7 @@ class ControllersGenerator extends BaseGenerator {
         $parse->addParameter('response')->setType('\\Psr\\Http\\Message\\ResponseInterface');
         $parse->addParameter('args')->setType('array');
         $parse->setReturnType('\\Psr\\Http\\Message\\ResponseInterface');
-        $parse->addComment('@get /' . $this->prefix . strtolower($mainClass->getName()) . "/");
+        $parse->addComment('@get /' . $this->prefix . strtolower($mainClass->getName()) . '/');
         $parse->addComment('@produce json');
 
         $parse->addBody('
@@ -55,7 +54,7 @@ class ControllersGenerator extends BaseGenerator {
         $parse->addParameter('response')->setType('\\Psr\\Http\\Message\\ResponseInterface');
         $parse->addParameter('args')->setType('array');
         $parse->setReturnType('\\Psr\\Http\\Message\\ResponseInterface');
-        $parse->addComment('@get /' . $this->prefix . strtolower($mainClass->getName()) . "/(?<id>[0-9]*)/");
+        $parse->addComment('@get /' . $this->prefix . strtolower($mainClass->getName()) . '/(?<id>[0-9]*)/');
         $parse->addComment('@produce json');
         $parse->addBody('
             $' . strtolower($mainClass->getName()) . ' = ' . $mainClass->getName() . '::get' . $mainClass->getName() . '($args[\'id\']);
@@ -70,7 +69,7 @@ class ControllersGenerator extends BaseGenerator {
         $parse->addParameter('response')->setType('\\Psr\\Http\\Message\\ResponseInterface');
         $parse->addParameter('args')->setType('array');
         $parse->setReturnType('\\Psr\\Http\\Message\\ResponseInterface');
-        $parse->addComment('@post /' . $this->prefix . strtolower($mainClass->getName()) . "/");
+        $parse->addComment('@post /' . $this->prefix . strtolower($mainClass->getName()) . '/');
         $parse->addComment('@produce json');
         $parse->addComment('@consume json');
         $parse->addBody('$' . strtolower($mainClass->getName()) . ' = new ' . $mainClass->getName() . '();

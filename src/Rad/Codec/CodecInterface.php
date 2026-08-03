@@ -15,7 +15,6 @@ namespace Rad\Codec;
  * @author guillaume
  */
 interface CodecInterface {
-
     public function getMimeTypes(): array;
 
     public function serialize($object);
