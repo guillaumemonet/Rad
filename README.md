@@ -31,9 +31,9 @@ Here is an overview of the PSRs followed by the RAD framework:
 
 - **PSR-3 Logger Interface:** The framework utilizes PSR-3 for logging, providing a standardized approach for logging messages.
 - **PSR-4 Autoloader:** The PSR-4 autoloading standard is employed, allowing efficient class autoloading based on namespaces.
-- **PSR-7 Http Message:** RAD leverages the PSR-7 standard, powered by Guzzle HTTP, for handling HTTP messages, providing a consistent interface for interacting with HTTP requests and responses.
-- **PSR-11 Container:** The framework employs PSR-11 for dependency injection, enabling the management and retrieval of dependencies through a container.
-- **PSR-14 EventDispatcher:** RAD utilizes PSR-14 for event dispatching, facilitating the decoupling of components and promoting the observer pattern.
+- **PSR-7 Http Message:** RAD manipulates HTTP messages through the PSR-7 interfaces; the concrete implementation (Guzzle) sits behind a single swappable PSR-17 factory.
+- **PSR-11 Container:** The framework ships a container with constructor autowiring for dependency injection, resolving controllers and their dependencies automatically.
+- **PSR-14 EventDispatcher:** RAD uses PSR-14 for event dispatching, which replaces the framework's former home-made observer pattern.
 - **PSR-15 Middleware:** Requests flow through a PSR-15 pipeline (`Rad\Middleware\Dispatcher`) of `Psr\Http\Server\MiddlewareInterface` layers ending in the controller dispatcher. Legacy Rad middlewares are adapted transparently.
 - **PSR-16 Caching:** RAD adheres to PSR-16 for caching, allowing developers to implement caching mechanisms efficiently.
 - **PSR-17 Http Factory:** The framework creates all HTTP messages through PSR-17 factories (`Rad\Http\HttpFactory`), so the concrete PSR-7 implementation (Guzzle) is confined to a single, swappable place. Responses are sent to the client by `Rad\Http\Emitter`.
@@ -46,9 +46,9 @@ With its focus on performance, optimized object instantiation, simplified depend
 
 ## Installation
 
-To use RAD Framework, you need to have PHP 8.1 or higher and Composer installed on your system.
+To use RAD Framework, you need to have PHP 8.2 or higher and Composer installed on your system.
 
-    Make sure you have PHP 8.1 or a later version installed. You can check your PHP version by running the following command in your terminal:
+    Make sure you have PHP 8.2 or a later version installed. You can check your PHP version by running the following command in your terminal:
 
 ```bash
 
@@ -64,7 +64,7 @@ Once PHP and Composer are set up, you can add RAD Framework to your project by i
 ```json
 
 "require": {
-    "rad/rad-framework": "^1.0"
+    "rad/rad-framework": "^2.0"
 }
 ```
 For the latest development version, you can use the following line:
@@ -104,25 +104,14 @@ No local PHP? A Docker dev stack is provided:
 ```bash
 docker compose build
 docker compose run --rm php composer install
-docker compose run --rm php composer qa     # phpstan + phpunit
+docker compose run --rm php composer qa     # cs-check + phpstan + phpunit
 ```
 
 CI (GitHub Actions) runs the same checks on PHP 8.2, 8.3 and 8.4.
 
-PHPStan runs at level 5; existing legacy findings are frozen in
-`phpstan-baseline.neon` so only new issues fail the build. Coding-standards
-(`composer cs-fix`) are not yet applied to the legacy code, so that CI step is
-informational for now.
-
-For an existing project with legacy type debt, generate a PHPStan baseline first:
-
-```bash
-vendor/bin/phpstan analyse --generate-baseline
-```
-
-## TODO
-
-* Improve Documentation
+The codebase is clean at **PHPStan level 5 (no baseline)** and fully formatted
+with **php-cs-fixer**; both checks are blocking in CI, so any regression fails
+the build.
 
 ## Usage
 
@@ -153,7 +142,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Rad\Route\Attribute\Get;
 use Rad\Route\Attribute\Produce;
 
-class Exemple extends \Rad\Controller\Controller {
+class Example extends \Rad\Controller\Controller {
 
     #[Get('/'), Produce('html')]
     public function html(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
@@ -183,7 +172,7 @@ Add controller to the Rad API :
 ```php
 
 $app->addControllers([
-    Example:class
+    Example::class
 ]);
 ```
 
@@ -337,21 +326,29 @@ $dispatcher->dispatch(new UserRegistered(42));
 
 The dispatcher is also injectable as `Psr\EventDispatcher\EventDispatcherInterface`.
 
-## How is works
+## HTTP client (PSR-18)
 
-* **Config**
+Outbound HTTP calls use a PSR-18 client. Build requests with the PSR-17 factory
+and send them through the injectable `Psr\Http\Client\ClientInterface`:
 
-* **Middleware**
+```php
+use Rad\Http\HttpFactory;
 
-* **Route**
+$factory = new HttpFactory();
+$client  = $app->getContainer()->get(\Psr\Http\Client\ClientInterface::class);
 
-* **Controller**
+$request  = $factory->createRequest('GET', 'https://api.example.com/status');
+$response = $client->sendRequest($request);   // throws Rad\Http\Exception\NetworkException on transport failure
+
+echo $response->getStatusCode();
+echo (string) $response->getBody();
+```
 
 ## PSR Support
 
 * [psr-3](http://www.php-fig.org/psr/psr-3/) Logger Interface
 * [psr-4](http://www.php-fig.org/psr/psr-4/) Autoloader
-* [psr-7](http://www.php-fig.org/psr/psr-7/) Http Message (Thanks to Guzzle Http)
+* [psr-7](http://www.php-fig.org/psr/psr-7/) Http Message (Guzzle behind a swappable factory)
 * [psr-11](http://www.php-fig.org/psr/psr-11/) Container
 * [psr-14](http://www.php-fig.org/psr/psr-14/) EventDispatcher (replaces the old Observer pattern)
 * [psr-15](http://www.php-fig.org/psr/psr-15/) Middleware (Dispatcher + RequestHandler)
