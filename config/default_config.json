@@ -52,7 +52,6 @@
         "template": {
             "default": "smarty",
             "classname": "Rad\\Template\\TemplateInterface",
-            "default": "smarty",         
             "handlers": {
                 "smarty": {
                     "classname": "Rad\\Template\\SmartyTemplateHandler",
@@ -69,6 +68,15 @@
                         "config_dir": "config/",
                         "cache_dir": "cache/",
                         "cache_type": "smarty"
+                    }
+                },
+                "twig": {
+                    "classname": "Rad\\Template\\TwigTemplateHandler",
+                    "config": {
+                        "template_dir": "templates/",
+                        "cache_dir": "cache/twig/",
+                        "debug": true,
+                        "auto_reload": true
                     }
                 }
             }
