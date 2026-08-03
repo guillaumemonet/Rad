@@ -36,8 +36,8 @@ abstract class AutoConfig {
      * @return array
      */
     public static function loadControllers($caching = true): array {
-
-        $controllers = unserialize(Cache::getHandler()->get('controllers'));
+        $cached      = Cache::getHandler()->get('controllers');
+        $controllers = is_string($cached) && $cached !== '' ? unserialize($cached) : false;
 
         if (empty($controllers) || !$caching) {
             $controllers = self::findControllers();
