@@ -10,6 +10,7 @@
 namespace Rad\Build\DatabaseBuilder;
 
 use Nette\PhpGenerator\ClassType;
+use Nette\PhpGenerator\Method;
 use Rad\Build\DatabaseBuilder\Elements\Column;
 use Rad\Build\DatabaseBuilder\Elements\Table;
 use Rad\Utils\StringUtils;
@@ -59,19 +60,7 @@ class ClassesGenerator extends BaseGenerator {
         foreach ($table->columns as $col_name => $col) {
             if (str_ends_with($col_name, '_i18n') && $col->auto == 0 && !str_starts_with($table->name, 'i18n')) {
                 $parse->addBody('if(' . $col->getAsVar('this') . ' == null){');
-                $parse->addBody('$li18n = new I18n();');
-                $parse->addBody('$li18n->name = "' . $table->name . '_' . $col_name . '";');
-                $parse->addBody('$li18n->table= "' . $table->name . '";');
-                $parse->addBody('$li18n->row= "' . $col_name . '";');
-                $parse->addBody('$li18n->create();');
-                $parse->addBody($col->getAsVar('this') . ' = $li18n->getId();');
-                $parse->addBody('foreach($this->' . str_replace('_i18n', '', $col_name) . ' as $lang=>$datas){');
-                $parse->addBody('$ti18n = new I18nTranslate();');
-                $parse->addBody('$ti18n->language_slug = $lang;');
-                $parse->addBody('$ti18n->i18n_id = ' . $col->getAsVar('this') . ';');
-                $parse->addBody('$ti18n->datas=$datas;');
-                $parse->addBody('$ti18n->create();');
-                $parse->addBody('}');
+                $this->addI18nContainerCreation($parse, $table, $col_name, $col);
                 $parse->addBody('}');
             }
         }
@@ -133,11 +122,21 @@ class ClassesGenerator extends BaseGenerator {
 
         foreach ($table->columns as $col_name => $col) {
             if (str_ends_with($col_name, '_i18n') && $col->auto == 0 && !str_starts_with($table->name, 'i18n')) {
-                //TODO Rajouter les conditions de test pour la creation d'une trad
-                $parse->addBody('foreach($this->' . str_replace('_i18n', '', $col_name) . ' as $lang=>$datas){');
+                $base = str_replace('_i18n', '', $col_name);
+                // No translation container yet: create it together with every translation.
+                $parse->addBody('if(' . $col->getAsVar('this') . ' == null){');
+                $this->addI18nContainerCreation($parse, $table, $col_name, $col);
+                $parse->addBody('}else{');
+                // Container exists: upsert each translation (create when missing, update otherwise).
+                $parse->addBody('foreach($this->' . $base . ' as $lang=>$datas){');
                 $parse->addBody('$ti18n = I18nTranslate::getTranslation(' . $col->getAsVar('this') . ',$lang);');
+                $parse->addBody('if($ti18n === false || $ti18n === null){');
+                $this->addI18nTranslationCreation($parse, $col);
+                $parse->addBody('}else{');
                 $parse->addBody('$ti18n->datas=$datas;');
                 $parse->addBody('$ti18n->update();');
+                $parse->addBody('}');
+                $parse->addBody('}');
                 $parse->addBody('}');
             }
         }
@@ -284,6 +283,35 @@ class ClassesGenerator extends BaseGenerator {
             $parse->addBody('}');
             $parse->addBody('return $ret;');
         }
+    }
+
+    /**
+     * Emits the code creating the I18n container for a column and all of its
+     * translations (used by both create() and update()).
+     */
+    private function addI18nContainerCreation(Method $parse, Table $table, string $col_name, Column $col): void {
+        $base = str_replace('_i18n', '', $col_name);
+        $parse->addBody('$li18n = new I18n();');
+        $parse->addBody('$li18n->name = "' . $table->name . '_' . $col_name . '";');
+        $parse->addBody('$li18n->table= "' . $table->name . '";');
+        $parse->addBody('$li18n->row= "' . $col_name . '";');
+        $parse->addBody('$li18n->create();');
+        $parse->addBody($col->getAsVar('this') . ' = $li18n->getId();');
+        $parse->addBody('foreach($this->' . $base . ' as $lang=>$datas){');
+        $this->addI18nTranslationCreation($parse, $col);
+        $parse->addBody('}');
+    }
+
+    /**
+     * Emits the code creating a single I18nTranslate row (expects $lang/$datas
+     * in scope).
+     */
+    private function addI18nTranslationCreation(Method $parse, Column $col): void {
+        $parse->addBody('$ti18n = new I18nTranslate();');
+        $parse->addBody('$ti18n->language_slug = $lang;');
+        $parse->addBody('$ti18n->i18n_id = ' . $col->getAsVar('this') . ';');
+        $parse->addBody('$ti18n->datas=$datas;');
+        $parse->addBody('$ti18n->create();');
     }
 
 }
