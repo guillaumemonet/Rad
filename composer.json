@@ -33,6 +33,7 @@
         "psr/http-server-middleware": "^1",
         "psr/http-server-handler": "^1",
         "psr/http-factory": "^1",
+        "psr/http-client": "^1",
         "psr/event-dispatcher": "^1",
         "guzzlehttp/psr7": "^2.6",
         "smarty/smarty": "^4",

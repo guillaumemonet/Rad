@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace Rad\Test\Middleware;
 
-use GuzzleHttp\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface as PsrMiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Rad\Error\Http\InternalErrorException;
-use Rad\Http\Response;
+use Rad\Http\HttpFactory;
 use Rad\Middleware\Base\Produce;
 use Rad\Middleware\ControllerHandler;
 use Rad\Middleware\Dispatcher;
@@ -22,7 +21,7 @@ use Rad\Test\Fixtures\EchoController;
 
 final class MiddlewareTest extends TestCase {
     private function request(): ServerRequestInterface {
-        return new ServerRequest('GET', '/');
+        return (new HttpFactory())->createServerRequest('GET', '/');
     }
 
     private function core(string $body = 'core'): RequestHandlerInterface {
@@ -32,7 +31,7 @@ final class MiddlewareTest extends TestCase {
             }
 
             public function handle(ServerRequestInterface $request): ResponseInterface {
-                $response = new Response(200);
+                $response = (new HttpFactory())->createResponse(200);
                 $response->getBody()->write($this->body);
                 return $response;
             }
@@ -71,7 +70,7 @@ final class MiddlewareTest extends TestCase {
     public function testMiddlewareCanShortCircuit(): void {
         $shortCircuit = new class () implements PsrMiddlewareInterface {
             public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface {
-                return new Response(418);
+                return (new HttpFactory())->createResponse(418);
             }
         };
         // Core would throw if reached.

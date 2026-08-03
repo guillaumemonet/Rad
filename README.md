@@ -36,7 +36,8 @@ Here is an overview of the PSRs followed by the RAD framework:
 - **PSR-14 EventDispatcher:** RAD utilizes PSR-14 for event dispatching, facilitating the decoupling of components and promoting the observer pattern.
 - **PSR-15 Middleware:** Requests flow through a PSR-15 pipeline (`Rad\Middleware\Dispatcher`) of `Psr\Http\Server\MiddlewareInterface` layers ending in the controller dispatcher. Legacy Rad middlewares are adapted transparently.
 - **PSR-16 Caching:** RAD adheres to PSR-16 for caching, allowing developers to implement caching mechanisms efficiently.
-- **PSR-17 Http Factory:** The framework incorporates PSR-17, powered by Guzzle HTTP, for creating HTTP request and response objects in a standardized manner.
+- **PSR-17 Http Factory:** The framework creates all HTTP messages through PSR-17 factories (`Rad\Http\HttpFactory`), so the concrete PSR-7 implementation (Guzzle) is confined to a single, swappable place. Responses are sent to the client by `Rad\Http\Emitter`.
+- **PSR-18 Http Client:** Outbound requests go through a PSR-18 client (`Rad\Http\CurlClient`), injectable as `Psr\Http\Client\ClientInterface`.
 
 By following these PSR standards, the RAD framework ensures code consistency, improves code reuse, and promotes collaboration within the PHP development community.
 
@@ -355,4 +356,5 @@ The dispatcher is also injectable as `Psr\EventDispatcher\EventDispatcherInterfa
 * [psr-14](http://www.php-fig.org/psr/psr-14/) EventDispatcher (replaces the old Observer pattern)
 * [psr-15](http://www.php-fig.org/psr/psr-15/) Middleware (Dispatcher + RequestHandler)
 * [psr-16](http://www.php-fig.org/psr/psr-16/) Caching
-* [psr-17](http://www.php-fig.org/psr/psr-17/) Http Factory (Thanks to Guzzle Http)
+* [psr-17](http://www.php-fig.org/psr/psr-17/) Http Factory (single swappable factory over Guzzle)
+* [psr-18](http://www.php-fig.org/psr/psr-18/) Http Client (cURL-based `CurlClient`)

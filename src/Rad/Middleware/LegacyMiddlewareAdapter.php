@@ -13,7 +13,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface as PsrMiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Rad\Http\Response;
+use Rad\Http\HttpFactory;
 use Rad\Route\Route;
 
 /**
@@ -35,6 +35,6 @@ final class LegacyMiddlewareAdapter implements PsrMiddlewareInterface {
         $route = $request->getAttribute(Route::class);
         $next  = static fn (ServerRequestInterface $req, ResponseInterface $res, ?Route $rt = null): ResponseInterface => $handler->handle($rt !== null ? $req->withAttribute(Route::class, $rt) : $req);
 
-        return $this->middleware->call($request, new Response(200), $route, $next);
+        return $this->middleware->call($request, (new HttpFactory())->createResponse(200), $route, $next);
     }
 }

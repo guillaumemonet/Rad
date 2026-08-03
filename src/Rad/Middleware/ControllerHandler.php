@@ -10,12 +10,13 @@
 namespace Rad\Middleware;
 
 use Psr\Container\ContainerInterface;
+use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Rad\Container\Container;
 use Rad\Error\Http\InternalErrorException;
-use Rad\Http\Response;
+use Rad\Http\HttpFactory;
 use Rad\Route\Route;
 
 /**
@@ -37,6 +38,7 @@ final class ControllerHandler implements RequestHandlerInterface {
         }
         $className  = $route->getClassName();
         $controller = $this->container instanceof Container ? $this->container->make($className, ['route' => $route]) : new $className($route);
-        return $controller->{$route->getMethodName()}($request, new Response(200), $route->getArgs());
+        $factory    = $this->container !== null ? $this->container->get(ResponseFactoryInterface::class) : new HttpFactory();
+        return $controller->{$route->getMethodName()}($request, $factory->createResponse(200), $route->getArgs());
     }
 }

@@ -13,13 +13,14 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Rad\Error\Http\PreconditionFailedException;
+use Rad\Http\ServerRequestHelper;
 
 /**
  * Enforces that the request is an XMLHttpRequest.
  */
 class XMLHttpRequest extends AbstractMiddleware {
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface {
-        if (method_exists($request, 'isXhr') && $request->isXhr()) {
+        if (ServerRequestHelper::isXhr($request)) {
             return $handler->handle($request);
         }
         throw new PreconditionFailedException('Must be an XmlHttpRequest');

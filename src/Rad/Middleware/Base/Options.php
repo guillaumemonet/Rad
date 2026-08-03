@@ -13,7 +13,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Rad\Config\Config;
-use Rad\Http\Response;
+use Rad\Http\HttpFactory;
 
 /**
  * Short-circuits pre-flight OPTIONS requests with a 200 response carrying the
@@ -24,7 +24,7 @@ class Options extends AbstractMiddleware {
         if (strtoupper($request->getMethod()) !== 'OPTIONS') {
             return $handler->handle($request);
         }
-        $response = new Response(200);
+        $response = (new HttpFactory())->createResponse(200);
         foreach ((array) Config::getApiConfig('cors') as $header => $value) {
             $response = $response->withAddedHeader($header, $value);
         }
