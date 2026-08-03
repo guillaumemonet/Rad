@@ -22,7 +22,6 @@ use Rad\Route\Route;
  * exactly like the legacy annotation it replaces.
  */
 final class AttributeTest extends TestCase {
-
     public function testVerbSetsMethodAndPath(): void {
         $route = new Route();
         (new Get('/foo/'))->apply($route);

@@ -10,7 +10,6 @@ use Rad\Config\Config;
 use Throwable;
 
 final class RedisCacheHandlerTest extends CacheContractTestCase {
-
     protected function createHandler(): CacheInterface {
         if (!extension_loaded('redis')) {
             $this->markTestSkipped('ext-redis is not installed');

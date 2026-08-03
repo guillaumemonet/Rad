@@ -18,6 +18,5 @@ use PDOStatement;
  * @author guillaume
  */
 abstract class DatabaseAdapter extends PDO {
-
-    public abstract function fetch_assoc(PDOStatement $rid);
+    abstract public function fetch_assoc(PDOStatement $rid);
 }

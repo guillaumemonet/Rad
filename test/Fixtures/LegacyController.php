@@ -13,7 +13,6 @@ use Rad\Controller\Controller;
  * Controller still using legacy docblock annotations (backward-compat path).
  */
 class LegacyController extends Controller {
-
     /**
      * @get /legacy/
      * @produce html

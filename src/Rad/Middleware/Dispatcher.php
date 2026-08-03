@@ -22,7 +22,6 @@ use Psr\Http\Server\RequestHandlerInterface;
  * advanced cursor, so it is safe to re-enter.
  */
 final class Dispatcher implements RequestHandlerInterface {
-
     /** @var MiddlewareInterface[] */
     private array $queue;
 

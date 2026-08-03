@@ -13,9 +13,8 @@ namespace Rad\Error\Http;
  * Represents an HTTP 403 error.
  */
 class ForbiddenException extends HttpException {
-
     /**
-     * 
+     *
      * @param string $message
      * @param int $code
      */

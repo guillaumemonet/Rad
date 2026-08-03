@@ -18,7 +18,6 @@ use Psr\Http\Server\RequestHandlerInterface;
  * Access-Control-Allow-Headers.
  */
 class AllowHeaders extends AbstractMiddleware {
-
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface {
         $response = $handler->handle($request);
         $route    = $this->route($request);

@@ -15,17 +15,16 @@ namespace Rad\Build\DatabaseBuilder\Elements;
  * @author guillaume
  */
 class Index {
-
     use BaseElementTrait;
 
     /**
-     * 
+     *
      * @var string
      */
     public string $name;
 
     /**
-     * 
+     *
      * @var Column[]
      */
     public array $columns;

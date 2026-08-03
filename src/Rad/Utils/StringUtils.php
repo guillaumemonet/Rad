@@ -10,20 +10,19 @@
 namespace Rad\Utils;
 
 /**
- * 
+ *
  */
 abstract class StringUtils {
-
     private function __construct() {
-        
+
     }
 
     private function __clone() {
-        
+
     }
 
     /**
-     * 
+     *
      * Check if is an email adresse.
      *
      * @pre1 <code>$email="toto@toto.com";</code>
@@ -43,13 +42,13 @@ abstract class StringUtils {
     }
 
     /**
-     * 
+     *
      * @pre1 <code>$str="toto%";</code>
      * @post1 <code>$result="toto ";</code>
      * @pre2 <code>$str="toto[%";</code>
      * @post2 <code>$result="toto ";</code>
-     * 
-     * Remove all special chars from string 
+     *
+     * Remove all special chars from string
      * only let alpha and digit.
      *
      * @param string $str
@@ -62,10 +61,10 @@ abstract class StringUtils {
     /**
      * @pre1 <code>$str="abcd";</code>
      * @post1 <code>$result="abcd";</code>
-     * 
+     *
      * @pre2 <code>$str="éàçù";</code>
      * @post2 <code>$result="eacu";</code>
-     * 
+     *
      * @param string $str
      * @return string
      */
@@ -82,10 +81,10 @@ abstract class StringUtils {
     /**
      * @pre1 <code>$text="BonJour Monde";</code>
      * @post1 <code>$result="bonjour-monde";</code>
-     * 
+     *
      * @pre2 <code>$text="bonjour-monde";</code>
      * @post2 <code>$result="bonjour-monde";</code>
-     * 
+     *
      * @param string $text
      * @return string
      */
@@ -130,7 +129,7 @@ abstract class StringUtils {
     }
 
     /**
-     * 
+     *
      * @param string $pattern
      * @param array $input
      * @param int $flags
@@ -141,21 +140,21 @@ abstract class StringUtils {
     }
 
     /**
-     * 
+     *
      */
-    public static function printLn($line = "", $tab = 0) {
-        $c = "";
+    public static function printLn($line = '', $tab = 0) {
+        $c = '';
         for ($i = 0; $i < $tab; $i++) {
-            $c .= "     ";
+            $c .= '     ';
         }
         return $c . $line . "\n";
     }
 
     /**
-     * 
+     *
      */
     public static function camelCase(string $name): string {
-        return str_replace("_", "", ucwords($name, '_'));
+        return str_replace('_', '', ucwords($name, '_'));
     }
 
     /**
@@ -182,7 +181,7 @@ abstract class StringUtils {
     }
 
     /**
-     * 
+     *
      * @param string $string
      * @return string
      */

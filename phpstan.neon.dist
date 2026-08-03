@@ -1,11 +1,5 @@
-includes:
-    - phpstan-baseline.neon
-
 parameters:
     level: 5
     paths:
         - src
-    # The codebase predates strict typing in places; raise the level progressively.
-    # Generate a baseline for the current debt with:
-    #   vendor/bin/phpstan analyse --generate-baseline
     treatPhpDocTypesAsCertain: false

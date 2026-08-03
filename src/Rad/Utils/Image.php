@@ -15,45 +15,44 @@ use Rad\Error\ServiceException;
 use Rad\Log\Log;
 
 class Image {
-
     /**
-     * 
+     *
      * @var string
      */
     public $source;
 
     /**
-     * 
+     *
      * @var GdImage
      */
     public $image;
 
     /**
-     * 
+     *
      * @var int
      */
     public $height;
 
     /**
-     * 
+     *
      * @var int
      */
     public $width;
 
     /**
-     * 
+     *
      * @var int
      */
     public $type;
 
     /**
-     * 
+     *
      * @var int
      */
     public $quality = -1;
 
     /**
-     * 
+     *
      * @var array
      */
     public $image_functions = [
@@ -63,7 +62,7 @@ class Image {
             IMAGETYPE_GIF  => 'imagecreatefromgif',
             IMAGETYPE_WEBP => 'imagecreatefromwebp'
         ],
-        'build'  => [
+        'build' => [
             IMAGETYPE_JPEG => 'imagejpeg',
             IMAGETYPE_PNG  => 'imagepng',
             IMAGETYPE_GIF  => 'imagegif',
@@ -76,7 +75,7 @@ class Image {
     }
 
     /**
-     * 
+     *
      * @param String $source
      */
     public function load($source = null) {
@@ -90,9 +89,9 @@ class Image {
             return;
         }
         list($width, $height, $type) = $infos_image;
-        $this->width  = $width;
-        $this->height = $height;
-        $this->type   = $type;
+        $this->width                 = $width;
+        $this->height                = $height;
+        $this->type                  = $type;
 
         if (!array_key_exists($type, $this->image_functions['create'])) {
             throw new ServiceException('Unsupported image type');
@@ -100,14 +99,14 @@ class Image {
         try {
             $create_function = $this->image_functions['create'][$type];
             $this->image     = $create_function($source);
-        } catch (Exception $ex) {
+        } catch (\Throwable $ex) {
             Log::getHandler()->error('Unable to load image from ' . $source);
         }
         return $this;
     }
 
     /**
-     * 
+     *
      * @return bool
      */
     public function exists(): bool {
@@ -115,7 +114,7 @@ class Image {
     }
 
     /**
-     * 
+     *
      * @param String $destination
      */
     public function save($destination) {
@@ -139,7 +138,7 @@ class Image {
     }
 
     /**
-     * 
+     *
      */
     private function displayRaw() {
         $extension = pathinfo($this->source, PATHINFO_EXTENSION);
@@ -150,7 +149,7 @@ class Image {
     }
 
     /**
-     * 
+     *
      * @throws ServiceException
      */
     private function displayContent() {
@@ -161,8 +160,8 @@ class Image {
         $extension        = image_type_to_extension($this->type);
         $mime_type        = 'image/' . $extension;
         ob_start();
-        $success          = $display_function($this->image);
-        $content          = ob_get_clean();
+        $success = $display_function($this->image);
+        $content = ob_get_clean();
         if (!$success) {
             throw new ServiceException('Unable to display image');
         }
@@ -171,7 +170,7 @@ class Image {
     }
 
     /**
-     * 
+     *
      * @param int $type
      */
     public function convertTo($type = IMAGETYPE_WEBP) {
@@ -192,19 +191,19 @@ class Image {
     }
 
     /**
-     * 
+     *
      * @param String $source
      * @param String $destination
      * @param int $height
      * @return Image
      */
     public static function resize($source, $destination, $height): Image {
-        $image            = new Image($source);
+        $image = new Image($source);
         $image->load();
         $newimage         = new Image();
         $newimage->height = $height;
         $ratio            = $newimage->height / $image->height;
-        $newimage->width  = round($image->width * $ratio);
+        $newimage->width  = (int) round($image->width * $ratio);
 
         // Création d'une nouvelle image avec les dimensions souhaitées
 
@@ -236,21 +235,21 @@ class Image {
 
         // Calculer la nouvelle hauteur et largeur de l'image
         $newHeight = $maxHeight;
-        $newWidth  = ($newHeight / $sourceHeight) * $sourceWidth;
+        $newWidth  = (int) (($newHeight / $sourceHeight) * $sourceWidth);
 
         // Redimensionner l'image source à la nouvelle taille
         $resizedImage = imagecreatetruecolor($newWidth, $newHeight);
         imagecopyresampled($resizedImage, $sourceImage, 0, 0, 0, 0, $newWidth, $newHeight, $sourceWidth, $sourceHeight);
 
         // Positionner l'image redimensionnée à gauche ou à droite
-        if ($position === "left") {
+        if ($position === 'left') {
             imagecopy($canvas, $resizedImage, 0, 0, 0, 0, $newWidth, $newHeight);
             for ($i = 0; $i < $step; $i++) {
                 $alpha = intval(($i / $step) * 127); // Valeur d'opacité progressive
                 $color = imagecolorallocatealpha($canvas, 255, 255, 255, $alpha);
                 imageline($canvas, $newWidth - $i, 0, $newWidth - $i, 500, $color);
             }
-        } elseif ($position === "right") {
+        } elseif ($position === 'right') {
             $x = 1200 - $newWidth;
             imagecopy($canvas, $resizedImage, $x + 1, 0, 0, 0, $newWidth, $newHeight);
             for ($i = 0; $i < $step; $i++) {
@@ -270,7 +269,7 @@ class Image {
         return $canvas;
     }
 
-    public static function generateResponsiveImages($imagePath,$destinationFolder) {
+    public static function generateResponsiveImages($imagePath, $destinationFolder) {
         // Obtenir les informations sur le fichier d'origine
         $imageInfo      = pathinfo($imagePath);
         $imageExtension = $imageInfo['extension'];
@@ -287,7 +286,7 @@ class Image {
             $resizedImagePath = $destinationFolder . '/' . $resizedFilename;
 
             // Redimensionner l'image
-            resize($imagePath, $resizedImagePath, $width);
+            self::resize($imagePath, $resizedImagePath, $width);
 
             // Ajouter le chemin de l'image redimensionnée à l'attribut srcset
             $srcset .= $resizedImagePath . ' ' . $width . 'w, ';

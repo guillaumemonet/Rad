@@ -19,7 +19,6 @@ use Rad\Error\Http\ForbiddenException;
  * authorization logic (call $handler->handle($request) when allowed).
  */
 class Security extends AbstractMiddleware {
-
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface {
         throw new ForbiddenException();
     }

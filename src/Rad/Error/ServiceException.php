@@ -32,5 +32,4 @@ namespace Rad\Error;
  * @author guillaume
  */
 class ServiceException extends RadException {
-    
 }

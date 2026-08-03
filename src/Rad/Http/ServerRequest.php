@@ -34,7 +34,6 @@ use GuzzleHttp\Psr7\ServerRequest as GServerRequest;
  * @author guillaume
  */
 class ServerRequest extends GServerRequest {
-
     use RequestTrait;
 
 }

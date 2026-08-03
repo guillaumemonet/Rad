@@ -35,7 +35,6 @@ use JsonSerializable;
  * @author guillaume
  */
 abstract class RadException extends ErrorException implements JsonSerializable {
-
     /**
      * Constructor
      *

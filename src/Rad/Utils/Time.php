@@ -17,15 +17,14 @@ use Rad\Cache\Cache;
  * @author Guillaume
  */
 abstract class Time {
-
     private static ?float $counter = null;
 
     private function __construct() {
-        
+
     }
 
     private function __clone() {
-        
+
     }
 
     /**
@@ -67,7 +66,7 @@ abstract class Time {
             $easterDay   = (int) date('j', $easterDate);
             $easterMonth = (int) date('n', $easterDate);
             $easterYear  = (int) date('Y', $easterDate);
-            $holidays    = array(
+            $holidays    = [
                 // Dates fixes
                 mktime(0, 0, 0, 1, 1, $year), // 1er janvier
                 mktime(0, 0, 0, 5, 1, $year), // Fête du travail
@@ -84,7 +83,7 @@ abstract class Time {
                 mktime(0, 0, 0, $easterMonth, $easterDay + 39, $easterYear),
                 //Lundi pentecote
                 mktime(0, 0, 0, $easterMonth, $easterDay + 50, $easterYear),
-            );
+            ];
             Cache::getHandler('quick')->set('holiday' . $year, $holidays);
         }
         return in_array($date, $holidays);

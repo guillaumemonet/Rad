@@ -7,8 +7,8 @@ namespace Rad\Test\Container;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use Rad\Container\Container;
-use Rad\Error\ContainerException;
 use Rad\Container\NotFoundException;
+use Rad\Error\ContainerException;
 use Rad\Test\Fixtures\Container\Alpha;
 use Rad\Test\Fixtures\Container\FrenchGreeter;
 use Rad\Test\Fixtures\Container\GreeterInterface;
@@ -17,7 +17,6 @@ use Rad\Test\Fixtures\Container\Welcome;
 use Rad\Test\Fixtures\Container\WithDefault;
 
 final class ContainerTest extends TestCase {
-
     private Container $container;
 
     protected function setUp(): void {
@@ -31,15 +30,15 @@ final class ContainerTest extends TestCase {
 
     public function testGetReturnsSameSingletonInstance(): void {
         $this->assertSame(
-                $this->container->get(FrenchGreeter::class),
-                $this->container->get(FrenchGreeter::class)
+            $this->container->get(FrenchGreeter::class),
+            $this->container->get(FrenchGreeter::class)
         );
     }
 
     public function testMakeReturnsFreshInstances(): void {
         $this->assertNotSame(
-                $this->container->make(FrenchGreeter::class),
-                $this->container->make(FrenchGreeter::class)
+            $this->container->make(FrenchGreeter::class),
+            $this->container->make(FrenchGreeter::class)
         );
     }
 
@@ -57,7 +56,7 @@ final class ContainerTest extends TestCase {
     }
 
     public function testFactoryClosureBinding(): void {
-        $this->container->singleton(GreeterInterface::class, fn() => new FrenchGreeter());
+        $this->container->singleton(GreeterInterface::class, fn () => new FrenchGreeter());
         $this->assertInstanceOf(FrenchGreeter::class, $this->container->get(GreeterInterface::class));
     }
 
@@ -103,7 +102,7 @@ final class ContainerTest extends TestCase {
 
     public function testCallAutowiresCallableParameters(): void {
         $this->container->bind(GreeterInterface::class, FrenchGreeter::class);
-        $result = $this->container->call(fn(GreeterInterface $g) => $g->greet());
+        $result = $this->container->call(fn (GreeterInterface $g) => $g->greet());
         $this->assertSame('Bonjour', $result);
     }
 

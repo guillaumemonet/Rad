@@ -15,5 +15,4 @@ namespace Rad;
  * @author Guillaume Monet
  */
 class Api extends Rad {
-    
 }

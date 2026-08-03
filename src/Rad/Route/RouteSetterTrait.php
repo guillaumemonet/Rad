@@ -25,7 +25,6 @@ use Rad\Middleware\Base\XMLHttpRequest;
  * @author guillaume
  */
 trait RouteSetterTrait {
-
     public function setVersion(string $version) {
         $this->version = $version;
         return $this;
@@ -89,7 +88,7 @@ trait RouteSetterTrait {
     public function enableSession() {
         $this->sessionEnabled = true;
         array_unshift($this->middlewares, SessionStart::class);
-        $this->middlewares[]  = SessionEnd::class;
+        $this->middlewares[] = SessionEnd::class;
         return $this;
     }
 
@@ -116,7 +115,7 @@ trait RouteSetterTrait {
     }
 
     /**
-     * 
+     *
      * @param array $args
      * @return $this
      */

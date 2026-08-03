@@ -29,12 +29,11 @@ use Rad\Middleware\MiddlewareInterface as LegacyMiddlewareInterface;
  * @author Guillaume Monet
  */
 class Router implements RouterInterface, ContainerAwareInterface {
-
     /**
      *
      * @var string
      */
-    private $cacheName = "RadRoute";
+    private $cacheName = 'RadRoute';
 
     /**
      * @var TreeNodeRoute[]
@@ -52,7 +51,7 @@ class Router implements RouterInterface, ContainerAwareInterface {
     }
 
     /**
-     * 
+     *
      * @param Route $route
      */
     public function addGetRoute(Route $route): self {
@@ -60,7 +59,7 @@ class Router implements RouterInterface, ContainerAwareInterface {
     }
 
     /**
-     * 
+     *
      * @param Route $route
      */
     public function addPostRoute(Route $route): self {
@@ -68,7 +67,7 @@ class Router implements RouterInterface, ContainerAwareInterface {
     }
 
     /**
-     * 
+     *
      * @param Route $route
      */
     public function addPutRoute(Route $route): self {
@@ -76,7 +75,7 @@ class Router implements RouterInterface, ContainerAwareInterface {
     }
 
     /**
-     * 
+     *
      * @param Route $route
      */
     public function addPatchRoute(Route $route): self {
@@ -84,7 +83,7 @@ class Router implements RouterInterface, ContainerAwareInterface {
     }
 
     /**
-     * 
+     *
      * @param Route $route
      */
     public function addDeleteRoute(Route $route): self {
@@ -92,7 +91,7 @@ class Router implements RouterInterface, ContainerAwareInterface {
     }
 
     /**
-     * 
+     *
      * @param Route $route
      */
     public function addOptionsRoute(Route $route): self {
@@ -100,12 +99,12 @@ class Router implements RouterInterface, ContainerAwareInterface {
     }
 
     /**
-     * 
+     *
      * @param array $routes
      */
     public function setRoutes(array $routes): self {
         foreach ($routes as $route) {
-            $method = "add" . ucfirst($route->getMethod()) . "Route";
+            $method = 'add' . ucfirst($route->getMethod()) . 'Route';
             $this->{$method}($route);
         }
         return $this;
@@ -119,7 +118,7 @@ class Router implements RouterInterface, ContainerAwareInterface {
     }
 
     /**
-     * 
+     *
      * @param string $method
      * @param Route $route
      * @return $this
@@ -128,13 +127,13 @@ class Router implements RouterInterface, ContainerAwareInterface {
         if (!isset($this->treeRoutes[$method])) {
             $this->treeRoutes[$method] = new TreeNodeRoute($method);
         }
-        $this->treeRoutes[$method]->addFromArray(explode("/", trim($route->getPath(), '/')), $route);
+        $this->treeRoutes[$method]->addFromArray(explode('/', trim($route->getPath(), '/')), $route);
         Log::getHandler()->debug($method . ' Adding route ' . $route->getPath());
         return $this;
     }
 
     /**
-     * 
+     *
      * @return string
      */
     public function __toString(): string {
@@ -142,7 +141,7 @@ class Router implements RouterInterface, ContainerAwareInterface {
     }
 
     /**
-     * 
+     *
      * @param ServerRequestInterface $request
      * @return ResponseInterface
      * @throws NotFoundException
@@ -150,7 +149,7 @@ class Router implements RouterInterface, ContainerAwareInterface {
     public function route(ServerRequestInterface $request): ResponseInterface {
         $method    = strtoupper($request->getMethod());
         $path      = $request->getUri()->getPath();
-        $cacheKey  = $method . "rt_cache_" . $path;
+        $cacheKey  = $method . 'rt_cache_' . $path;
         $cached    = Cache::getHandler()->get($cacheKey);
         $route     = is_string($cached) && $cached !== '' ? unserialize($cached) : false;
         $nodeRoute = $this->treeRoutes[$method] ?? null;
@@ -160,16 +159,16 @@ class Router implements RouterInterface, ContainerAwareInterface {
         }
         if ($route !== null && $route !== false) {
             $route->setFullPath($path);
-            Log::getHandler()->debug($method . " : " . $path . " Matching " . $route->getPath());
+            Log::getHandler()->debug($method . ' : ' . $path . ' Matching ' . $route->getPath());
             // Expose the matched route to the PSR-15 pipeline via a request attribute.
-            $request     = $request->withAttribute(Route::class, $route);
-            $dispatcher  = new Dispatcher(
-                    $this->normalizeMiddlewares($route->getMiddlewares()),
-                    new ControllerHandler($this->container)
+            $request    = $request->withAttribute(Route::class, $route);
+            $dispatcher = new Dispatcher(
+                $this->normalizeMiddlewares($route->getMiddlewares()),
+                new ControllerHandler($this->container)
             );
             return $dispatcher->handle($request);
         } else {
-            throw new NotFoundException("No Method " . $method . " found for " . $path);
+            throw new NotFoundException('No Method ' . $method . ' found for ' . $path);
         }
     }
 

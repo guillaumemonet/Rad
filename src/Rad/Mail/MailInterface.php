@@ -15,6 +15,5 @@ namespace Rad\Mail;
  * @author guillaume
  */
 interface MailInterface {
-
     public function createMail(): EmailInterface;
 }

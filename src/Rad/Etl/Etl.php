@@ -14,19 +14,18 @@ namespace Rad\Etl;
  * @author guillaume
  */
 class Etl {
-
     private $extractor;
     private $loader;
 
     public function __construct(EtlExtractor $extractor, EtlLoader $loader) {
         $this->extractor = $extractor;
-        $this->loader = $loader;
+        $this->loader    = $loader;
     }
 
     /**
      * array(col1_to => array(col1_from=>array(Cleaner::class)
      * ,...)
-     * 
+     *
      * @param array $mapper
      */
     public function mapTo(array $mapper) {

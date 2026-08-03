@@ -13,14 +13,13 @@ namespace Rad\Etl;
  *
  * @author guillaume
  */
-class StdOut_EtlExtractor implements EtlLoader{
-    
+class StdOut_EtlExtractor implements EtlLoader {
     public function close() {
-        
+
     }
 
     public function connect() {
-        
+
     }
 
     public function loadDatas(array $datas) {

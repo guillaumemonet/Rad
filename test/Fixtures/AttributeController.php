@@ -17,7 +17,6 @@ use Rad\Route\Attribute\Version;
  * Controller declaring its routes with PHP 8 attributes (never executed in tests).
  */
 class AttributeController extends Controller {
-
     #[Get('/attr/'), Produce('html')]
     public function index(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
         throw new LogicException('not executed');

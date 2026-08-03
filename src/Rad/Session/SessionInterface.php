@@ -6,6 +6,7 @@
  * @link https://github.com/guillaumemonet/Rad
  * @package Rad
  */
+
 namespace Rad\Session;
 
 /**
@@ -14,15 +15,14 @@ namespace Rad\Session;
  * @author guillaume
  */
 interface SessionInterface {
-
     public function get(string $index);
 
     public function set(string $index, $value);
 
     public function has(string $index): bool;
-    
+
     public function start();
-    
+
     public function end();
-    
+
 }

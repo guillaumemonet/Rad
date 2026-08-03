@@ -14,7 +14,6 @@ use Rad\Route\Route;
 
 #[Attribute(Attribute::TARGET_METHOD | Attribute::TARGET_CLASS)]
 final class AllowHeaders implements RouteAttribute {
-
     /** @var string[] */
     public readonly array $headers;
 

@@ -18,7 +18,6 @@ use Rad\Session\Session;
  * Persists/closes the session once the response has been produced.
  */
 class SessionEnd extends AbstractMiddleware {
-
     public static int $priority = 9;
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface {

@@ -18,7 +18,6 @@ namespace Rad\Worker;
  * is what {@see Orderer} sends on the queue.
  */
 enum MessageType: int {
-
     case DEFAULT = 1;
     case COMMAND = 2;
     case EVENT   = 3;

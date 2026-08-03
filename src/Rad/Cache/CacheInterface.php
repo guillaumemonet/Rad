@@ -17,6 +17,5 @@ use Psr\SimpleCache\CacheInterface as PsrCacheInterface;
  * @author Guillaume Monet
  */
 interface CacheInterface extends PsrCacheInterface {
-
     public function purge(): bool;
 }

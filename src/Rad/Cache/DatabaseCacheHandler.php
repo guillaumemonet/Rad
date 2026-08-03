@@ -30,12 +30,11 @@ use Rad\Encryption\Encryption;
  * ) ENGINE = InnoDB;</pre>
  */
 class DatabaseCacheHandler extends AbstractCacheHandler {
-
-    private string $read   = "SELECT id,content FROM output_cache WHERE id IN(%s)";
-    private string $write  = "INSERT INTO output_cache (id,modified,content) VALUES (\"%s\",%d,\"%s\") ON DUPLICATE KEY UPDATE content=\"%s\",modified=%d";
-    private string $purge  = "DELETE FROM output_cache WHERE modified < %d";
-    private string $clear  = "TRUNCATE output_cache";
-    private string $delete = "DELETE FROM output_cache WHERE id IN (\"%s\")";
+    private string $read   = 'SELECT id,content FROM output_cache WHERE id IN(%s)';
+    private string $write  = 'INSERT INTO output_cache (id,modified,content) VALUES ("%s",%d,"%s") ON DUPLICATE KEY UPDATE content="%s",modified=%d';
+    private string $purge  = 'DELETE FROM output_cache WHERE modified < %d';
+    private string $clear  = 'TRUNCATE output_cache';
+    private string $delete = 'DELETE FROM output_cache WHERE id IN ("%s")';
     private ?string $type  = null;
 
     public function __construct() {
@@ -65,7 +64,7 @@ class DatabaseCacheHandler extends AbstractCacheHandler {
     public function get(string $key, mixed $default = null): mixed {
         $res = Database::getHandler($this->type)->query(sprintf($this->read, '"' . Encryption::hashMd5($key) . '"'));
         $row = $res->fetch(PDO::FETCH_ASSOC);
-        return ($row !== false && $row !== null) ? $row["content"] : $default;
+        return ($row !== false && $row !== null) ? $row['content'] : $default;
     }
 
     public function getMultiple(iterable $keys, mixed $default = null): iterable {

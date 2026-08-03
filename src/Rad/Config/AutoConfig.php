@@ -22,17 +22,16 @@ use RegexIterator;
  * @author guillaume
  */
 abstract class AutoConfig {
-
     private function __construct() {
-        
+
     }
 
     private function __clone() {
-        
+
     }
 
     /**
-     * 
+     *
      * @param bool $caching
      * @return array
      */
@@ -40,7 +39,7 @@ abstract class AutoConfig {
 
         $controllers = unserialize(Cache::getHandler()->get('controllers'));
 
-        if (empty($controllers) || $caching = false) {
+        if (empty($controllers) || !$caching) {
             $controllers = self::findControllers();
             Cache::getHandler()->set('controllers', serialize($controllers));
         }
@@ -48,7 +47,7 @@ abstract class AutoConfig {
     }
 
     /**
-     * 
+     *
      * @return array
      */
     private static function findControllers(): array {
@@ -67,7 +66,7 @@ abstract class AutoConfig {
     }
 
     /**
-     * 
+     *
      * @return string|null
      */
     private static function parseFile($file): ?string {
@@ -77,7 +76,7 @@ abstract class AutoConfig {
         preg_match('/namespace\s+(.*);/', $content, $namespaces);
         preg_match('/class\s+(\w+)\s+/', $content, $classnames);
         if (count($namespaces) == 0 && count($classnames) == 0) {
-            error_log("Not a class " . $file);
+            error_log('Not a class ' . $file);
             return null;
         }
 
@@ -89,7 +88,7 @@ abstract class AutoConfig {
             } else {
                 return null;
             }
-        } catch (Exception $ex) {
+        } catch (\Throwable $ex) {
             return null;
         }
     }

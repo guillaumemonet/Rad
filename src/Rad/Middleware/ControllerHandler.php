@@ -26,7 +26,6 @@ use Rad\Route\Route;
  * (ServerRequestInterface $request, ResponseInterface $response, array $args).
  */
 final class ControllerHandler implements RequestHandlerInterface {
-
     public function __construct(private ?ContainerInterface $container = null) {
 
     }

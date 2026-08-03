@@ -15,9 +15,8 @@ namespace Rad\Http;
  * @author guillaume
  */
 trait RequestTrait {
-
     public function getRequestURI() {
-        return $_SERVER["REQUEST_URI"];
+        return $_SERVER['REQUEST_URI'];
     }
 
     public function isCache() {
@@ -43,7 +42,7 @@ trait RequestTrait {
     }
 
     /**
-     * 
+     *
      * @return bool
      */
     public function isXhr(): bool {
@@ -60,7 +59,7 @@ trait RequestTrait {
         if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
             //check ip from share internet
             $ip = $_SERVER['HTTP_CLIENT_IP'];
-        } else if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
             //to check ip is pass from proxy
             $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
         } else {

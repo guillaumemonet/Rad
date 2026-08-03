@@ -14,7 +14,6 @@ namespace Rad\Etl;
  * @author guillaume
  */
 interface EtlExtractor {
-
     public function connect(array $params);
 
     public function transform(array $mapper);

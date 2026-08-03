@@ -10,7 +10,6 @@
 namespace Rad\Middleware;
 
 use Closure;
-use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Rad\Route\Route;
@@ -22,7 +21,6 @@ use Rad\Route\Route;
  * compatibility with code instantiating it directly.
  */
 class Middleware {
-
     protected array $layers = [];
 
     public function __construct(array $layers = []) {
@@ -30,10 +28,8 @@ class Middleware {
     }
 
     /**
-     * 
      * @param array|Middleware|MiddlewareInterface $layers
      * @return void
-     * @throws InvalidArgumentException
      */
     public function layer(array|Middleware|MiddlewareInterface $layers): void {
         if ($layers instanceof Middleware) {
@@ -42,14 +38,11 @@ class Middleware {
         if ($layers instanceof MiddlewareInterface) {
             $layers = [$layers];
         }
-        if (!is_array($layers)) {
-            throw new InvalidArgumentException(get_class($layers) . ' is not a valid middleware.');
-        }
         $this->layers = array_merge($this->layers, $layers);
     }
 
     /**
-     * 
+     *
      * @param ServerRequestInterface $request
      * @param ResponseInterface $response
      * @param Route $route
@@ -57,20 +50,17 @@ class Middleware {
      * @return mixed
      */
     public function call(ServerRequestInterface $request, ResponseInterface $response, Route $route, Closure $core): mixed {
-        usort($this->layers, fn($a, $b) => $a::$priority <=> $b::$priority);
+        usort($this->layers, fn ($a, $b) => $a::$priority <=> $b::$priority);
 
-        $coreFunction = fn(ServerRequestInterface $request, ResponseInterface $response, Route $route) =>
-                $core(...func_get_args());
+        $coreFunction = fn (ServerRequestInterface $request, ResponseInterface $response, Route $route) => $core(...func_get_args());
 
-        $completeOnion = array_reduce($this->layers, fn($nextLayer, $layer) =>
-                fn(ServerRequestInterface $request, ResponseInterface $response, Route $route) =>
-                $layer->call($request, $response, $route, $nextLayer), $coreFunction);
+        $completeOnion = array_reduce($this->layers, fn ($nextLayer, $layer) => fn (ServerRequestInterface $request, ResponseInterface $response, Route $route) => $layer->call($request, $response, $route, $nextLayer), $coreFunction);
 
         return $completeOnion($request, $response, $route);
     }
 
     /**
-     * 
+     *
      * @return array
      */
     public function toArray(): array {

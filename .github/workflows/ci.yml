@@ -38,11 +38,8 @@ jobs:
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress
 
-      # Informational for now: the legacy codebase predates a fixed style.
-      # Run `composer cs-fix` once to adopt it, then make this step blocking.
       - name: Coding standards (php-cs-fixer)
         run: composer cs-check
-        continue-on-error: true
 
       - name: Static analysis (PHPStan)
         run: composer phpstan

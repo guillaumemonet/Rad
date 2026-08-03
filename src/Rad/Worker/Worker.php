@@ -15,7 +15,6 @@ namespace Rad\Worker;
  * @author Guillaume Monet
  */
 abstract class Worker {
-
     protected $queue;
     protected $desiredmsgtype;
     protected $maxsize;
@@ -28,6 +27,7 @@ abstract class Worker {
 
     public function run() {
         $ip = msg_get_queue($this->queue);
+        // @phpstan-ignore-next-line while.alwaysTrue (worker daemon loop is intentional)
         while (true) {
             $message     = null;
             $messageType = null;

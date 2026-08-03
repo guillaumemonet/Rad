@@ -18,7 +18,6 @@ use Rad\Session\Session;
  * Starts the session before handling the request.
  */
 class SessionStart extends AbstractMiddleware {
-
     public static int $priority = 9;
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface {

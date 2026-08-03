@@ -22,7 +22,6 @@ use Redis;
  * @author Guillaume Monet
  */
 final class RedisCacheHandler extends AbstractCacheHandler {
-
     private Redis $redis;
 
     public function __construct() {

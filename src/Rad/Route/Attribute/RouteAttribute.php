@@ -18,7 +18,6 @@ use Rad\Route\Route;
  * the parser can collect modifiers and verbs separately.
  */
 interface RouteAttribute {
-
     /**
      * Mutate the given route with this attribute's configuration.
      */

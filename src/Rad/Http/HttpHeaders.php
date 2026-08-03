@@ -15,8 +15,7 @@ namespace Rad\Http;
  * @author guillaume
  */
 abstract class HttpHeaders {
-
-    const headers = [
+    public const headers = [
         'A-IM', //	http		[RFC4229]
         'Accept', //	http	standard	[RFC7231, Section 5.3.2]
         'Accept-Additions', //	http		[RFC4229]
@@ -179,11 +178,11 @@ abstract class HttpHeaders {
     ];
 
     private function __construct() {
-        
+
     }
 
     private function __clone() {
-        
+
     }
 
     public static function parseAccepted($acceptDatas) {

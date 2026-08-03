@@ -8,7 +8,6 @@ use PHPUnit\Framework\TestCase;
 use Rad\Http\StatusCode;
 
 final class StatusCodeTest extends TestCase {
-
     public function testBackedCases(): void {
         $this->assertSame(200, StatusCode::OK->value);
         $this->assertSame(StatusCode::OK, StatusCode::from(200));

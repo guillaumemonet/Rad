@@ -13,9 +13,8 @@ namespace Rad\Error\Http;
  * Represents an HTTP 500 error.
  */
 class InternalErrorException extends HttpException {
-
     /**
-     * 
+     *
      * @param string $message
      * @param int $code
      */

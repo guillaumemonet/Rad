@@ -16,5 +16,4 @@ use Rad\Error\ContainerException;
  * Thrown when the container cannot find an entry for the given identifier.
  */
 class NotFoundException extends ContainerException implements NotFoundExceptionInterface {
-
 }

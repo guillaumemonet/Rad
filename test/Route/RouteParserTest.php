@@ -14,7 +14,6 @@ use Rad\Test\Fixtures\LegacyController;
  * Integration tests for the attribute-based parser and its docblock fallback.
  */
 final class RouteParserTest extends TestCase {
-
     public function testParsesAttributeRoutes(): void {
         $routes = RouteParser::parseRoutes([AttributeController::class]);
 

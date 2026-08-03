@@ -11,7 +11,6 @@ use Rad\Database\Database;
 use Throwable;
 
 final class DatabaseCacheHandlerTest extends CacheContractTestCase {
-
     protected function createHandler(): CacheInterface {
         if (!extension_loaded('pdo_mysql')) {
             $this->markTestSkipped('ext-pdo_mysql is not installed');
@@ -25,7 +24,7 @@ final class DatabaseCacheHandlerTest extends CacheContractTestCase {
         $db->password = getenv('MYSQL_PASSWORD') ?: 'rad';
         try {
             Database::getHandler('pdo')->exec(
-                    'CREATE TABLE IF NOT EXISTS output_cache ('
+                'CREATE TABLE IF NOT EXISTS output_cache ('
                     . '`id` CHAR(40) NOT NULL, `modified` INT, `content` LONGTEXT NOT NULL,'
                     . ' PRIMARY KEY (`id`), INDEX(`modified`)) ENGINE=InnoDB'
             );

@@ -13,9 +13,8 @@ namespace Rad\Error\Http;
  * Represents an HTTP 404 error.
  */
 class NotFoundException extends HttpException {
-
     /**
-     * 
+     *
      * @param string $message
      * @param int $code
      */

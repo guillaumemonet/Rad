@@ -14,7 +14,6 @@ use Rad\Route\Route;
 
 #[Attribute(Attribute::TARGET_METHOD | Attribute::TARGET_CLASS)]
 final class Version implements RouteAttribute {
-
     public readonly string $version;
 
     public function __construct(int|string $version) {

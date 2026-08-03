@@ -18,7 +18,6 @@ use Psr\Http\Message\ServerRequestInterface;
  * @author guillaume
  */
 interface RouterInterface {
-
     public function addGetRoute(Route $route): self;
 
     public function addPostRoute(Route $route): self;

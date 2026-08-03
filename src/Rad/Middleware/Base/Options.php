@@ -20,7 +20,6 @@ use Rad\Http\Response;
  * configured CORS headers; passes everything else through.
  */
 class Options extends AbstractMiddleware {
-
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface {
         if (strtoupper($request->getMethod()) !== 'OPTIONS') {
             return $handler->handle($request);

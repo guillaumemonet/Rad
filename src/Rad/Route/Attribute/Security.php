@@ -14,7 +14,6 @@ use Rad\Route\Route;
 
 #[Attribute(Attribute::TARGET_METHOD | Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]
 final class Security implements RouteAttribute {
-
     /** @var class-string[] */
     public readonly array $securities;
 

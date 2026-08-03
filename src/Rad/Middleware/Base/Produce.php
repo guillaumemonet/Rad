@@ -19,7 +19,6 @@ use Rad\Utils\Mime;
  * (defaults to json) to the downstream response.
  */
 class Produce extends AbstractMiddleware {
-
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface {
         $response = $handler->handle($request);
         $route    = $this->route($request);

@@ -23,7 +23,6 @@ use Rad\Encryption\Encryption;
  * @author Guillaume Monet
  */
 class FileCacheHandler extends AbstractCacheHandler {
-
     private string $path;
     private int $defaultTTL;
 

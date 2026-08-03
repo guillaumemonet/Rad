@@ -16,7 +16,6 @@ use Rad\Observer\Observable;
  *
  */
 class Route {
-
     use RouteSetterTrait;
     use RouteGetterTrait;
 
@@ -26,15 +25,15 @@ class Route {
     protected ?string $method     = null;
     protected ?string $path       = null;
     /** @var array<int, class-string> */
-    protected array $middlewares  = [];
+    protected array $middlewares = [];
     /** @var string[] */
-    protected array $produce      = [];
+    protected array $produce = [];
     /** @var string[] */
-    protected array $consume      = [];
+    protected array $consume = [];
     /** @var array<int, class-string> */
-    protected array $observers    = [];
+    protected array $observers = [];
     /** @var array<string, string> */
-    protected array $args         = [];
+    protected array $args          = [];
     protected bool $sessionEnabled = false;
     protected bool $cacheEnabled   = false;
     protected ?string $fullPath    = null;
@@ -45,7 +44,7 @@ class Route {
     protected string $corsDomain    = '*';
 
     /**
-     * 
+     *
      * @param Observable $observable
      */
     public function applyObservers(Observable $observable) {
@@ -56,7 +55,7 @@ class Route {
     }
 
     /**
-     * 
+     *
      * @return string
      */
     public function __toString(): string {

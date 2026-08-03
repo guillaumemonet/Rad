@@ -47,7 +47,6 @@ use Rad\Template\TemplateInterface;
  * swapped in at runtime via addHandler().
  */
 final class ServiceProvider {
-
     private function __construct() {
 
     }
@@ -62,22 +61,22 @@ final class ServiceProvider {
      */
     private static function map(): array {
         return [
-            'log'       => [
-                LoggerInterface::class => static fn() => Log::getHandler(),
-                AbstractLogger::class  => static fn() => Log::getHandler(),
+            'log' => [
+                LoggerInterface::class => static fn () => Log::getHandler(),
+                AbstractLogger::class  => static fn () => Log::getHandler(),
             ],
-            'cache'     => [CacheInterface::class => static fn() => Cache::getHandler()],
-            'database'  => [DatabaseAdapter::class => static fn() => Database::getHandler()],
-            'session'   => [SessionInterface::class => static fn() => Session::getHandler()],
-            'cookie'    => [CookieInterface::class => static fn() => Cookie::getHandler()],
-            'encrypt'   => [EncryptionInterface::class => static fn() => Encryption::getHandler()],
-            'template'  => [TemplateInterface::class => static fn() => Template::getHandler()],
-            'language'  => [LanguageInterface::class => static fn() => Language::getHandler()],
-            'codec'     => [CodecInterface::class => static fn() => Codec::getHandler()],
-            'build'     => [BuildInterface::class => static fn() => Build::getHandler()],
-            'clientapi' => [ClientApiInterface::class => static fn() => ClientApi::getHandler()],
-            'mail'      => [MailInterface::class => static fn() => Mail::getHandler()],
-            'event'     => [EventDispatcherInterface::class => static fn() => Event::getHandler()],
+            'cache'     => [CacheInterface::class => static fn () => Cache::getHandler()],
+            'database'  => [DatabaseAdapter::class => static fn () => Database::getHandler()],
+            'session'   => [SessionInterface::class => static fn () => Session::getHandler()],
+            'cookie'    => [CookieInterface::class => static fn () => Cookie::getHandler()],
+            'encrypt'   => [EncryptionInterface::class => static fn () => Encryption::getHandler()],
+            'template'  => [TemplateInterface::class => static fn () => Template::getHandler()],
+            'language'  => [LanguageInterface::class => static fn () => Language::getHandler()],
+            'codec'     => [CodecInterface::class => static fn () => Codec::getHandler()],
+            'build'     => [BuildInterface::class => static fn () => Build::getHandler()],
+            'clientapi' => [ClientApiInterface::class => static fn () => ClientApi::getHandler()],
+            'mail'      => [MailInterface::class => static fn () => Mail::getHandler()],
+            'event'     => [EventDispatcherInterface::class => static fn () => Event::getHandler()],
         ];
     }
 

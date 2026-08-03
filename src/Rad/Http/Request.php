@@ -17,6 +17,5 @@ use GuzzleHttp\Psr7\Request as GRequest;
  * @author Admin
  */
 class Request extends GRequest {
-
     use RequestTrait;
 }

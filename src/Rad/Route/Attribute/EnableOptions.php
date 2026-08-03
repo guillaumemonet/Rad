@@ -14,7 +14,6 @@ use Rad\Route\Route;
 
 #[Attribute(Attribute::TARGET_METHOD | Attribute::TARGET_CLASS)]
 final class EnableOptions implements RouteAttribute {
-
     public function apply(Route $route): void {
         $route->enableOptions();
     }

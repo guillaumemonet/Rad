@@ -17,14 +17,13 @@ use ArrayIterator;
  * @author guillaume
  */
 class Collection implements CollectionInterface {
-
     /**
      * @var array
      */
     protected $data = [];
 
     /**
-     * 
+     *
      * @param array $items
      */
     public function __construct(array $items = []) {
@@ -32,7 +31,7 @@ class Collection implements CollectionInterface {
     }
 
     /**
-     * 
+     *
      * @param string $key
      */
     public function set(string $key, $value) {
@@ -40,7 +39,7 @@ class Collection implements CollectionInterface {
     }
 
     /**
-     * 
+     *
      * @param string $key
      */
     public function get(string $key, $default = null) {
@@ -48,17 +47,17 @@ class Collection implements CollectionInterface {
     }
 
     /**
-     * 
+     *
      * @param array $items
      */
     public function replace(array $items) {
-        array_map(function ($key, $value) {
+        foreach ($items as $key => $value) {
             $this->set($key, $value);
-        }, $items);
+        }
     }
 
     /**
-     * 
+     *
      * @return array
      */
     public function all(): array {
@@ -66,7 +65,7 @@ class Collection implements CollectionInterface {
     }
 
     /**
-     * 
+     *
      * @return array
      */
     public function keys(): array {
@@ -74,7 +73,7 @@ class Collection implements CollectionInterface {
     }
 
     /**
-     * 
+     *
      * @param string $key
      * @return bool
      */
@@ -83,7 +82,7 @@ class Collection implements CollectionInterface {
     }
 
     /**
-     * 
+     *
      * @param string $key
      */
     public function remove(string $key) {
@@ -91,14 +90,14 @@ class Collection implements CollectionInterface {
     }
 
     /**
-     * 
+     *
      */
     public function clear() {
         $this->data = [];
     }
 
     /**
-     * 
+     *
      * @return int
      */
     public function count(): int {
@@ -106,7 +105,7 @@ class Collection implements CollectionInterface {
     }
 
     /**
-     * 
+     *
      * @return ArrayIterator
      */
     public function getIterator(): ArrayIterator {
@@ -114,7 +113,7 @@ class Collection implements CollectionInterface {
     }
 
     /**
-     * 
+     *
      * @param string $key
      * @return bool
      */
@@ -123,7 +122,7 @@ class Collection implements CollectionInterface {
     }
 
     /**
-     * 
+     *
      * @param string $key
      */
     public function offsetGet($key): mixed {

@@ -19,7 +19,6 @@ use Rad\Config\Config;
  * downstream response.
  */
 class Cors extends AbstractMiddleware {
-
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface {
         $response = $handler->handle($request);
         foreach ((array) Config::getApiConfig('cors') as $header => $value) {

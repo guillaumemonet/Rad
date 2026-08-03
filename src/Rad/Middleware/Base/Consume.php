@@ -21,7 +21,6 @@ use Rad\Utils\Mime;
  * of the mime types the route consumes.
  */
 class Consume extends AbstractMiddleware {
-
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface {
         $route = $this->route($request);
 

@@ -10,7 +10,6 @@ use Rad\Config\Config;
 use Throwable;
 
 final class MemcacheCacheHandlerTest extends CacheContractTestCase {
-
     protected function createHandler(): CacheInterface {
         if (!extension_loaded('memcached')) {
             $this->markTestSkipped('ext-memcached is not installed');

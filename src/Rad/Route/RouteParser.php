@@ -29,8 +29,7 @@ use ReflectionMethod;
  * @author guillaume
  */
 abstract class RouteParser {
-
-    private static $allowed_methods  = ['GET', "POST", "PUT", "PATCH", "DELETE", "OPTIONS"];
+    private static $allowed_methods  = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'];
     private static $annotationsArray = [
         'middleware' => ['method' => 'addMiddlewares', 'type' => 'array'],
         'api'        => ['method' => 'setVersion', 'type' => 'single'],
@@ -81,8 +80,8 @@ abstract class RouteParser {
         $reflection     = new ReflectionClass($class);
         $classModifiers = self::modifierAttributes($reflection);
 
-        $routes    = [];
-        $hasVerbs  = false;
+        $routes   = [];
+        $hasVerbs = false;
         foreach ($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
             $verbs = $method->getAttributes(HttpMethod::class, ReflectionAttribute::IS_INSTANCEOF);
             if (empty($verbs)) {
@@ -136,7 +135,7 @@ abstract class RouteParser {
         $routes        = [];
         $classComments = self::getAnnotationsArray($class);
         //Cleaning non controller methods
-        $methods       = array_filter(get_class_methods($class), function ($method) use ($class) {
+        $methods = array_filter(get_class_methods($class), function ($method) use ($class) {
             $returnType = (new ReflectionMethod($class, $method))->getReturnType();
             Log::getHandler()->debug('Loading Method ' . $method . ' ' . $returnType);
             return $returnType instanceof \ReflectionNamedType
@@ -147,10 +146,10 @@ abstract class RouteParser {
             $paths          = self::getPathsFromComment($methodComments);
             array_walk($paths, function ($array, $action) use (&$routes, $class, $classComments, $method, $methodComments) {
                 array_walk($array, function ($path) use (&$routes, $action, $class, $classComments, $method, $methodComments) {
-                    $route    = new Route();
+                    $route = new Route();
                     $route->setClassName($class)->setMethodName($method)->setMethod($action)->setPath($path);
                     self::enableFunctions($route, $action);
-                    $others   = array_merge(self::getOthersFromComment($methodComments), self::getOthersFromComment($classComments));
+                    $others = array_merge(self::getOthersFromComment($methodComments), self::getOthersFromComment($classComments));
                     self::enableOtherFunctions($others, $route);
                     $routes[] = $route;
                 });

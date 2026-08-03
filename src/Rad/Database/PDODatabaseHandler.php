@@ -21,7 +21,6 @@ use Rad\Log\Log;
  * @author guillaume
  */
 class PDODatabaseHandler extends DatabaseAdapter {
-
     public function __construct() {
         $config = Config::getServiceConfig('database', 'pdo')->config;
         try {
@@ -38,9 +37,6 @@ class PDODatabaseHandler extends DatabaseAdapter {
      * @param string $dbname
      */
     public function change(string $dbname) {
-        if (!$this->ping()) {
-            $this->connect();
-        }
         try {
             $this->exec('USE ' . $dbname);
         } catch (PDOException $ex) {
@@ -79,9 +75,8 @@ class PDODatabaseHandler extends DatabaseAdapter {
     }
 
     /**
-     * 
      * @param string $sql
-     * @return boolean
+     * @return int|false
      */
     public function exec(string $sql): int|false {
         try {
@@ -112,7 +107,7 @@ class PDODatabaseHandler extends DatabaseAdapter {
     }
 
     /**
-     * 
+     *
      * @param string $table_name
      */
     public function describeTable(string $table_name) {
@@ -122,7 +117,7 @@ class PDODatabaseHandler extends DatabaseAdapter {
     }
 
     /**
-     * 
+     *
      * @param PDOStatement $rid
      */
     public function fetch_assoc(PDOStatement $rid) {
@@ -130,7 +125,7 @@ class PDODatabaseHandler extends DatabaseAdapter {
     }
 
     /**
-     * 
+     *
      * @param PDOStatement $rid
      */
     public function fetch_object(PDOStatement $rid) {
@@ -138,7 +133,7 @@ class PDODatabaseHandler extends DatabaseAdapter {
     }
 
     /**
-     * 
+     *
      * @param PDOStatement $rid
      */
     public function fetch(PDOStatement $rid, $fetch_style) {

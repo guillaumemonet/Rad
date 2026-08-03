@@ -32,7 +32,6 @@ use ReflectionParameter;
  * scalar/optional parameters fall back to their default value or null.
  */
 final class Container implements ContainerInterface {
-
     /** @var array<string, array{concrete: Closure|string, shared: bool}> */
     private array $bindings = [];
 
@@ -99,8 +98,8 @@ final class Container implements ContainerInterface {
     public function call(callable $callable, array $parameters = []): mixed {
         $reflection = new ReflectionFunction(Closure::fromCallable($callable));
         $args       = array_map(
-                fn(ReflectionParameter $p) => $this->resolveParameter($p, $parameters),
-                $reflection->getParameters()
+            fn (ReflectionParameter $p) => $this->resolveParameter($p, $parameters),
+            $reflection->getParameters()
         );
         return $callable(...$args);
     }
@@ -142,8 +141,8 @@ final class Container implements ContainerInterface {
         $this->building[$class] = true;
         try {
             $args = array_map(
-                    fn(ReflectionParameter $p) => $this->resolveParameter($p, $parameters),
-                    $constructor->getParameters()
+                fn (ReflectionParameter $p) => $this->resolveParameter($p, $parameters),
+                $constructor->getParameters()
             );
         } finally {
             unset($this->building[$class]);
@@ -182,9 +181,9 @@ final class Container implements ContainerInterface {
         }
         $class = $param->getDeclaringClass();
         throw new ContainerException(sprintf(
-                        'Cannot autowire parameter $%s of %s',
-                        $param->getName(),
-                        $class !== null ? $class->getName() : '{closure}'
+            'Cannot autowire parameter $%s of %s',
+            $param->getName(),
+            $class !== null ? $class->getName() : '{closure}'
         ));
     }
 }

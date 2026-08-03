@@ -11,7 +11,6 @@ use Rad\Cache\CacheInterface;
  * Shared PSR-16 behaviour every writable cache handler must satisfy.
  */
 abstract class CacheContractTestCase extends TestCase {
-
     protected CacheInterface $cache;
 
     abstract protected function createHandler(): CacheInterface;

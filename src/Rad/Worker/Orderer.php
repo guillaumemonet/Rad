@@ -15,7 +15,6 @@ namespace Rad\Worker;
  * @author Guillaume Monet
  */
 class Orderer {
-
     /**
      * @param int $queue
      * @param int|MessageType $messageType

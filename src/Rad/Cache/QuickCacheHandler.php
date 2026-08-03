@@ -18,7 +18,6 @@ use DateInterval;
  * To Share Var Between Function
  */
 class QuickCacheHandler extends AbstractCacheHandler {
-
     /**
      * @var array<string, mixed>
      */
@@ -34,7 +33,7 @@ class QuickCacheHandler extends AbstractCacheHandler {
     }
 
     public function delete(string $key): bool {
-        unset($this->datas["key_" . $key]);
+        unset($this->datas['key_' . $key]);
         return true;
     }
 
@@ -46,7 +45,7 @@ class QuickCacheHandler extends AbstractCacheHandler {
     }
 
     public function get(string $key, mixed $default = null): mixed {
-        return $this->datas["key_" . $key] ?? $default;
+        return $this->datas['key_' . $key] ?? $default;
     }
 
     public function getMultiple(iterable $keys, mixed $default = null): iterable {
@@ -58,11 +57,11 @@ class QuickCacheHandler extends AbstractCacheHandler {
     }
 
     public function has(string $key): bool {
-        return isset($this->datas["key_" . $key]);
+        return isset($this->datas['key_' . $key]);
     }
 
     public function set(string $key, mixed $value, null|int|DateInterval $ttl = null): bool {
-        $this->datas["key_" . $key] = $value;
+        $this->datas['key_' . $key] = $value;
         return true;
     }
 

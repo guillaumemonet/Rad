@@ -15,12 +15,11 @@ namespace Rad\Utils;
  * @author Guillaume Monet
  */
 class Sort {
-
     private $order;
     private $order_by;
 
-    const DESC = -1;
-    const ASC  = 1;
+    public const DESC = -1;
+    public const ASC  = 1;
 
     public function __construct($order_by, $order = Sort::ASC) {
         $this->order    = $order;
@@ -28,7 +27,7 @@ class Sort {
     }
 
     /**
-     * 
+     *
      * @return int
      */
     public function sort($a, $b) {
@@ -40,13 +39,13 @@ class Sort {
     }
 
     /**
-     * 
+     *
      * @param array $array
      * @return bool
      */
     public static function sortBy(array &$array, $order_by, $order = Sort::ASC): bool {
         $sort = new Sort($order_by, $order);
-        return uasort($array, array($sort, "sort"));
+        return uasort($array, [$sort, 'sort']);
     }
 
 }

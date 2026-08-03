@@ -21,14 +21,12 @@ use Rad\Route\Route;
 use Rad\Test\Fixtures\EchoController;
 
 final class MiddlewareTest extends TestCase {
-
     private function request(): ServerRequestInterface {
         return new ServerRequest('GET', '/');
     }
 
     private function core(string $body = 'core'): RequestHandlerInterface {
-        return new class($body) implements RequestHandlerInterface {
-
+        return new class ($body) implements RequestHandlerInterface {
             public function __construct(private string $body) {
 
             }
@@ -43,8 +41,7 @@ final class MiddlewareTest extends TestCase {
 
     /** A PSR-15 middleware that adds a response header after handling. */
     private function headerMiddleware(string $name, string $value): PsrMiddlewareInterface {
-        return new class($name, $value) implements PsrMiddlewareInterface {
-
+        return new class ($name, $value) implements PsrMiddlewareInterface {
             public function __construct(private string $name, private string $value) {
 
             }
@@ -63,8 +60,8 @@ final class MiddlewareTest extends TestCase {
 
     public function testMiddlewaresRunAroundCore(): void {
         $dispatcher = new Dispatcher(
-                [$this->headerMiddleware('X-A', '1'), $this->headerMiddleware('X-B', '2')],
-                $this->core()
+            [$this->headerMiddleware('X-A', '1'), $this->headerMiddleware('X-B', '2')],
+            $this->core()
         );
         $response = $dispatcher->handle($this->request());
         $this->assertSame('1', $response->getHeaderLine('X-A'));
@@ -72,15 +69,13 @@ final class MiddlewareTest extends TestCase {
     }
 
     public function testMiddlewareCanShortCircuit(): void {
-        $shortCircuit = new class implements PsrMiddlewareInterface {
-
+        $shortCircuit = new class () implements PsrMiddlewareInterface {
             public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface {
                 return new Response(418);
             }
         };
         // Core would throw if reached.
-        $core       = new class implements RequestHandlerInterface {
-
+        $core = new class () implements RequestHandlerInterface {
             public function handle(ServerRequestInterface $request): ResponseInterface {
                 throw new \RuntimeException('core must not run');
             }
@@ -90,8 +85,7 @@ final class MiddlewareTest extends TestCase {
     }
 
     public function testLegacyMiddlewareAdapterAfter(): void {
-        $legacy = new class extends MiddlewareAfter {
-
+        $legacy = new class () extends MiddlewareAfter {
             public function middle(ServerRequestInterface $request, ResponseInterface $response, Route $route): ResponseInterface {
                 return $response->withHeader('X-Legacy', 'yes');
             }
@@ -103,8 +97,8 @@ final class MiddlewareTest extends TestCase {
     }
 
     public function testControllerHandlerInvokesAction(): void {
-        $route   = (new Route())->setClassName(EchoController::class)->setMethodName('index')->setMethod('GET')->setPath('/');
-        $handler = new ControllerHandler();
+        $route    = (new Route())->setClassName(EchoController::class)->setMethodName('index')->setMethod('GET')->setPath('/');
+        $handler  = new ControllerHandler();
         $response = $handler->handle($this->request()->withAttribute(Route::class, $route));
         $this->assertSame('ok', (string) $response->getBody());
     }
@@ -115,7 +109,7 @@ final class MiddlewareTest extends TestCase {
     }
 
     public function testProduceMiddlewareSetsContentType(): void {
-        $route      = (new Route())->setClassName(EchoController::class)->setMethodName('index')->setMethod('GET')->setPath('/');
+        $route = (new Route())->setClassName(EchoController::class)->setMethodName('index')->setMethod('GET')->setPath('/');
         $route->setProduce(['json']);
         $dispatcher = new Dispatcher([new Produce()], new ControllerHandler());
         $response   = $dispatcher->handle($this->request()->withAttribute(Route::class, $route));

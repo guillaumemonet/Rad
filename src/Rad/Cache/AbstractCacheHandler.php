@@ -19,7 +19,6 @@ use DateTimeImmutable;
  * interface with native types.
  */
 abstract class AbstractCacheHandler implements CacheInterface {
-
     /**
      * Normalize a PSR-16 TTL (seconds or DateInterval) to a number of seconds.
      */

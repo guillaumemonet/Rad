@@ -13,9 +13,8 @@ namespace Rad\Error\Http;
  * Represents an HTTP 406 error.
  */
 class NotAcceptableException extends HttpException {
-
     /**
-     * 
+     *
      * @param string $message
      * @param int $code
      */

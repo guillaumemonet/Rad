@@ -14,7 +14,6 @@ use Rad\Route\Route;
 
 #[Attribute(Attribute::TARGET_METHOD | Attribute::TARGET_CLASS)]
 final class Cors implements RouteAttribute {
-
     public function __construct(public readonly string $domain = '*') {
 
     }

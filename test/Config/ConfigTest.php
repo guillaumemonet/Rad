@@ -12,7 +12,6 @@ use Rad\Config\Config;
  * accessor used (regression test for the array/object incoherence).
  */
 final class ConfigTest extends TestCase {
-
     protected function setUp(): void {
         Config::load();
     }

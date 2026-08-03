@@ -14,6 +14,5 @@ namespace Rad\Observer;
  *
  */
 interface Observer {
-
     public function update(Observable $observable);
 }

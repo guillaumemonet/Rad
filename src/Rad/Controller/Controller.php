@@ -20,7 +20,6 @@ use Rad\Worker\Orderer;
  */
 
 abstract class Controller extends Observable {
-
     /**
      *
      * @var Route
@@ -28,7 +27,7 @@ abstract class Controller extends Observable {
     protected $route;
 
     /**
-     * 
+     *
      * @param Route $route
      */
     public function __construct(Route $route = null) {
@@ -36,7 +35,7 @@ abstract class Controller extends Observable {
     }
 
     /**
-     * 
+     *
      * @return Route
      */
     public function getRoute(): Route {

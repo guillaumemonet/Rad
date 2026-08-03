@@ -13,10 +13,9 @@ use Rad\Cache\Cache;
 use Smarty_CacheResource_KeyValueStore;
 
 /**
- * 
+ *
  */
 class SmartyTemplateCacheHandler extends Smarty_CacheResource_KeyValueStore {
-
     private $cacheType = null;
 
     public function __construct($cacheType) {
@@ -24,7 +23,7 @@ class SmartyTemplateCacheHandler extends Smarty_CacheResource_KeyValueStore {
     }
 
     /**
-     * 
+     *
      * @param array $keys
      * @return array
      */
@@ -33,15 +32,15 @@ class SmartyTemplateCacheHandler extends Smarty_CacheResource_KeyValueStore {
     }
 
     public function write(array $keys, $expire = null) {
-        Cache::getHandler($this->cacheType)->setMultiple($keys, $expire);
+        return Cache::getHandler($this->cacheType)->setMultiple($keys, $expire);
     }
 
     public function delete(array $keys) {
-        Cache::getHandler($this->cacheType)->deleteMultiple($keys);
+        return Cache::getHandler($this->cacheType)->deleteMultiple($keys);
     }
 
     public function purge() {
-        Cache::getHandler($this->cacheType)->clear();
+        return Cache::getHandler($this->cacheType)->clear();
     }
 
 }

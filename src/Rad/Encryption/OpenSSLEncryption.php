@@ -35,14 +35,13 @@ use Rad\Config\Config;
  * @author Guillaume Monet
  */
 class OpenSSLEncryption implements EncryptionInterface {
-
     private const TAG_LENGTH = 16;
 
     private string $method = 'aes-256-gcm';
 
     public function __construct() {
-        if (isset(Config::getServiceConfig("encrypt", "openssl")->config->method)) {
-            $this->method = Config::getServiceConfig("encrypt", "openssl")->config->method;
+        if (isset(Config::getServiceConfig('encrypt', 'openssl')->config->method)) {
+            $this->method = Config::getServiceConfig('encrypt', 'openssl')->config->method;
         }
     }
 

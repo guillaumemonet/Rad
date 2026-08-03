@@ -19,7 +19,6 @@ use Stringable;
  * @author guillaume
  */
 class OutputLogHandler extends AbstractLogger {
-
     public function log($level, string|Stringable $message, array $context = []): void {
         $config = Config::getServiceConfig('log', 'output')->config;
         if ($config->enabled == 1 && $config->{$level} == 1) {

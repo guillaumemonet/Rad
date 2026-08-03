@@ -19,7 +19,6 @@ use Stringable;
  * @author guillaume
  */
 class FileLogHandler extends AbstractLogger {
-
     public function log($level, string|Stringable $message, array $context = []): void {
         $config  = Config::getServiceConfig('log', 'file')->config;
         $message = (string) $message;

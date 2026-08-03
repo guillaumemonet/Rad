@@ -20,7 +20,6 @@ use Rad\Route\Route;
  * Route is exposed to subclasses through {@see self::route()}.
  */
 abstract class AbstractMiddleware implements MiddlewareInterface {
-
     public static int $priority = 1;
 
     protected function route(ServerRequestInterface $request): ?Route {

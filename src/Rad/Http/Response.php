@@ -32,16 +32,15 @@ use Rad\Codec\Codec;
 use Rad\Log\Log;
 
 /**
- * 
+ *
  */
 class Response extends GResponse {
-
     private $type   = null;
     private $secret = null;
 
     public function __construct(int $statusCode = 200, array $headers = [], StreamInterface $body = null) {
-        $baseHeaders  = [
-            "Application-Nonce" => [(string) time()]
+        $baseHeaders = [
+            'Application-Nonce' => [(string) time()]
         ];
         $mergedHeader = array_merge($headers, $baseHeaders);
         parent::__construct($statusCode, $mergedHeader, $body);
@@ -56,7 +55,7 @@ class Response extends GResponse {
     }
 
     /**
-     * 
+     *
      */
     public function send() {
         http_response_code($this->getStatusCode());

@@ -18,7 +18,6 @@ use Psr\EventDispatcher\ListenerProviderInterface;
  * @author guillaume
  */
 class EventHandler implements EventDispatcherInterface, ListenerProviderInterface {
-
     private $listeners = [];
 
     public function addListener(string $eventName, EventListenerInterface $listener) {
@@ -32,7 +31,7 @@ class EventHandler implements EventDispatcherInterface, ListenerProviderInterfac
         $eventName = get_class($event);
         $listeners = $this->listeners[$eventName] ?? [];
 
-        array_walk($listeners, static fn(EventListenerInterface $listener) => $listener->handle($event));
+        array_walk($listeners, static fn (EventListenerInterface $listener) => $listener->handle($event));
         return $event;
     }
 

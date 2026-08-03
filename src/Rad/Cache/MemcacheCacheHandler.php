@@ -22,13 +22,12 @@ use Rad\Encryption\Encryption;
  * @author Guillaume Monet
  */
 final class MemcacheCacheHandler extends AbstractCacheHandler {
-
     private Memcached $memcache;
     private int $defaultTTL;
 
     public function __construct() {
-        $config           = Config::getServiceConfig('cache', 'memcache')->config;
-        $this->memcache   = new Memcached();
+        $config         = Config::getServiceConfig('cache', 'memcache')->config;
+        $this->memcache = new Memcached();
         $this->memcache->addServer($config->host, (int) $config->port, 100);
         $this->defaultTTL = isset($config->lifetime) ? (int) $config->lifetime : 3600;
     }
@@ -46,7 +45,7 @@ final class MemcacheCacheHandler extends AbstractCacheHandler {
     }
 
     public function deleteMultiple(iterable $keys): bool {
-        $nkeys = array_map(static fn($v) => Encryption::hashMd5($v), $this->toArray($keys));
+        $nkeys = array_map(static fn ($v) => Encryption::hashMd5($v), $this->toArray($keys));
         $this->memcache->deleteMulti($nkeys);
         return true;
     }
@@ -75,10 +74,10 @@ final class MemcacheCacheHandler extends AbstractCacheHandler {
     }
 
     public function setMultiple(iterable $values, null|int|DateInterval $ttl = null): bool {
-        $seconds  = $this->ttlToSeconds($ttl) ?? $this->defaultTTL;
-        $values   = $this->toArray($values);
-        $keys     = array_map(static fn($v) => Encryption::hashMd5($v), array_keys($values));
-        $nvalues  = array_combine($keys, array_values($values));
+        $seconds = $this->ttlToSeconds($ttl) ?? $this->defaultTTL;
+        $values  = $this->toArray($values);
+        $keys    = array_map(static fn ($v) => Encryption::hashMd5($v), array_keys($values));
+        $nvalues = array_combine($keys, array_values($values));
         return $this->memcache->setMulti($nvalues, $seconds);
     }
 

@@ -17,5 +17,4 @@ use Psr\EventDispatcher\StoppableEventInterface;
  * @author Guillaume Monet
  */
 abstract class AbstractEvent implements StoppableEventInterface {
-    
 }

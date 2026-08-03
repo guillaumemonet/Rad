@@ -14,9 +14,8 @@ namespace Rad\Observer;
  *
  */
 abstract class Observable {
-
     /**
-     * 
+     *
      * @var Observer[]
      */
     private $observers = [];

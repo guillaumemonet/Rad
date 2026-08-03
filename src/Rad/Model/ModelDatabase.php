@@ -12,11 +12,13 @@ namespace Rad\Model;
 use Exception;
 use Nette\PhpGenerator\PhpNamespace;
 use PDO;
+
+use function qdh;
+
 use Rad\Database\Database;
 use Rad\Utils\SQLUtils;
 use Rad\Utils\StringUtils;
 use ReflectionClass;
-use function qdh;
 
 /**
  * Description of ModelDatabase
@@ -24,7 +26,6 @@ use function qdh;
  * @author Guillaume Monet
  */
 class ModelDatabase {
-
     // Méthode pour enregistrer les modifications de la structure de la table dans la base de données
     public static function saveStructure(string $class_name) {
         // Vérifier si la classe existe
@@ -75,13 +76,14 @@ class ModelDatabase {
 
                 //Avec un fallback si type n'est pas setter on met
                 if (isset($attributes['var'])) {
-                    $php_type                                          = $attributes['var'][0];
+                    $php_type = $attributes['var'][0];
                     // Utiliser mapPhpTypeToSqlType pour obtenir le type SQL correspondant au type PHP
                     $sql_type                                          = SQLUtils::mapPhpTypeToSqlType($php_type);
                     $class_attributes['columns'][$column_name]['var']  = $php_type;
                     $class_attributes['columns'][$column_name]['type'] = $sql_type;
                 } else {
-                    $php_type                                          = $property->getType()->getName();
+                    $refType                                           = $property->getType();
+                    $php_type                                          = $refType instanceof \ReflectionNamedType ? $refType->getName() : 'string';
                     $sql_type                                          = SQLUtils::mapPhpTypeToSqlType($php_type);
                     $class_attributes['columns'][$column_name]['var']  = $php_type;
                     $class_attributes['columns'][$column_name]['type'] = $sql_type;
@@ -174,8 +176,8 @@ class ModelDatabase {
         $pdo = Database::getHandler();
 
         // Vérifier si la table existe déjà dans la base de données
-        $query        = "SHOW TABLES LIKE '$table_name'";
-        $stmt         = $pdo->prepare($query);
+        $query = "SHOW TABLES LIKE '$table_name'";
+        $stmt  = $pdo->prepare($query);
         $stmt->execute();
         $table_exists = $stmt->rowCount() > 0;
 
@@ -209,7 +211,7 @@ class ModelDatabase {
             }
 
             $query .= implode(',', $column_definitions);
-            $query .= ")";
+            $query .= ')';
 
             // Exécution de la requête pour créer la table
             $pdo->exec($query);
@@ -293,12 +295,12 @@ class ModelDatabase {
         }
 
         foreach ($indexes_to_add_unique as $index_name => $columns) {
-            $sql = "ALTER TABLE $table_name ADD UNIQUE INDEX $index_name (" . implode(", ", $columns) . ")";
+            $sql = "ALTER TABLE $table_name ADD UNIQUE INDEX $index_name (" . implode(', ', $columns) . ')';
             $pdo->exec($sql);
         }
 
         foreach ($indexes_to_add_key as $index_name => $columns) {
-            $sql = "ALTER TABLE $table_name ADD INDEX $index_name (" . implode(',', $columns) . ")";
+            $sql = "ALTER TABLE $table_name ADD INDEX $index_name (" . implode(',', $columns) . ')';
             $pdo->exec($sql);
         }
 
@@ -307,7 +309,7 @@ class ModelDatabase {
             if (isset($new_unique_indexes[$index_name])) {
                 $new_columns = $new_unique_indexes[$index_name];
                 if ($columns !== $new_columns) {
-                    $sql = "ALTER TABLE $table_name DROP INDEX $index_name, ADD UNIQUE INDEX $index_name (" . implode(", ", $new_columns) . ")";
+                    $sql = "ALTER TABLE $table_name DROP INDEX $index_name, ADD UNIQUE INDEX $index_name (" . implode(', ', $new_columns) . ')';
                     $pdo->exec($sql);
                 }
             }
@@ -317,7 +319,7 @@ class ModelDatabase {
             if (isset($new_key_indexes[$index_name])) {
                 $new_columns = $new_key_indexes[$index_name];
                 if ($columns !== $new_columns) {
-                    $sql = "ALTER TABLE $table_name DROP INDEX $index_name, ADD INDEX $index_name (" . implode(", ", $new_columns) . ")";
+                    $sql = "ALTER TABLE $table_name DROP INDEX $index_name, ADD INDEX $index_name (" . implode(', ', $new_columns) . ')';
                     $pdo->exec($sql);
                 }
             }
@@ -357,8 +359,8 @@ class ModelDatabase {
     private static function getTableColumns(string $table_name): array {
         $columns = [];
         // Récupérer les informations sur les colonnes depuis la base de données
-        $sql     = "SHOW COLUMNS FROM $table_name";
-        $result  = Database::getHandler()->query($sql);
+        $sql    = "SHOW COLUMNS FROM $table_name";
+        $result = Database::getHandler()->query($sql);
         foreach ($result as $row) {
             $column_name    = $row['Field'];
             $type           = preg_replace('/\(.+\)/', '', $row['Type']);
@@ -370,10 +372,10 @@ class ModelDatabase {
                 'var'  => SQLUtils::mapSqlTypeToPhpType($type),
                 'type' => $type
             ];
-            $matches               = [];
+            $matches = [];
             // Analyser le type SQL pour extraire la taille (pour les colonnes de type chaîne, double ou decimal)
             if (preg_match('/\((\d+)(,\d+)?\)/', $row['Type'], $matches)) {
-                $columns[$column_name]['length'] = $matches[1] . (isset($matches[2]) ? $matches[2] : "");
+                $columns[$column_name]['length'] = $matches[1] . (isset($matches[2]) ? $matches[2] : '');
             }
 
             // Ajouter les champs 'notnull', 'default' et 'autoinc' seulement si nécessaire
@@ -395,7 +397,7 @@ class ModelDatabase {
     private static function getTableIndexes(string $table_name): array {
         $indexes = ['primary' => [], 'unique' => [], 'key' => []];
         // Récupérer les informations sur les indexes depuis la base de données
-        $pdo     = Database::getHandler();
+        $pdo = Database::getHandler();
 
         $sql    = "SHOW CREATE TABLE $table_name";
         $stmt   = $pdo->query($sql);
@@ -408,7 +410,7 @@ class ModelDatabase {
             if (preg_match_all($pattern, $create_table_statement, $matches, PREG_SET_ORDER, 0)) {
                 foreach ($matches as $match) {
                     $index_type   = $match[1]; // Récupère le type
-                    $nomOptionnel = isset($match[2]) ? trim($match[2], '`') : null; // Récupère le nom optionnel
+                    $nomOptionnel = $match[2] !== '' ? trim($match[2], '`') : null; // Récupère le nom optionnel
                     $columns      = explode(',', $match[3]); // Récupère les colonnes et les place dans un tableau
                     $columns      = array_map(function ($item) {
                         return trim($item, '`');
@@ -431,8 +433,8 @@ class ModelDatabase {
     private static function getTableForeignKeys(string $table_name): array {
         $foreign_keys = [];
         // Récupérer les informations sur les clés étrangères depuis la base de données
-        $sql          = "SHOW CREATE TABLE $table_name";
-        $result       = Database::getHandler()->query($sql);
+        $sql    = "SHOW CREATE TABLE $table_name";
+        $result = Database::getHandler()->query($sql);
         if ($result) {
             $row                    = $result->fetch(PDO::FETCH_NUM);
             $create_table_statement = $row[1];
@@ -463,7 +465,7 @@ class ModelDatabase {
         // Vérifier si la colonne est auto-incrémentée
         if (isset($column_info['autoinc']) && $column_info['autoinc'] === true) {
             $column_definition .= ' AUTO_INCREMENT';
-            $nodefault         = true;
+            $nodefault = true;
         }
 
         // Vérifier si la colonne doit être non null
@@ -483,48 +485,6 @@ class ModelDatabase {
             $column_definition .= ' DEFAULT ' . $default_value;
         }
         return $column_definition;
-    }
-
-    private static function parseDocComment(string $doc_comment): array {
-        $attributes = [];
-
-        // Utiliser StringUtils::parseComments pour analyser les annotations
-        $annotations = StringUtils::parseComments($doc_comment);
-
-        // Traiter chaque annotation en fonction de son type
-        foreach ($annotations as $annotation => $params) {
-            switch ($annotation) {
-                case 'var':
-                    $attributes['var']     = $params[0];
-                    break;
-                case 'length':
-                    $attributes['length']  = $params[0];
-                    break;
-                case 'pkey':
-                    $attributes['pkey']    = true;
-                    break;
-                case 'autoinc':
-                    $attributes['autoinc'] = true;
-                    break;
-                case 'notnull':
-                    $attributes['notnull'] = true;
-                    break;
-                case 'unique':
-                    $attributes['unique']  = $params;
-                    break;
-                case 'index':
-                    $attributes['index']   = $params;
-                    break;
-                case 'fk':
-                    $attributes['fk']      = self::parseForeignKeyAnnotation($params[0]);
-                    break;
-                default:
-                    // Annotation inconnue, ignorer
-                    break;
-            }
-        }
-
-        return $attributes;
     }
 
     /**

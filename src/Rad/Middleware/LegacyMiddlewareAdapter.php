@@ -27,15 +27,13 @@ use Rad\Route\Route;
  * discarded, since the downstream handler builds its own.
  */
 final class LegacyMiddlewareAdapter implements PsrMiddlewareInterface {
-
     public function __construct(private MiddlewareInterface $middleware) {
 
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface {
         $route = $request->getAttribute(Route::class);
-        $next  = static fn(ServerRequestInterface $req, ResponseInterface $res, ?Route $rt = null): ResponseInterface =>
-                $handler->handle($rt !== null ? $req->withAttribute(Route::class, $rt) : $req);
+        $next  = static fn (ServerRequestInterface $req, ResponseInterface $res, ?Route $rt = null): ResponseInterface => $handler->handle($rt !== null ? $req->withAttribute(Route::class, $rt) : $req);
 
         return $this->middleware->call($request, new Response(200), $route, $next);
     }

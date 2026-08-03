@@ -14,9 +14,8 @@ namespace Rad\Error\Http;
  *
  */
 class RequestedRangeException extends HttpException {
-
     /**
-     * 
+     *
      * @param string $message
      * @param int $code
      */

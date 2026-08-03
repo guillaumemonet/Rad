@@ -15,6 +15,5 @@ use Psr\Container\ContainerInterface;
  * Implemented by components that can receive the application container.
  */
 interface ContainerAwareInterface {
-
     public function setContainer(ContainerInterface $container): void;
 }

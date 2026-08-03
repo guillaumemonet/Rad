@@ -17,17 +17,16 @@ use Rad\Log\Log;
  * @author guillaume
  */
 abstract class HttpClient {
-
     private function __construct() {
-        
+
     }
 
     private function __clone() {
-        
+
     }
 
     /**
-     * 
+     *
      * @param string $url
      * @param array $get_array
      * @param array $post_array
@@ -54,8 +53,8 @@ abstract class HttpClient {
             $post_params = array_filter($post_array, function ($value) {
                 return $value !== null;
             });
-            $opts['http']['method']  = 'POST';
-            $opts['http']['header']  .= 'Content-type: application/x-www-form-urlencoded';
+            $opts['http']['method'] = 'POST';
+            $opts['http']['header'] .= 'Content-type: application/x-www-form-urlencoded';
             $opts['http']['content'] = http_build_query($post_params);
         }
         $context = stream_context_create($opts);

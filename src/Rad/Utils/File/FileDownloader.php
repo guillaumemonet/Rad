@@ -17,9 +17,8 @@ use Rad\Log\Log;
  * @author Guillaume Monet
  */
 class FileDownloader {
-
     /**
-     * 
+     *
      * @param array $files
      * @param bool $overwrite
      */
@@ -34,7 +33,7 @@ class FileDownloader {
     }
 
     /**
-     * 
+     *
      * @param string $originalFile
      * @param string $destinationFile
      * @param bool $overwrite
@@ -46,7 +45,7 @@ class FileDownloader {
     }
 
     /**
-     * 
+     *
      * @param array $urls
      * @param callable $f
      * @param bool $overwrite
@@ -60,7 +59,7 @@ class FileDownloader {
             }
         });
         $this->waitForExec($multi);
-        array_walk($reqs, function ($req, $destinationFile)use ($multi, $f) {
+        array_walk($reqs, function ($req, $destinationFile) use ($multi, $f) {
             $f($destinationFile, curl_multi_getcontent($req));
             curl_multi_remove_handle($multi, $req);
         });
@@ -68,7 +67,7 @@ class FileDownloader {
     }
 
     /**
-     * 
+     *
      */
     private function buildCurl($multi, $originFile) {
         Log::getHandler()->debug($originFile);
@@ -79,13 +78,13 @@ class FileDownloader {
         curl_setopt($req, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($req, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($req, CURLOPT_SSL_VERIFYHOST, 0);
-        curl_setopt($req, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($req, CURLOPT_SSL_VERIFYPEER, false);
         curl_multi_add_handle($multi, $req);
         return $req;
     }
 
     /**
-     * 
+     *
      */
     private function waitForExec($multi) {
         $active = null;

@@ -15,24 +15,23 @@ namespace Rad\Template;
  * @author guillaume
  */
 interface TemplateInterface {
-
     /**
-     * 
+     *
      */
     public function display($filename = null, $cache_id = null, $compile_id = null, $parent = null);
 
     /**
-     * 
+     *
      */
     public function fetch($filename = null, $cache_id = null, $compile_id = null, $parent = null);
 
     /**
-     * 
+     *
      */
     public function isCached($filename = null, $cache_id = null, $compile_id = null, $parent = null);
 
     /**
-     * 
+     *
      */
     public function assign($varname, $value, $nocache = false);
 }

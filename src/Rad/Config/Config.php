@@ -22,8 +22,7 @@ use stdClass;
  * can rely on object access (e.g. Config::getConfig()->api->token).
  */
 abstract class Config {
-
-    const BUILD_NAME = 'build_config.json';
+    public const BUILD_NAME = 'build_config.json';
 
     public static ?stdClass $config = null;
 
@@ -67,7 +66,7 @@ abstract class Config {
     }
 
     private static function checkConfigModification(string $configDir, string $configFile): void {
-        $stringTime = "";
+        $stringTime = '';
         foreach (glob($configDir . '*.json') as $filename) {
             if (basename($filename) != self::BUILD_NAME) {
                 $stringTime .= filemtime($filename);
@@ -87,7 +86,7 @@ abstract class Config {
      * @return array{0: array, 1: string} the merged config and the mtime hash
      */
     private static function mergeOtherConfigFiles(array $config, string $configDir): array {
-        $stringTime = "";
+        $stringTime = '';
         foreach (glob($configDir . '*.json') as $filename) {
             if (basename($filename) === self::BUILD_NAME) {
                 continue;
@@ -114,7 +113,7 @@ abstract class Config {
     }
 
     private static function defaultConfigArray(): array {
-        $datas  = file_get_contents(__DIR__ . "/../../../config/default_config.json");
+        $datas  = file_get_contents(__DIR__ . '/../../../config/default_config.json');
         $config = json_decode($datas, true);
         if (json_last_error() !== JSON_ERROR_NONE) {
             throw new ConfigurationException('Configuration default_config.json can\'t be loaded');

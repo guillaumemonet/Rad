@@ -15,6 +15,5 @@ namespace Rad\Event;
  * @author Guillaume Monet
  */
 interface EventListenerInterface {
-
     public function handle(AbstractEvent $event);
 }

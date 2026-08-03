@@ -8,7 +8,6 @@ use PHPUnit\Framework\TestCase;
 use Rad\Cache\NoCacheHandler;
 
 final class NoCacheHandlerTest extends TestCase {
-
     public function testNeverStores(): void {
         $cache = new NoCacheHandler();
         $this->assertFalse($cache->set('k', 'v'));

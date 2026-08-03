@@ -17,7 +17,6 @@ namespace Rad\Http;
 use GuzzleHttp\Psr7\Uri as GUri;
 
 class Uri extends GUri {
-
     /**
      * If the current uri is secured
      * @return bool

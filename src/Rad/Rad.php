@@ -28,8 +28,7 @@ use Rad\Route\RouterInterface;
  *
  */
 class Rad {
-
-    const VERSION = '1.0';
+    public const VERSION = '1.0';
 
     /**
      *
@@ -62,7 +61,7 @@ class Rad {
         Config::load($configFilename);
         $routerClass        = Config::getApiConfig('router');
         $serverRequestClass = Config::getApiConfig('serverrequest');
-        $this->router       = $routerClass !== null ? new $routerClass : new Router();
+        $this->router       = $routerClass !== null ? new $routerClass() : new Router();
         $this->request      = $serverRequestClass !== null ? $serverRequestClass::fromGlobals() : ServerRequest::fromGlobals();
         $this->container    = $this->bootContainer();
     }
@@ -92,10 +91,10 @@ class Rad {
     }
 
     /**
-     * 
+     *
      * @param Closure $finalClosure
      */
-    public final function run(Closure $finalClosure = null, Closure $errorClosure = null): void {
+    final public function run(Closure $finalClosure = null, Closure $errorClosure = null): void {
         try {
             $response = $this->getRouter()
                     ->load($this->controllers)
@@ -127,7 +126,7 @@ class Rad {
         if ($this->router !== null) {
             return $this->router;
         } else {
-            throw new NotFoundException("RouterInterface Not Defined");
+            throw new NotFoundException('RouterInterface Not Defined');
         }
     }
 

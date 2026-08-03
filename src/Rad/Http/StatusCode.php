@@ -18,27 +18,26 @@ namespace Rad\Http;
  * compatibility; new code can use the type-safe cases (StatusCode::OK, ...).
  */
 enum StatusCode: int {
-
     // Informational 1xx
-    case CONTINUE                        = 100;
-    case SWITCHING_PROTOCOLS             = 101;
+    case CONTINUE            = 100;
+    case SWITCHING_PROTOCOLS = 101;
     // Successful 2xx
-    case OK                              = 200;
-    case CREATED                         = 201;
-    case ACCEPTED                        = 202;
-    case NONAUTHORITATIVE_INFORMATION    = 203;
-    case NO_CONTENT                      = 204;
-    case RESET_CONTENT                   = 205;
-    case PARTIAL_CONTENT                 = 206;
+    case OK                           = 200;
+    case CREATED                      = 201;
+    case ACCEPTED                     = 202;
+    case NONAUTHORITATIVE_INFORMATION = 203;
+    case NO_CONTENT                   = 204;
+    case RESET_CONTENT                = 205;
+    case PARTIAL_CONTENT              = 206;
     // Redirection 3xx
-    case MULTIPLE_CHOICES                = 300;
-    case MOVED_PERMANENTLY               = 301;
-    case FOUND                           = 302;
-    case SEE_OTHER                       = 303;
-    case NOT_MODIFIED                    = 304;
-    case USE_PROXY                       = 305;
-    case UNUSED                          = 306;
-    case TEMPORARY_REDIRECT              = 307;
+    case MULTIPLE_CHOICES   = 300;
+    case MOVED_PERMANENTLY  = 301;
+    case FOUND              = 302;
+    case SEE_OTHER          = 303;
+    case NOT_MODIFIED       = 304;
+    case USE_PROXY          = 305;
+    case UNUSED             = 306;
+    case TEMPORARY_REDIRECT = 307;
     // Client Error 4xx
     case BAD_REQUEST                     = 400;
     case UNAUTHORIZED                    = 401;
@@ -60,56 +59,56 @@ enum StatusCode: int {
     case EXPECTATION_FAILED              = 417;
     case I_M_A_TEAPOT                    = 418;
     // Server Error 5xx
-    case INTERNAL_SERVER_ERROR           = 500;
-    case NOT_IMPLEMENTED                 = 501;
-    case BAD_GATEWAY                     = 502;
-    case SERVICE_UNAVAILABLE             = 503;
-    case GATEWAY_TIMEOUT                 = 504;
-    case VERSION_NOT_SUPPORTED           = 505;
+    case INTERNAL_SERVER_ERROR = 500;
+    case NOT_IMPLEMENTED       = 501;
+    case BAD_GATEWAY           = 502;
+    case SERVICE_UNAVAILABLE   = 503;
+    case GATEWAY_TIMEOUT       = 504;
+    case VERSION_NOT_SUPPORTED = 505;
 
     // ---- Backward-compatible integer constants ------------------------------
-    const HTTP_CONTINUE                        = 100;
-    const HTTP_SWITCHING_PROTOCOLS             = 101;
-    const HTTP_OK                              = 200;
-    const HTTP_CREATED                         = 201;
-    const HTTP_ACCEPTED                        = 202;
-    const HTTP_NONAUTHORITATIVE_INFORMATION    = 203;
-    const HTTP_NO_CONTENT                      = 204;
-    const HTTP_RESET_CONTENT                   = 205;
-    const HTTP_PARTIAL_CONTENT                 = 206;
-    const HTTP_MULTIPLE_CHOICES                = 300;
-    const HTTP_MOVED_PERMANENTLY               = 301;
-    const HTTP_FOUND                           = 302;
-    const HTTP_SEE_OTHER                       = 303;
-    const HTTP_NOT_MODIFIED                    = 304;
-    const HTTP_USE_PROXY                       = 305;
-    const HTTP_UNUSED                          = 306;
-    const HTTP_TEMPORARY_REDIRECT              = 307;
-    const HTTP_BAD_REQUEST                     = 400;
-    const HTTP_UNAUTHORIZED                    = 401;
-    const HTTP_PAYMENT_REQUIRED                = 402;
-    const HTTP_FORBIDDEN                       = 403;
-    const HTTP_NOT_FOUND                       = 404;
-    const HTTP_METHOD_NOT_ALLOWED              = 405;
-    const HTTP_NOT_ACCEPTABLE                  = 406;
-    const HTTP_PROXY_AUTHENTICATION_REQUIRED   = 407;
-    const HTTP_REQUEST_TIMEOUT                 = 408;
-    const HTTP_CONFLICT                        = 409;
-    const HTTP_GONE                            = 410;
-    const HTTP_LENGTH_REQUIRED                 = 411;
-    const HTTP_PRECONDITION_FAILED             = 412;
-    const HTTP_REQUEST_ENTITY_TOO_LARGE        = 413;
-    const HTTP_REQUEST_URI_TOO_LONG            = 414;
-    const HTTP_UNSUPPORTED_MEDIA_TYPE          = 415;
-    const HTTP_REQUESTED_RANGE_NOT_SATISFIABLE = 416;
-    const HTTP_EXPECTATION_FAILED              = 417;
-    const HTTP_I_M_A_TEAPOT                    = 418;
-    const HTTP_INTERNAL_SERVER_ERROR           = 500;
-    const HTTP_NOT_IMPLEMENTED                 = 501;
-    const HTTP_BAD_GATEWAY                     = 502;
-    const HTTP_SERVICE_UNAVAILABLE             = 503;
-    const HTTP_GATEWAY_TIMEOUT                 = 504;
-    const HTTP_VERSION_NOT_SUPPORTED           = 505;
+    public const HTTP_CONTINUE                        = 100;
+    public const HTTP_SWITCHING_PROTOCOLS             = 101;
+    public const HTTP_OK                              = 200;
+    public const HTTP_CREATED                         = 201;
+    public const HTTP_ACCEPTED                        = 202;
+    public const HTTP_NONAUTHORITATIVE_INFORMATION    = 203;
+    public const HTTP_NO_CONTENT                      = 204;
+    public const HTTP_RESET_CONTENT                   = 205;
+    public const HTTP_PARTIAL_CONTENT                 = 206;
+    public const HTTP_MULTIPLE_CHOICES                = 300;
+    public const HTTP_MOVED_PERMANENTLY               = 301;
+    public const HTTP_FOUND                           = 302;
+    public const HTTP_SEE_OTHER                       = 303;
+    public const HTTP_NOT_MODIFIED                    = 304;
+    public const HTTP_USE_PROXY                       = 305;
+    public const HTTP_UNUSED                          = 306;
+    public const HTTP_TEMPORARY_REDIRECT              = 307;
+    public const HTTP_BAD_REQUEST                     = 400;
+    public const HTTP_UNAUTHORIZED                    = 401;
+    public const HTTP_PAYMENT_REQUIRED                = 402;
+    public const HTTP_FORBIDDEN                       = 403;
+    public const HTTP_NOT_FOUND                       = 404;
+    public const HTTP_METHOD_NOT_ALLOWED              = 405;
+    public const HTTP_NOT_ACCEPTABLE                  = 406;
+    public const HTTP_PROXY_AUTHENTICATION_REQUIRED   = 407;
+    public const HTTP_REQUEST_TIMEOUT                 = 408;
+    public const HTTP_CONFLICT                        = 409;
+    public const HTTP_GONE                            = 410;
+    public const HTTP_LENGTH_REQUIRED                 = 411;
+    public const HTTP_PRECONDITION_FAILED             = 412;
+    public const HTTP_REQUEST_ENTITY_TOO_LARGE        = 413;
+    public const HTTP_REQUEST_URI_TOO_LONG            = 414;
+    public const HTTP_UNSUPPORTED_MEDIA_TYPE          = 415;
+    public const HTTP_REQUESTED_RANGE_NOT_SATISFIABLE = 416;
+    public const HTTP_EXPECTATION_FAILED              = 417;
+    public const HTTP_I_M_A_TEAPOT                    = 418;
+    public const HTTP_INTERNAL_SERVER_ERROR           = 500;
+    public const HTTP_NOT_IMPLEMENTED                 = 501;
+    public const HTTP_BAD_GATEWAY                     = 502;
+    public const HTTP_SERVICE_UNAVAILABLE             = 503;
+    public const HTTP_GATEWAY_TIMEOUT                 = 504;
+    public const HTTP_VERSION_NOT_SUPPORTED           = 505;
 
     /**
      * Human-readable reason phrase for this status.

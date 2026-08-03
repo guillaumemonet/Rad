@@ -17,16 +17,15 @@ use Rad\Log\Log;
  * @author guillaume
  */
 class TreeNodeRoute {
-
     /**
      * RegExp of the current left
-     * @var string 
+     * @var string
      */
     protected string $path_chunk;
 
     /**
      *
-     * @var Route 
+     * @var Route
      */
     protected ?Route $route = null;
 
@@ -47,7 +46,7 @@ class TreeNodeRoute {
     }
 
     /**
-     * 
+     *
      * @param TreeNodeRoute $node
      */
     protected function addChild(TreeNodeRoute $node) {
@@ -55,7 +54,7 @@ class TreeNodeRoute {
     }
 
     /**
-     * 
+     *
      * @param array $array
      * @param Route $route
      */
@@ -116,7 +115,7 @@ class TreeNodeRoute {
     public function __toString() {
         $str = '';
         if (strlen($this->route) > 0) {
-            $str = $this->name . ' method ' . $this->route . '\n';
+            $str = $this->path_chunk . ' method ' . $this->route . '\n';
         }
         if (count($this->children) > 0) {
             foreach ($this->children as $child) {

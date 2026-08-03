@@ -15,6 +15,5 @@ namespace Rad\Language;
  * @author Guillaume Monet
  */
 interface LanguageInterface {
-
     public function getText(string $value): ?string;
 }

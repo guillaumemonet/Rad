@@ -19,7 +19,6 @@ use DateInterval;
  * @author guillaume
  */
 class NoCacheHandler extends AbstractCacheHandler {
-
     public function clear(): bool {
         return true;
     }

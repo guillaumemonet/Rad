@@ -19,38 +19,37 @@ use Rad\Error\ServiceException;
  * @author guillaume
  */
 abstract class Service implements ServiceInterface {
-
     /**
-     * 
+     *
      * @var array
      */
     protected static array $instances = [];
 
     /**
-     * 
+     *
      * @var string|null
      */
     protected ?string $serviceType = null;
 
     /**
-     * 
+     *
      * @var string|null
      */
     protected ?string $providedClassName = null;
 
     /**
-     * 
+     *
      */
     protected $default = null;
 
     /**
-     * 
+     *
      * @var array
      */
     protected array $services = [];
 
     /**
-     * 
+     *
      * @var array
      */
     protected array $handlers = [];
@@ -64,7 +63,7 @@ abstract class Service implements ServiceInterface {
     }
 
     /**
-     * 
+     *
      * @return static
      */
     final public static function getInstance(): static {
@@ -76,11 +75,11 @@ abstract class Service implements ServiceInterface {
     }
 
     private function __clone() {
-        
+
     }
 
     /**
-     * 
+     *
      * @param string $shortName
      * @param object $handler
      * @return void
@@ -95,7 +94,7 @@ abstract class Service implements ServiceInterface {
     }
 
     /**
-     * 
+     *
      * @param string|null $handlerType
      * @return object|null
      * @throws ServiceException
@@ -108,14 +107,14 @@ abstract class Service implements ServiceInterface {
             if (!$this->hasService($handlerType)) {
                 throw new ServiceException('Service ' . $handlerType . ' Not Found');
             }
-            $instance                     = new $this->services[$handlerType];
+            $instance                     = new $this->services[$handlerType]();
             $this->handlers[$handlerType] = $this->providedClassName !== null && $instance instanceof $this->providedClassName ? $instance : null;
         }
         return $this->handlers[$handlerType];
     }
 
     /**
-     * 
+     *
      * @param string $handlerType
      * @return bool
      */
@@ -124,7 +123,7 @@ abstract class Service implements ServiceInterface {
     }
 
     /**
-     * 
+     *
      * @param string $serviceName
      * @return bool
      */
@@ -133,7 +132,7 @@ abstract class Service implements ServiceInterface {
     }
 
     /**
-     * 
+     *
      * @return void
      * @throws ConfigurationException
      */
@@ -150,10 +149,10 @@ abstract class Service implements ServiceInterface {
         $this->services = (array) $config->handlers;
 
         $this->services = array_map(
-                fn($value) => $value->classname,
-                (array) ($config->handlers ?? [])
+            fn ($value) => $value->classname,
+            (array) ($config->handlers ?? [])
         );
     }
 
-    protected abstract function getServiceType(): string;
+    abstract protected function getServiceType(): string;
 }

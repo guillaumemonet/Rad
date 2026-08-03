@@ -14,7 +14,6 @@ use Rad\Route\Route;
 
 #[Attribute(Attribute::TARGET_METHOD | Attribute::TARGET_CLASS)]
 final class Observer implements RouteAttribute {
-
     /** @var class-string[] */
     public readonly array $observers;
 

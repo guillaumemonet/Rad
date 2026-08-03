@@ -19,7 +19,6 @@ use Rad\Encryption\EncryptionInterface;
  * resolve to the very same handler the facade exposes.
  */
 final class ServiceProviderTest extends TestCase {
-
     private Container $container;
 
     protected function setUp(): void {
@@ -47,8 +46,8 @@ final class ServiceProviderTest extends TestCase {
     public function testBindingDelegatesOnEachResolution(): void {
         // Non-shared bridge: the container must not cache its own copy.
         $this->assertSame(
-                $this->container->get(CacheInterface::class),
-                $this->container->get(CacheInterface::class)
+            $this->container->get(CacheInterface::class),
+            $this->container->get(CacheInterface::class)
         );
         // ...and it is the facade's instance, not a container-built one.
         $this->assertSame(Cache::getHandler(), $this->container->get(CacheInterface::class));

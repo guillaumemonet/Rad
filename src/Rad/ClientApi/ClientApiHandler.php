@@ -19,9 +19,8 @@ use Rad\Http\HttpClient;
  * @author guillaume
  */
 class ClientApiHandler implements ClientApiInterface {
-
     /**
-     * 
+     *
      * @param string $endpoint
      * @param array $get
      * @param array $post
@@ -35,7 +34,7 @@ class ClientApiHandler implements ClientApiInterface {
         $cache   = boolval($cfg->cache_enabled) && $caching;
         $fullUrl = $url . $endpoint;
 
-        $c_key = "cache_clientapi_" . md5($fullUrl . $token);
+        $c_key = 'cache_clientapi_' . md5($fullUrl . $token);
         $datas = unserialize(Cache::getHandler()->get($c_key));
         if ($datas === false || !$cache) {
             $headers[] = 'Authorization: ' . $token;

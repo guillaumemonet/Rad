@@ -15,9 +15,8 @@ namespace Rad\ClientApi;
  * @author guillaume
  */
 interface ClientApiInterface {
-
     /**
-     * 
+     *
      * @param string $endpoint
      * @param array $get
      * @param array $post

@@ -18,7 +18,6 @@ use Rad\Error\Http\PreconditionFailedException;
  * Enforces that the request is an XMLHttpRequest.
  */
 class XMLHttpRequest extends AbstractMiddleware {
-
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface {
         if (method_exists($request, 'isXhr') && $request->isXhr()) {
             return $handler->handle($request);

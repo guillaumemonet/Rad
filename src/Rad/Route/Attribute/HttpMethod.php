@@ -18,7 +18,6 @@ use Rad\Route\Route;
  * several verbs/paths.
  */
 abstract class HttpMethod {
-
     public function __construct(public readonly string $path) {
 
     }

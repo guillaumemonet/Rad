@@ -12,7 +12,6 @@ namespace Rad\Mail;
 use Rad\Service\Service;
 
 final class Mail extends Service {
-
     public static function addHandler(string $handlerType, $handler) {
         static::getInstance()->addServiceHandler($handlerType, $handler);
     }
