@@ -13,11 +13,12 @@ use Psr\Http\Message\ServerRequestInterface;
 use Rad\Build\Build;
 use Rad\Controller\Controller;
 use Rad\Cookie\Cookie;
+use Rad\Event\Event;
+use Rad\Event\EventHandler;
 use Rad\Log\Log;
 use Rad\Rad;
 use Rad\Route\Attribute\Consume;
 use Rad\Route\Attribute\Get;
-use Rad\Route\Attribute\Observer;
 use Rad\Route\Attribute\Options;
 use Rad\Route\Attribute\Produce;
 use Rad\Route\Attribute\Session;
@@ -106,11 +107,11 @@ class Example extends Controller {
         return $response;
     }
 
-    #[Get('/observer/'), Produce('html'), Observer(\TestObserver::class)]
+    #[Get('/observer/'), Produce('html')]
     public function observer(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface {
-        $response->getBody()->write("State Change");
         $this->state = 2;
-        $this->notify();
+        $this->dispatch(new StateChangedEvent($this->state));
+        $response->getBody()->write("State Change");
         return $response;
     }
 
@@ -148,12 +149,19 @@ if (in_array($ext, $extensions)) {
 
 Time::startCounter();
 /**
- * Load TestObserver class
+ * Load the example event + listener
  */
+require(__DIR__ . '/StateChangedEvent.php');
 require(__DIR__ . '/TestObserver.php');
 
 //Init Api
 $app = new Rad(__DIR__ . "/config/");
+
+// Register the PSR-14 listener for the example event.
+$dispatcher = Event::getHandler();
+if ($dispatcher instanceof EventHandler) {
+    $dispatcher->addListener(StateChangedEvent::class, new TestObserver());
+}
 
 $app->addControllers(
         [Example::class]

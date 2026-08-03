@@ -245,6 +245,16 @@
                     }
                 }
             }
+        },
+
+        "event": {
+            "default": "event",
+            "classname": "Psr\\EventDispatcher\\EventDispatcherInterface",
+            "handlers": {
+                "event": {
+                    "classname": "Rad\\Event\\EventHandler"
+                }
+            }
         }
     }
 }

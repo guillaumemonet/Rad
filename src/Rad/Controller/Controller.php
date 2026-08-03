@@ -9,7 +9,7 @@
 
 namespace Rad\Controller;
 
-use Rad\Observer\Observable;
+use Rad\Event\Event;
 use Rad\Route\Route;
 use Rad\Worker\Orderer;
 
@@ -19,7 +19,7 @@ use Rad\Worker\Orderer;
  * @author Guillaume Monet
  */
 
-abstract class Controller extends Observable {
+abstract class Controller {
     /**
      *
      * @var Route
@@ -40,6 +40,13 @@ abstract class Controller extends Observable {
      */
     public function getRoute(): Route {
         return $this->route;
+    }
+
+    /**
+     * Dispatch a PSR-14 event to the registered listeners.
+     */
+    protected function dispatch(object $event): object {
+        return Event::getHandler()->dispatch($event);
     }
 
     /**

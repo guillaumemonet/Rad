@@ -55,11 +55,6 @@ trait RouteSetterTrait {
         return $this;
     }
 
-    public function setObservers(array $observers) {
-        $this->observers = $observers;
-        return $this;
-    }
-
     public function setProduce(array $produce) {
         $this->produce       = $produce;
         $this->middlewares[] = Produce::class;

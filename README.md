@@ -173,7 +173,6 @@ Available attributes :
 | `#[Version]` | method / class | `#[Version(1)]` |
 | `#[Session]` `#[Xhr]` `#[Cacheable]` `#[EnableOptions]` | method / class | `#[Session]` |
 | `#[Cors]` | method / class | `#[Cors('https://example.com')]` |
-| `#[Observer]` | method / class | `#[Observer(MyObserver::class)]` |
 | `#[AllowHeaders]` / `#[ExposeHeaders]` | method / class | `#[AllowHeaders('X-Total-Count')]` |
 
 > Legacy `@get` / `@produce` docblock annotations are still parsed automatically for controllers that have not been migrated yet.
@@ -301,6 +300,42 @@ by declaring `public static int $priority` (lower runs first). Middlewares still
 written against the old `Rad\Middleware\MiddlewareInterface` keep working through
 an adapter.
 
+## Events (PSR-14)
+
+The legacy Observer/Observable classes have been removed in favour of a PSR-14
+event dispatcher (`Rad\Event\EventHandler`). Define events by extending
+`Rad\Event\AbstractEvent` (which supports `stopPropagation()`), and listeners by
+implementing `Rad\Event\EventListenerInterface`:
+
+```php
+use Rad\Event\AbstractEvent;
+use Rad\Event\EventListenerInterface;
+
+final class UserRegistered extends AbstractEvent {
+    public function __construct(public readonly int $userId) {}
+}
+
+final class SendWelcomeEmail implements EventListenerInterface {
+    public function handle(object $event): void {
+        if ($event instanceof UserRegistered) { /* ... */ }
+    }
+}
+```
+
+Register listeners and dispatch:
+
+```php
+$dispatcher = \Rad\Event\Event::getHandler();          // PSR-14 EventDispatcherInterface
+if ($dispatcher instanceof \Rad\Event\EventHandler) {
+    $dispatcher->addListener(UserRegistered::class, new SendWelcomeEmail());
+}
+
+// From anywhere (a controller can also use $this->dispatch($event)):
+$dispatcher->dispatch(new UserRegistered(42));
+```
+
+The dispatcher is also injectable as `Psr\EventDispatcher\EventDispatcherInterface`.
+
 ## How is works
 
 * **Config**
@@ -317,7 +352,7 @@ an adapter.
 * [psr-4](http://www.php-fig.org/psr/psr-4/) Autoloader
 * [psr-7](http://www.php-fig.org/psr/psr-7/) Http Message (Thanks to Guzzle Http)
 * [psr-11](http://www.php-fig.org/psr/psr-11/) Container
-* [psr-14](http://www.php-fig.org/psr/psr-14/) EventDispatcher (WIP Remplace Observer Pattern)
+* [psr-14](http://www.php-fig.org/psr/psr-14/) EventDispatcher (replaces the old Observer pattern)
 * [psr-15](http://www.php-fig.org/psr/psr-15/) Middleware (Dispatcher + RequestHandler)
 * [psr-16](http://www.php-fig.org/psr/psr-16/) Caching
 * [psr-17](http://www.php-fig.org/psr/psr-17/) Http Factory (Thanks to Guzzle Http)

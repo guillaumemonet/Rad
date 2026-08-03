@@ -12,9 +12,16 @@ namespace Rad\Event;
 use Psr\EventDispatcher\StoppableEventInterface;
 
 /**
- * Description of AbstractEvent
- *
- * @author Guillaume Monet
+ * Base class for events dispatched through the PSR-14 event dispatcher.
  */
 abstract class AbstractEvent implements StoppableEventInterface {
+    private bool $propagationStopped = false;
+
+    public function isPropagationStopped(): bool {
+        return $this->propagationStopped;
+    }
+
+    public function stopPropagation(): void {
+        $this->propagationStopped = true;
+    }
 }

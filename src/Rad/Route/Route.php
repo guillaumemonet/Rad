@@ -9,8 +9,6 @@
 
 namespace Rad\Route;
 
-use Rad\Observer\Observable;
-
 /**
  * Description of Route
  *
@@ -30,8 +28,6 @@ class Route {
     protected array $produce = [];
     /** @var string[] */
     protected array $consume = [];
-    /** @var array<int, class-string> */
-    protected array $observers = [];
     /** @var array<string, string> */
     protected array $args          = [];
     protected bool $sessionEnabled = false;
@@ -42,17 +38,6 @@ class Route {
     /** @var string[] */
     protected array $exposedHeaders = [];
     protected string $corsDomain    = '*';
-
-    /**
-     *
-     * @param Observable $observable
-     */
-    public function applyObservers(Observable $observable) {
-        array_map(function ($observer) use ($observable) {
-            $obs = new $observer();
-            $observable->attach($obs);
-        }, $this->observers);
-    }
 
     /**
      *
