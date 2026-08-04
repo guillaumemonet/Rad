@@ -77,10 +77,18 @@ class TreeNodeRoute {
     public function getRoute($array) {
         if (count($array) > 0) {
             $matching_nodes = $this->matchRoute(array_shift($array));
-            $routes         = array_map(function ($node) use ($array) {
-                return $node->getRoute($array);
-            }, $matching_nodes);
-            return current($routes);
+            // Several sibling patterns may match the same segment (e.g. a
+            // "(?<slug>[a-z0-9\-]+)" node and a "(?<id>[0-9]+)" node both
+            // matching "2"). Try each in turn and keep the first that resolves
+            // to a route further down, so an ambiguous prefix does not shadow a
+            // deeper, valid match (backtracking).
+            foreach ($matching_nodes as $node) {
+                $route = $node->getRoute($array);
+                if ($route !== null) {
+                    return $route;
+                }
+            }
+            return null;
         } else {
             return ($this->route !== null) ? $this->route->setArgs($this->regArgs) : null;
         }
